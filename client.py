@@ -10,11 +10,18 @@ class MyXchangeClient(XChangeClient):
 
     def __init__(self, host: str, username: str, password: str):
         super().__init__(host, username, password)
+        self.eps_a = None
+        self.fv_a = None
+        self.eps_c = None
+        # fed probabilities from the news or the book
+        self.q_hike = 0.39
+        self.q_hold = 0.42
+        self.q_cut = 0.19  #tweak ^^^
         
-    async def calc_fv_a(eps):
+    async def calc_fv_a(self, eps):
         return eps * 10
     
-    async def calc_fv_c(eps, pe, b, n, lmbda, noise):
+    async def calc_fv_c(self, eps, pe, b, n, lmbda, noise):
         return (eps * pe) + (lmbda * (b/n)) + noise
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
@@ -30,6 +37,23 @@ class MyXchangeClient(XChangeClient):
         pass
 
     async def bot_handle_book_update(self, symbol: str) -> None:
+        if symbol == "A" and self.fv_a is not None:
+            book = self.order_books["A"]
+            asks = [k for k,v in book.asks.items() if v > 0]
+            bids = [k for k,v in book.bids.items() if v > 0]
+            if not asks or not bids:
+                return
+
+            best_ask = min(asks)
+            best_bid = max(bids)
+            EDGE = 2  # require 2 ticks of edge before trading
+
+            if best_ask < self.fv_a - EDGE:
+                print(f"A underpriced: ask={best_ask} FV={self.fv_a:.1f} → BUY")
+                await self.place_order("A", 5, Side.BUY, best_ask)
+            elif best_bid > self.fv_a + EDGE:
+                print(f"A overpriced: bid={best_bid} FV={self.fv_a:.1f} → SELL")
+                await self.place_order("A", 5, Side.SELL, best_bid)
         pass
 
     async def bot_handle_swap_response(self, swap: str, qty: int, success: bool):
@@ -45,10 +69,24 @@ class MyXchangeClient(XChangeClient):
             subtype = news_data["structured_subtype"]
             if subtype == "earnings":
                 asset = news_data["asset"]
+                print(f"asset: {asset}")
                 value = news_data["value"]
+                print(f"value: {value}")
+                if asset == "A":
+                    self.eps_a = value
+                    self.fv_a = self.calc_fv_a(self.eps_a)
+                    print(f"[NEWS] A EPS = {value}  FV_A = {self.fv_a}")
+                elif asset == "C":
+                    self.eps_c = value
+                    self.fv_c = self.calc_fv_c(self.eps_c)
+                    print(f"[NEWS] C EPS = {value}  FV_C = {self.fv_C}")
             elif subtype == "cpi_print":
                 forecast = news_data["forecast"]
+                print(f"forecast: {forecast}")
                 actual = news_data["actual"]
+                print(f"actual: {actual}")
+                surprise = news_data["actual"] - news_data["forecast"]
+                print(f"[NEWS] CPI surprise={surprise:+.6f} ({'hawkish' if surprise>0 else 'dovish'})")
         else:
             content = news_data["content"]
             message_type = news_data["type"]
