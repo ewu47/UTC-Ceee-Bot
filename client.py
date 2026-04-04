@@ -14,22 +14,19 @@ class MyXchangeClient(XChangeClient):
     async def calc_fv_a(eps):
         return eps * 10
     
-    
+    async def calc_fv_c(eps, pe, b, n, lmbda, noise):
+        return (eps * pe) + (lmbda * (b/n)) + noise
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
-        print("inside handle cancel function")
         pass
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
-        print("inside handle order function")
         pass
 
     async def bot_handle_order_rejected(self, order_id: str, reason: str) -> None:
-        print("handle order rejected function")
         pass
 
     async def bot_handle_trade_msg(self, symbol: str, price: int, qty: int):
-        print("handle trade function")
         pass
 
     async def bot_handle_book_update(self, symbol: str) -> None:
