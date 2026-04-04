@@ -5,20 +5,31 @@ import asyncio
 
 
 class MyXchangeClient(XChangeClient):
+    
+    
 
     def __init__(self, host: str, username: str, password: str):
         super().__init__(host, username, password)
+        
+    async def calc_fv_a(eps):
+        return eps * 10
+    
+    
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
+        print("inside handle cancel function")
         pass
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
+        print("inside handle order function")
         pass
 
     async def bot_handle_order_rejected(self, order_id: str, reason: str) -> None:
+        print("handle order rejected function")
         pass
 
     async def bot_handle_trade_msg(self, symbol: str, price: int, qty: int):
+        print("handle trade function")
         pass
 
     async def bot_handle_book_update(self, symbol: str) -> None:
@@ -69,7 +80,11 @@ class MyXchangeClient(XChangeClient):
                 print(f"Asks for {security}:\n{sorted_asks}")
 
     async def start(self):
-        asyncio.create_task(self.trade())
+        def _handle_trade_exception(task):
+            if not task.cancelled() and task.exception():
+                print(f"Trade task exception: {task.exception()}")
+        self._trade_task = asyncio.create_task(self.trade())
+        self._trade_task.add_done_callback(_handle_trade_exception)
         await self.connect()
 
 
