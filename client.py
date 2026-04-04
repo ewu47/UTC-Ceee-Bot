@@ -26,6 +26,32 @@ class MyXchangeClient(XChangeClient):
 
     async def bot_handle_swap_response(self, swap: str, qty: int, success: bool):
         pass
+    
+    async def bot_handle_news(self, news_release: dict):
+        tick = news_release["tick"]
+        news_type = news_release["kind"]
+        symbol = news_release["symbol"]  # may be None
+        news_data = news_release["new_data"]
+
+        if news_type == "structured":
+            subtype = news_data["structured_subtype"]
+            if subtype == "earnings":
+                asset = news_data["asset"]
+                value = news_data["value"]
+            elif subtype == "cpi_print":
+                forecast = news_data["forecast"]
+                actual = news_data["actual"]
+        else:
+            content = news_data["content"]
+            message_type = news_data["type"]
+            
+    async def bot_handle_market_resolved(self, market_id: str, winning_symbol: str, tick: int):
+        print(f"Market {market_id} resolved: winner is {winning_symbol}")
+
+    async def bot_handle_settlement_payout(self, user: str, market_id: str, amount: int, tick: int):
+        print(f"Settlement payout: {amount} from {market_id}")
+
+
 
     async def trade(self):
         """This is a simple example bot that places orders and prints updates."""
@@ -48,8 +74,8 @@ class MyXchangeClient(XChangeClient):
 
 
 async def main():
-    SERVER = '127.0.0.1:3333'
-    my_client = MyXchangeClient(SERVER, "user", "password")
+    SERVER = '34.197.188.76:3333'
+    my_client = MyXchangeClient(SERVER, "chicago6", "bolt-nova-rocket")
     await my_client.start()
 
 
