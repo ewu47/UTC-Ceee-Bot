@@ -124,7 +124,7 @@ class MyXchangeClient(XChangeClient):
 
 
 async def main():
-    SERVER = '34.197.188.76:3333'
+    SERVER = 'practice.uchicago.exchange:3333'
     my_client = MyXchangeClient(SERVER, "chicago6", "bolt-nova-rocket")
     await my_client.start()
 
