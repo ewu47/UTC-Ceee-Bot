@@ -31,11 +31,14 @@ class MyXchangeClient(XChangeClient):
         self.skews = {"A": 0.1, "C": 0.1} #tweak (filler numbers)
         # fed probabilities from the news or the book
         self.fed_probs = {"hike": 0.39, "hold": 0.42, "cut": 0.19} #tweak starting probs?
-        #maximums will be given on ed
-        self.max_order_size = None
-        self.max_open_order = None #size of unfilled order
-        self.max_outstanding_vol = None #total volume of unfilled order
-        self.max_abs_position = None #sum of long+short positions
+        self.max_order_size = {"A": 40, "B": 40, "B_C_950": 40, "B_P_950": 40, "B_C_1000": 40, "B_P_1000": 40, "B_C_1050": 40, "B_P_1050": 40, \
+        "C": 40, "ETF": 40, "R_CUT": 40, "R_HOLD": 40, "R_HIKE": 40}
+        self.max_open_orders = {"A": 50, "B": 50, "B_C_950": 50, "B_P_950": 50, "B_C_1000": 50, "B_P_1000": 50, "B_C_1050": 50, "B_P_1050": 50, \
+        "C": 50, "ETF": 50, "R_CUT": 50, "R_HOLD": 50, "R_HIKE": 50}
+        self.max_outstanding_vol = {"A": 120, "B": 120, "B_C_950": 120, "B_P_950": 120, "B_C_1000": 120, "B_P_1000": 120, "B_C_1050": 120, "B_P_1050": 120, \
+        "C": 120, "ETF": 120, "R_CUT": 120, "R_HOLD": 120, "R_HIKE": 120}
+        self.max_abs_position = {"A":200, "B": 200, "B_C_950": 200, "B_P_950": 200, "B_C_1000": 200, "B_P_1000": 200, "B_C_1050": 200, "B_P_1050": 200, \
+        "C": 200, "ETF": 200, "R_CUT": 200, "R_HOLD": 200, "R_HIKE": 200}
         self.my_quote_ids = set()
         self.cpi_sensitivity = 0.1 #tweak (filler number)
         self.num_quote = 5 #tweak (filler number)
