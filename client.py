@@ -51,7 +51,7 @@ class MyXchangeClient(XChangeClient):
         expected_rate_change = (25 * self.fed_probs["hike"]) + (-25 * self.fed_probs["cut"])
         dy = BETA * expected_rate_change
         pe_c = PE0_C * math.exp(-GAMMA * dy)
-        delta_b = B0 * (-D * dy + 0.5 * CONVEXITY * dy**2)
+        delta_b = B0 * (-D * dy + 0.5 * CONVEXITY * dy ** 2)
         return (eps * pe_c) + (LAMBDA * delta_b / N)
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
@@ -230,7 +230,7 @@ class MyXchangeClient(XChangeClient):
             await self.place_order("C", self.num_etf, Side.BUY, mid_c)
             await self.place_swap_order("toETF", 1)
             await self.place_order("ETF", self.num_etf, Side.SELL, etf_mid)
-        elif diff < -SWAP_COST:
+        elif diff < -ETF_COST:
             print(f"[ETF] ETF underpriced by {abs(diff):.1f}, redeeming ETF")
             await self.place_order("ETF", self.num_etf, Side.BUY, etf_mid)
             await self.place_swap_order("fromETF", 1)
