@@ -4,20 +4,21 @@ from utcxchangelib import XChangeClient, Side
 import asyncio
 import math
 
+PE_A = 10
+#hopefully will be given to us??
+PE0_C = None
+GAMMA = None
+Y0 = None
+BETA = None
+B0 = None
+D = None
+CONVEXITY = None
+N = None
+LAMBDA = None
 
 class MyXchangeClient(XChangeClient):
     
-    PE_A = 10
-    #hopefully will be given to us??
-    PE0_C = None
-    GAMMA = None
-    Y0 = None
-    BETA = None
-    B0 = None
-    D = None
-    CONVEXITY = None
-    N = None
-    LAMBDA = None
+
 
     def __init__(self, host: str, username: str, password: str):
         super().__init__(host, username, password)
@@ -41,12 +42,15 @@ class MyXchangeClient(XChangeClient):
     def calc_fv_c(self, eps):
         expected_rate_change = (25 * self.fed_probs["hike"]) + (-25 * self.fed_probs["cut"])
         dy = BETA * expected_rate_change
-        pe_c = PE0 * math.exp(-GAMMA * dy)
+        pe_c = PE0_C * math.exp(-GAMMA * dy)
         delta_b = B0 * (-D * dy + 0.5 * CONVEXITY * dy**2)
         return (eps * pe_c) + (LAMBDA * delta_b / N)
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
-        pass
+        if success:
+            self.my_quote_ids.discard(order_id)
+        else:
+            print(f"[CANCEL] Failed to cancel order {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
         pass
@@ -150,7 +154,6 @@ class MyXchangeClient(XChangeClient):
         to_cancel = [oid for oid in list(self.my_quote_ids) if oid in self.open_orders and self.open_orders[oid][0].symbol == symbol]
         for oid in to_cancel:
             await self.cancel_order(oid)
-        self.my_quote_ids.discard(oid)
         if position < self.max_abs_position:
             bid_id = await self.place_order(symbol, 5, Side.BUY, bid)
             self.my_quote_ids.add(bid_id)
