@@ -15,6 +15,7 @@ D = None
 CONVEXITY = None
 N = None
 LAMBDA = None
+RF_RATE = 0
 
 class MyXchangeClient(XChangeClient):
     
@@ -24,17 +25,17 @@ class MyXchangeClient(XChangeClient):
         super().__init__(host, username, password)
         self.eps = {"A": None, "C": None}
         self.fair_values = {"A": None, "C": None, "ETF": None}
-        self.spreads = {"A": 5, "C": 10} #change
-        self.skews = {"A": 0.1, "C": 0.1} #change
+        self.spreads = {"A": 5, "C": 10} #tweak (filler numbers)
+        self.skews = {"A": 0.1, "C": 0.1} #tweak (filler numbers)
         # fed probabilities from the news or the book
         self.fed_probs = {"hike": 0.39, "hold": 0.42, "cut": 0.19} #tweak starting probs?
-        self.rf_rate = 0
         #maximums will be given on ed
         self.max_order_size = None
         self.max_open_order = None #size of unfilled order
         self.max_outstanding_vol = None #total volume of unfilled order
         self.max_abs_position = None #sum of long+short positions
         self.my_quote_ids = set()
+        self.cpi_sensitivity = 0.1 #tweak (filler number)
         
     def calc_fv_a(self, eps):
         return eps * PE_A
@@ -79,6 +80,17 @@ class MyXchangeClient(XChangeClient):
             elif best_bid > self.fair_values["A"] + EDGE:
                 print(f"A overpriced: bid={best_bid} FV={self.fair_values['A']:.1f} → SELL")
                 await self.place_order("A", 5, Side.SELL, best_bid)
+        elif symbol in ["R_HIKE", "R_HOLD", "R_CUT"]:
+            for contract, key in [("R_HIKE", "hike"), ("R_HOLD", "hold"), ("R_CUT", "cut")]:
+                book = self.order_books[contract]
+                asks = [k for k,v in book.asks.items() if v > 0]
+                bids = [k for k,v in book.bids.items() if v > 0]
+                if bids and asks:
+                    mid = (max(bids) + min(asks)) / 2
+                    self.fed_probs[key] = mid/1000 #fed probs relies only on market not cpi
+            if self.eps["C"] is not None and PE0_C is not None:
+                self.fair_values["C"] = self.calc_fv_c(self.eps["C"])
+                print(f"[BOOK] fed_probs={self.fed_probs} FV_C={self.fair_values['C']}")
         pass
 
     async def bot_handle_swap_response(self, swap: str, qty: int, success: bool):
@@ -94,26 +106,41 @@ class MyXchangeClient(XChangeClient):
             subtype = news_data["structured_subtype"]
             if subtype == "earnings":
                 asset = news_data["asset"]
-                print(f"asset: {asset}")
                 value = news_data["value"]
-                print(f"value: {value}")
+                print(f"[NEWS] earnings: asset={asset} value={value}")
                 if asset == "A":
                     self.eps["A"] = value
                     self.fair_values["A"] = self.calc_fv_a(self.eps["A"])
                     print(f"[NEWS] A EPS = {value}  FV_A = {self.fair_values['A']}")
                 elif asset == "C":
                     self.eps["C"] = value
-                    self.fair_values["C"] = self.calc_fv_c(self.eps["C"])
-                    print(f"[NEWS] C EPS = {value}  FV_C = {self.fair_values['C']}")
+                    if PE0_C is not None:
+                        self.fair_values["C"] = self.calc_fv_c(self.eps["C"])
+                        print(f"[NEWS] C EPS = {value}  FV_C updated to {self.fair_values['C']}")
+                    else:
+                        print(f"[NEWS] C EPS = {value}, constants not set yet")
             elif subtype == "cpi_print":
                 forecast = news_data["forecast"]
                 print(f"forecast: {forecast}")
                 actual = news_data["actual"]
                 print(f"actual: {actual}")
-                surprise = news_data["actual"] - news_data["forecast"]
+                surprise = actual - forecast
                 print(f"[NEWS] CPI surprise={surprise:+.6f} ({'hawkish' if surprise>0 else 'dovish'})")
+                shift = self.cpi_sensitivity * abs(surprise)
+                if surprise > 0:
+                    actual_shift = min(shift, self.fed_probs["cut"])
+                    self.fed_probs["cut"] -= actual_shift
+                    self.fed_probs["hike"] += actual_shift
+                else:
+                    actual_shift = min(shift, self.fed_probs["hike"])
+                    self.fed_probs["hike"] -= actual_shift
+                    self.fed_probs["cut"] += actual_shift
+                if self.eps["C"] is not None and PE0_C is not None:
+                    self.fair_values["C"] = self.calc_fv_c(self.eps["C"])
+                    print(f"[NEWS] CPI-driven FV_C = {self.fair_values['C']}")
         else:
             content = news_data["content"]
+            print(f"[NEWS] unstructured: {content}")
             message_type = news_data["type"]
             
     async def bot_handle_market_resolved(self, market_id: str, winning_symbol: str, tick: int):
