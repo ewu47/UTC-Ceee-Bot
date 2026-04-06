@@ -17,12 +17,18 @@ class MyXchangeClient(XChangeClient):
         self.q_hike = 0.39
         self.q_hold = 0.42
         self.q_cut = 0.19  #tweak ^^^
+        self.rf_rate = 0
+        #maximums will be given
+        self.max_order_size = None
+        self.max_open_order = None #size of unfilled order
+        self.max_outstanding_vol = None #total volume of unfilled order
+        self.max_abs_position = None #sum of long+short positions
         
-    async def calc_fv_a(self, eps):
+    def calc_fv_a(self, eps):
         return eps * 10
     
-    async def calc_fv_c(self, eps, pe, b, n, lmbda, noise):
-        return (eps * pe) + (lmbda * (b/n)) + noise
+    def calc_fv_c(self, eps, pe, b, n, lmbda):
+        return (eps * pe) + (lmbda * (b/n))
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
         pass
@@ -59,8 +65,8 @@ class MyXchangeClient(XChangeClient):
     async def bot_handle_swap_response(self, swap: str, qty: int, success: bool):
         pass
     
-    async def bot_handle_news(self, news_release: dict):
-        tick = news_release["tick"]
+    async def bot_handle_news(self, news_release: dict): #note potential bug - parent class has (self, timestamp, news_release) variables
+        tick = news_release["tick"] #note potential bug - no "tick" key in dictionary in parent class
         news_type = news_release["kind"]
         symbol = news_release["symbol"]  # may be None
         news_data = news_release["new_data"]
@@ -79,7 +85,7 @@ class MyXchangeClient(XChangeClient):
                 elif asset == "C":
                     self.eps_c = value
                     self.fv_c = self.calc_fv_c(self.eps_c)
-                    print(f"[NEWS] C EPS = {value}  FV_C = {self.fv_C}")
+                    print(f"[NEWS] C EPS = {value}  FV_C = {self.fv_c}")
             elif subtype == "cpi_print":
                 forecast = news_data["forecast"]
                 print(f"forecast: {forecast}")
