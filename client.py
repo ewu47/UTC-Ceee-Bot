@@ -7,17 +7,18 @@ import math
 
 # ── Constants (fill in on competition day) ──────────────────────────
 PE_A = 10
-PE0_C = None
-GAMMA = None
-Y0 = None
-BETA = None
-B0 = None
-D = None
-CONVEXITY = None
-N = None
-LAMBDA = None
+PE0_C = 14.0
+EPS0 = 2.00
+Y0 = 0.045
+B0_N = 40
+D = 7.5
+C = 55.0
+LAMBDA = 0.65
 RF_RATE = 0
 ETF_COST = 5
+
+GAMMA = None #are we going to get these or will we have to figure them out?
+BETA = None
 
 OPTION_STRIKES = [950, 1000, 1050]
 
@@ -341,7 +342,11 @@ class StockCStrategy:
         self.client = client
 
     def calc_fair_value(self, eps):
-        pass
+        expected_rate_change = 25 * self.client.fed_probs["hike"] - 25 * self.client.fed_probs["cut"]
+        delta_y = BETA * expected_rate_change
+        pe = PE0_C * math.exp(-GAMMA * delta_y)
+        delta_b_b0 = -D * delta_y + 0.5 * C * delta_y ** 2
+        return eps * pe + LAMBDA * B0_N * delta_b_b0
 
     async def on_book_update(self):
         pass
@@ -484,7 +489,7 @@ class ETFStrategy:
         if mid_a is None or mid_b is None or mid_c is None:
             return
 
-        nav = mid_a + mid_b + mid_c
+        nav = self.client.fair_values["A"] + mid_b + self.client.fair_values["C"]
         diff = etf_mid - nav
         print(f"[ETF] etf_mid={etf_mid:.1f} nav={nav:.1f} diff={diff:.1f}")
 
