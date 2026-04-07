@@ -25,22 +25,313 @@ OPTION_STRIKES = [950, 1000, 1050]
 # ── Strategy modules ────────────────────────────────────────────────
 
 class StockAStrategy:
-    """Small-cap stock with constant P/E. Edge: fast reaction to earnings news."""
+    """Small-cap stock with constant P/E. Edge: fast reaction to earnings news.
+
+    Two modes:
+    1. POST-EARNINGS (first ~2s after news): aggressively sweep stale orders
+       at every price level better than FV. This is our primary edge.
+    2. PASSIVE MM (rest of the time): quote bid/ask around FV with inventory
+       skew to earn spread while staying flat.
+    """
 
     def __init__(self, client):
         self.client = client
 
+        # ── Exchange hard limits for A ──
+        self.MAX_ORDER_SIZE = 40
+        self.MAX_OUTSTANDING_VOL = 120
+        self.MAX_OPEN_ORDERS = 50
+        self.MAX_ABS_POS = 200
+
+        # ── Passive MM params ──
+        self.base_spread = 4
+        self.skew_per_unit = 0.15
+        self.quote_size = 10
+        self.max_position = 100  # soft limit — start unwinding beyond this
+
+        # ── Aggressive params ──
+        self.edge_threshold = 2
+        self.snipe_size = 20
+        self.post_earnings_ticks = 10
+
+        # ── Stop loss params ──
+        self.stop_loss_ticks = 8
+        self.cash_floor = -200      # stop opening new positions if cash below this
+
+        # ── State ──
+        self.earnings_countdown = 0
+        self.prev_fv = None
+        self.pending_cancels = set()
+        self.last_book_snipe_time = 0.0
+        # Track our own outstanding vol with a simple counter
+        # Incremented on place_order, decremented on fill/cancel/reject
+        self.my_outstanding_vol = 0
+        self.my_open_order_count = 0
+
+    # ── Limit tracking: use ACTUAL exchange state, no optimistic assumptions ──
+
+    def _outstanding_volume_actual(self):
+        """What the exchange considers our outstanding volume for A.
+        This counts ALL open orders including pending cancels,
+        because the exchange hasn't processed those cancels yet."""
+        total = 0
+        for oid, info in self.client.open_orders.items():
+            if info and info[0].symbol == "A" and not info[2]:
+                total += info[1]
+        return total
+
+    def _open_order_count_actual(self):
+        """What the exchange considers our open order count for A."""
+        count = 0
+        for oid, info in self.client.open_orders.items():
+            if info and info[0].symbol == "A" and not info[2]:
+                count += 1
+        return count
+
+    async def _place_order_a(self, qty, side, price):
+        """THE ONLY WAY to place an order for A. Hard-checks all limits."""
+        if qty <= 0:
+            return None
+
+        qty = min(qty, self.MAX_ORDER_SIZE)
+
+        # Hard limit: outstanding volume
+        cur_vol = self._outstanding_volume_actual()
+        if cur_vol + qty > self.MAX_OUTSTANDING_VOL:
+            qty = self.MAX_OUTSTANDING_VOL - cur_vol
+            if qty <= 0:
+                return None
+
+        # Hard limit: open order count
+        if self._open_order_count_actual() + 1 > self.MAX_OPEN_ORDERS:
+            return None
+
+        # Hard limit: absolute position
+        pos = self.client.positions["A"]
+        if side == Side.BUY and pos + qty > self.MAX_ABS_POS:
+            qty = self.MAX_ABS_POS - pos
+        elif side == Side.SELL and pos - qty < -self.MAX_ABS_POS:
+            qty = self.MAX_ABS_POS + pos
+        if qty <= 0:
+            return None
+
+        # Cash floor: don't open NEW positions if we're broke
+        cash = self.client.positions.get("cash", 0)
+        if cash < self.cash_floor:
+            # Only allow orders that REDUCE position
+            if side == Side.BUY and pos >= 0:
+                print(f"[A] BLOCKED: cash={cash} < floor={self.cash_floor}, won't increase long")
+                return None
+            if side == Side.SELL and pos <= 0:
+                print(f"[A] BLOCKED: cash={cash} < floor={self.cash_floor}, won't increase short")
+                return None
+
+        oid = await self.client.place_order("A", qty, side, price)
+        return oid
+
     def calc_fair_value(self, eps):
-        pass
+        return eps * PE_A
+
+    # ── Cancel helper ──
+
+    async def _cancel_a_quotes(self):
+        """Cancel our quote-ids for A."""
+        self.client.my_quote_ids = {
+            oid for oid in self.client.my_quote_ids if oid in self.client.open_orders
+        }
+        to_cancel = [
+            oid for oid in self.client.my_quote_ids
+            if self.client.open_orders[oid][0].symbol == "A"
+        ]
+        for oid in to_cancel:
+            self.client.my_quote_ids.discard(oid)
+            self.pending_cancels.add(oid)
+        for oid in to_cancel:
+            await self.client.cancel_order(oid)
+
+    def on_cancel_confirmed(self, order_id):
+        self.pending_cancels.discard(order_id)
+
+    def on_order_rejected(self, order_id):
+        self.pending_cancels.discard(order_id)
+
+    # ── Stop loss ──
+
+    async def _check_stop_loss(self):
+        """If holding a big position and market moving against us, cut it."""
+        fv = self.client.fair_values.get("A")
+        if fv is None:
+            return
+        pos = self.client.positions["A"]
+        if abs(pos) < 15:
+            return
+
+        best_bid, best_ask = self.client.get_best_bid_ask("A")
+        if best_bid is None or best_ask is None:
+            return
+        mid = (best_bid + best_ask) / 2
+
+        if pos > 0 and mid < fv - self.stop_loss_ticks:
+            cut_qty = min(abs(pos) // 2, self.MAX_ORDER_SIZE)
+            oid = await self._place_order_a(cut_qty, Side.SELL, best_bid)
+            if oid:
+                print(f"[A] STOP LOSS: long {pos}, mid={mid:.0f} << FV={fv:.0f}, selling {cut_qty} @ {best_bid}")
+        elif pos < 0 and mid > fv + self.stop_loss_ticks:
+            cut_qty = min(abs(pos) // 2, self.MAX_ORDER_SIZE)
+            oid = await self._place_order_a(cut_qty, Side.BUY, best_ask)
+            if oid:
+                print(f"[A] STOP LOSS: short {pos}, mid={mid:.0f} >> FV={fv:.0f}, buying {cut_qty} @ {best_ask}")
+
+    # ── Aggressive: sweep stale orders after earnings ──
+
+    async def _sweep_stale_orders(self):
+        """Walk the book and pick off every resting order better than FV."""
+        fv = self.client.fair_values.get("A")
+        if fv is None:
+            return
+        book = self.client.order_books["A"]
+        pos = self.client.positions["A"]
+
+        # Buy side: sweep asks below FV (cheapest first)
+        stale_asks = sorted(
+            [(px, qty) for px, qty in book.asks.items() if qty > 0 and px < fv - 1],
+            key=lambda x: x[0]
+        )
+        for px, qty in stale_asks:
+            buy_qty = min(qty, self.snipe_size)
+            oid = await self._place_order_a(buy_qty, Side.BUY, px)
+            if oid is None:
+                break  # hit a limit, stop sweeping
+            pos += buy_qty
+            print(f"[A] SNIPE BUY {buy_qty} @ {px} | edge={fv - px:.0f} | pos→{pos}")
+
+        # Sell side: sweep bids above FV (most expensive first)
+        pos = self.client.positions["A"]
+        stale_bids = sorted(
+            [(px, qty) for px, qty in book.bids.items() if qty > 0 and px > fv + 1],
+            key=lambda x: -x[0]
+        )
+        for px, qty in stale_bids:
+            sell_qty = min(qty, self.snipe_size)
+            oid = await self._place_order_a(sell_qty, Side.SELL, px)
+            if oid is None:
+                break
+            pos -= sell_qty
+            print(f"[A] SNIPE SELL {sell_qty} @ {px} | edge={px - fv:.0f} | pos→{pos}")
 
     async def on_book_update(self):
-        pass
+        """On book update, check for mispriced orders. Rate-limited to avoid spam."""
+        fv = self.client.fair_values.get("A")
+        if fv is None:
+            return
+
+        now = asyncio.get_event_loop().time()
+
+        # During post-earnings window, sweep but rate-limit to 5/sec
+        if self.earnings_countdown > 0:
+            if now - self.last_book_snipe_time < 0.2:
+                return
+            self.last_book_snipe_time = now
+            await self._sweep_stale_orders()
+            return
+
+        # Outside earnings: rate-limit to 2/sec max
+        if now - self.last_book_snipe_time < 0.5:
+            return
+        self.last_book_snipe_time = now
+
+        best_bid, best_ask = self.client.get_best_bid_ask("A")
+
+        if best_ask is not None and best_ask < fv - self.edge_threshold:
+            oid = await self._place_order_a(self.snipe_size, Side.BUY, best_ask)
+            if oid:
+                print(f"[A] BUY @ {best_ask} | signal: ask {best_ask} < FV {fv:.0f} - {self.edge_threshold}")
+        elif best_bid is not None and best_bid > fv + self.edge_threshold:
+            oid = await self._place_order_a(self.snipe_size, Side.SELL, best_bid)
+            if oid:
+                print(f"[A] SELL @ {best_bid} | signal: bid {best_bid} > FV {fv:.0f} + {self.edge_threshold}")
+
+    # ── Passive MM: quote around FV with inventory skew ──
 
     async def update_quotes(self):
-        pass
+        """Quote bid/ask around FV. Skew toward reducing position."""
+        fv = self.client.fair_values.get("A")
+        if fv is None:
+            # Before first earnings: use market mid as FV estimate
+            best_bid, best_ask = self.client.get_best_bid_ask("A")
+            if best_bid is not None and best_ask is not None:
+                fv = (best_bid + best_ask) / 2
+                self.client.fair_values["A"] = fv
+                print(f"[A] no earnings yet, using market mid as FV={fv:.1f}")
+            else:
+                return
+
+        pos = self.client.positions["A"]
+        cash = self.client.positions.get("cash", 0)
+
+        # Decay the post-earnings countdown
+        if self.earnings_countdown > 0:
+            self.earnings_countdown -= 1
+
+        # ── Check stop loss ──
+        await self._check_stop_loss()
+
+        # ── Cancel our existing quotes for A (tracked as pending) ──
+        await self._cancel_a_quotes()
+
+        # ── Dynamic spread: widen when position is large ──
+        pos_frac = abs(pos) / max(self.max_position, 1)
+        spread = self.base_spread + int(pos_frac * 3)
+
+        # ── Inventory skew: shift mid toward reducing position ──
+        skew = self.skew_per_unit * pos
+
+        bid = round(fv - spread / 2 - skew)
+        ask = round(fv + spread / 2 - skew)
+        if bid >= ask:
+            ask = bid + 1
+
+        # ── Size: reduce on the side that would increase risk ──
+        bid_size = self.quote_size if pos < self.max_position else max(2, self.quote_size // 3)
+        ask_size = self.quote_size if pos > -self.max_position else max(2, self.quote_size // 3)
+
+        # ── Place quotes — _place_order_a enforces all limits ──
+        bid_id = await self._place_order_a(bid_size, Side.BUY, bid)
+        if bid_id:
+            self.client.my_quote_ids.add(bid_id)
+        else:
+            bid_size = 0
+
+        ask_id = await self._place_order_a(ask_size, Side.SELL, ask)
+        if ask_id:
+            self.client.my_quote_ids.add(ask_id)
+        else:
+            ask_size = 0
+
+        outvol = self._outstanding_volume_actual()
+        print(f"[A] MM: fv={fv:.1f} pos={pos} cash={cash} spread={spread} skew={skew:.1f} "
+              f"bid={bid}x{bid_size} ask={ask}x{ask_size} outvol={outvol}")
+
+    # ── Earnings handler ──
 
     async def on_earnings(self, eps):
-        pass
+        """New EPS → update FV, cancel stale quotes, immediately sweep the book."""
+        self.prev_fv = self.client.fair_values.get("A")
+        self.client.eps["A"] = eps
+        self.client.fair_values["A"] = self.calc_fair_value(eps)
+        fv = self.client.fair_values["A"]
+
+        delta = fv - self.prev_fv if self.prev_fv else 0
+        print(f"[A] *** EARNINGS *** EPS={eps} → FV={fv} (Δ={delta:+.1f}) pos={self.client.positions['A']} cash={self.client.positions.get('cash', 0)}")
+
+        # Enter aggressive mode
+        self.earnings_countdown = self.post_earnings_ticks
+
+        # Cancel our existing quotes immediately so we don't get picked off
+        await self._cancel_a_quotes()
+
+        # Sweep the book for stale orders
+        await self._sweep_stale_orders()
 
 
 class StockCStrategy:
@@ -98,12 +389,25 @@ class FedStrategy:
 
     - Read R_HIKE/R_HOLD/R_CUT book mids to get market-implied probs
     - CPI news shifts our probs: actual > forecast = hawkish (hike), vice versa = dovish (cut)
+    - FEDSPEAK: parse keywords for dovish/hawkish signals
     - Trade R contracts when our probs diverge from market
     """
 
+    DOVISH_KEYWORDS = [
+        "easing", "cooling", "dovish", "cut", "lower rates",
+        "easing inflation", "slowing growth", "policy easing",
+        "expectations of policy easing",
+    ]
+    HAWKISH_KEYWORDS = [
+        "restrictive", "hawkish", "hike", "inflation risks",
+        "stay restrictive", "tightening", "higher for longer",
+        "restrictive for longer",
+    ]
+
     def __init__(self, client):
         self.client = client
-        self.cpi_sensitivity = 0.1  # tweak
+        self.cpi_sensitivity = 100  # tweak — surprises are ~0.0003-0.0007, so need large multiplier
+        self.fedspeak_shift = 0.03  # how much each headline shifts probs (tweak)
 
     def update_probs_from_book(self):
         """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs."""
@@ -126,6 +430,26 @@ class FedStrategy:
             actual_shift = min(shift, self.client.fed_probs["hike"])
             self.client.fed_probs["hike"] -= actual_shift
             self.client.fed_probs["cut"] += actual_shift
+        print(f"[FED] probs after CPI: {self.client.fed_probs}")
+
+    def on_fedspeak(self, content):
+        """Parse unstructured FEDSPEAK for dovish/hawkish signals."""
+        text = content.lower()
+        dovish = any(kw in text for kw in self.DOVISH_KEYWORDS)
+        hawkish = any(kw in text for kw in self.HAWKISH_KEYWORDS)
+
+        if dovish and not hawkish:
+            shift = min(self.fedspeak_shift, self.client.fed_probs["hike"])
+            self.client.fed_probs["hike"] -= shift
+            self.client.fed_probs["cut"] += shift
+            print(f"[FED] DOVISH: '{content}' → probs={self.client.fed_probs}")
+        elif hawkish and not dovish:
+            shift = min(self.fedspeak_shift, self.client.fed_probs["cut"])
+            self.client.fed_probs["cut"] -= shift
+            self.client.fed_probs["hike"] += shift
+            print(f"[FED] HAWKISH: '{content}' → probs={self.client.fed_probs}")
+        else:
+            print(f"[FED] NEUTRAL: '{content}'")
 
     async def trade_prediction_market(self):
         """Trade R contracts when our probs diverge from market probs."""
@@ -233,23 +557,31 @@ class MyXchangeClient(XChangeClient):
 
     async def cancel_quotes_for(self, symbol):
         """Cancel all our outstanding quotes for a given symbol."""
-        to_cancel = [oid for oid in list(self.my_quote_ids)
-                     if oid in self.open_orders and self.open_orders[oid][0].symbol == symbol]
-        if to_cancel:
-            await asyncio.gather(*(self.cancel_order(oid) for oid in to_cancel))
+        # First clean stale IDs that are no longer in open_orders
+        self.my_quote_ids = {oid for oid in self.my_quote_ids if oid in self.open_orders}
+        to_cancel = [oid for oid in self.my_quote_ids
+                     if self.open_orders[oid][0].symbol == symbol]
+        for oid in to_cancel:
+            self.my_quote_ids.discard(oid)
+        # Cancel sequentially to avoid overwhelming gRPC
+        for oid in to_cancel:
+            await self.cancel_order(oid)
 
     # ── Handlers ─────────────────────────────────────────────────────
 
     async def bot_handle_cancel_response(self, order_id: str, success: bool, error: Optional[str] = None) -> None:
+        self.strat_a.on_cancel_confirmed(order_id)
         if success:
             self.my_quote_ids.discard(order_id)
         else:
             print(f"[CANCEL] Failed to cancel order {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
+        self.strat_a.pending_cancels.discard(order_id)
         print(f"[FILL] order {order_id}: {qty} @ {price}")
 
     async def bot_handle_order_rejected(self, order_id: str, reason: str) -> None:
+        self.strat_a.on_order_rejected(order_id)
         self.my_quote_ids.discard(order_id)
         print(f"[REJECTED] order {order_id}: {reason}")
 
@@ -292,8 +624,8 @@ class MyXchangeClient(XChangeClient):
                 self.strat_c.recalc_fair_value()
         else:
             content = news_data["content"]
-            print(f"[NEWS] unstructured: {content}")
-            # TODO: parse unstructured news for fed sentiment
+            self.strat_fed.on_fedspeak(content)
+            self.strat_c.recalc_fair_value()
 
     async def bot_handle_market_resolved(self, market_id: str, winning_symbol: str, tick: int):
         print(f"Market {market_id} resolved: winner is {winning_symbol}")
@@ -314,7 +646,7 @@ class MyXchangeClient(XChangeClient):
                 self.strat_options.run(),
                 self.strat_fed.trade_prediction_market(),
             )
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
 
     async def start(self):
         def _handle_trade_exception(task):
