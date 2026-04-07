@@ -20,9 +20,6 @@ ETF_COST = 5
 
 
 class MyXchangeClient(XChangeClient):
-    
-
-
     def __init__(self, host: str, username: str, password: str):
         super().__init__(host, username, password)
         self.eps = {"A": None, "C": None}
@@ -39,7 +36,7 @@ class MyXchangeClient(XChangeClient):
         "C": 120, "ETF": 120, "R_CUT": 120, "R_HOLD": 120, "R_HIKE": 120}
         self.max_abs_position = {"A":200, "B": 200, "B_C_950": 200, "B_P_950": 200, "B_C_1000": 200, "B_P_1000": 200, "B_C_1050": 200, "B_P_1050": 200, \
         "C": 200, "ETF": 200, "R_CUT": 200, "R_HOLD": 200, "R_HIKE": 200}
-        self.my_quote_ids = set()
+        self.my_quote_ids = set()  # track our active quote order IDs for cancellation
         self.cpi_sensitivity = 0.1 #tweak (filler number)
         self.num_quote = 5 #tweak (filler number)
         self.num_etf = 1 #tweak (filler number)
@@ -61,10 +58,11 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL] Failed to cancel order {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
-        pass
+        print(f"[FILL] order {order_id}: {qty} @ {price}")
 
     async def bot_handle_order_rejected(self, order_id: str, reason: str) -> None:
-        pass
+        self.my_quote_ids.discard(order_id)
+        print(f"[REJECTED] order {order_id}: {reason}")
 
     async def bot_handle_trade_msg(self, symbol: str, price: int, qty: int):
         pass
@@ -83,10 +81,12 @@ class MyXchangeClient(XChangeClient):
 
             if best_ask < self.fair_values["A"] - EDGE:
                 print(f"A underpriced: ask={best_ask} FV={self.fair_values['A']:.1f} → BUY")
-                await self.place_order("A", 5, Side.BUY, best_ask)
+                oid = await self.place_order("A", 5, Side.BUY, best_ask)
+                self.my_quote_ids.add(oid)
             elif best_bid > self.fair_values["A"] + EDGE:
                 print(f"A overpriced: bid={best_bid} FV={self.fair_values['A']:.1f} → SELL")
-                await self.place_order("A", 5, Side.SELL, best_bid)
+                oid = await self.place_order("A", 5, Side.SELL, best_bid)
+                self.my_quote_ids.add(oid)
         elif symbol in ["R_HIKE", "R_HOLD", "R_CUT"]:
             for contract, key in [("R_HIKE", "hike"), ("R_HOLD", "hold"), ("R_CUT", "cut")]:
                 book = self.order_books[contract]
@@ -98,13 +98,15 @@ class MyXchangeClient(XChangeClient):
             if self.eps["C"] is not None and PE0_C is not None:
                 self.fair_values["C"] = self.calc_fv_c(self.eps["C"])
                 print(f"[BOOK] fed_probs={self.fed_probs} FV_C={self.fair_values['C']}")
-        pass
 
     async def bot_handle_swap_response(self, swap: str, qty: int, success: bool):
-        pass
+        if success:
+            print(f"[SWAP] {swap} x{qty} succeeded")
+        else:
+            print(f"[SWAP] {swap} x{qty} failed")
     
-    async def bot_handle_news(self, news_release: dict): #note potential bug - parent class has (self, timestamp, news_release) variables
-        tick = news_release["tick"] #note potential bug - no "tick" key in dictionary in parent class
+    async def bot_handle_news(self, news_release: dict):
+        tick = news_release["tick"]
         news_type = news_release["kind"]
         symbol = news_release["symbol"]  # may be None
         news_data = news_release["new_data"]
@@ -163,18 +165,20 @@ class MyXchangeClient(XChangeClient):
         await asyncio.sleep(5) #why do we want to wait 5 seconds?
 
         while True:
-            await self.update_quotes("A")
-            await self.update_quotes("C")
-            await self.check_etf_arb()
+            await asyncio.gather( #this is optimally more efficient.
+                self.update_quotes("A"),
+                self.update_quotes("C"),
+                self.check_etf_arb(),
+            )
             await asyncio.sleep(0.2) #length of a tick
 
         # You can also look at order books like this
-        for security, book in self.order_books.items():
-            if book.bids or book.asks:
-                sorted_bids = sorted((k,v) for k,v in book.bids.items() if v != 0)
-                sorted_asks = sorted((k,v) for k,v in book.asks.items() if v != 0)
-                print(f"Bids for {security}:\n{sorted_bids}")
-                print(f"Asks for {security}:\n{sorted_asks}")
+        # for security, book in self.order_books.items():
+        #     if book.bids or book.asks:
+        #         sorted_bids = sorted((k,v) for k,v in book.bids.items() if v != 0)
+        #         sorted_asks = sorted((k,v) for k,v in book.asks.items() if v != 0)
+        #         print(f"Bids for {security}:\n{sorted_bids}")
+        #         print(f"Asks for {security}:\n{sorted_asks}")
 
     async def update_quotes(self, symbol):
         fv = self.fair_values.get(symbol)
@@ -187,12 +191,12 @@ class MyXchangeClient(XChangeClient):
         bid = round(fv - spread / 2 - skew)
         ask = round(fv + spread / 2 - skew)
         to_cancel = [oid for oid in list(self.my_quote_ids) if oid in self.open_orders and self.open_orders[oid][0].symbol == symbol]
-        for oid in to_cancel:
-            await self.cancel_order(oid)
-        if position < self.max_abs_position:
+        if to_cancel:
+            await asyncio.gather(*(self.cancel_order(oid) for oid in to_cancel))
+        if position < self.max_abs_position[symbol]:
             bid_id = await self.place_order(symbol, self.num_quote, Side.BUY, bid)
             self.my_quote_ids.add(bid_id)
-        if position > -self.max_abs_position:
+        if position > -self.max_abs_position[symbol]:
             ask_id = await self.place_order(symbol, self.num_quote, Side.SELL, ask)
             self.my_quote_ids.add(ask_id)
         print(f"[QUOTES] {symbol} fv={fv:.1f} pos={position} bid={bid} ask={ask}")
@@ -200,43 +204,50 @@ class MyXchangeClient(XChangeClient):
     async def check_etf_arb(self):
         if self.fair_values["A"] is None or self.fair_values["C"] is None:
             return
-        etf_book = self.order_books["ETF"]
-        etf_bids = [k for k,v in etf_book.bids.items() if v > 0]
-        etf_asks = [k for k,v in etf_book.asks.items() if v > 0]
-        if not etf_bids or not etf_asks:
-            return
-        etf_mid = (max(etf_bids) + min(etf_asks)) / 2
-        
-        def get_mid(symbol):
+
+        # Compute best bid, best ask, and mid for a symbol in one pass
+        def get_best(symbol):
             book = self.order_books[symbol]
             bids = [k for k,v in book.bids.items() if v > 0]
             asks = [k for k,v in book.asks.items() if v > 0]
             if not bids or not asks:
-                return None
-            return (max(bids) + min(asks)) / 2
-        
-        mid_a = get_mid("A")
-        mid_b = get_mid("B")
-        mid_c = get_mid("C")
-        if mid_a is None or mid_b is None or mid_c is NOne:
+                return None, None, None
+            best_bid, best_ask = max(bids), min(asks)
+            return best_bid, best_ask, (best_bid + best_ask) / 2
+
+        etf_bid, etf_ask, etf_mid = get_best("ETF")
+        if etf_mid is None:
             return
+        bid_a, ask_a, mid_a = get_best("A")
+        bid_b, ask_b, mid_b = get_best("B")
+        bid_c, ask_c, mid_c = get_best("C")
+        if mid_a is None or mid_b is None or mid_c is None:
+            return
+
         nav = mid_a + mid_b + mid_c
         diff = etf_mid - nav
         print(f"[ETF] etf_mid={etf_mid:.1f} nav={nav:.1f} diff={diff:.1f}")
+
         if diff > ETF_COST:
+            # ETF overpriced: buy components at ask in parallel, swap to ETF, sell ETF at bid
             print(f"[ETF] ETF overpriced by {diff:.1f}, creating ETF")
-            await self.place_order("A", self.num_etf, Side.BUY, mid_a)
-            await self.place_order("B", self.num_etf, Side.BUY, mid_b)
-            await self.place_order("C", self.num_etf, Side.BUY, mid_c)
-            await self.place_swap_order("toETF", 1)
-            await self.place_order("ETF", self.num_etf, Side.SELL, etf_mid)
+            await asyncio.gather(
+                self.place_order("A", self.num_etf, Side.BUY, ask_a),
+                self.place_order("B", self.num_etf, Side.BUY, ask_b),
+                self.place_order("C", self.num_etf, Side.BUY, ask_c),
+            )
+            await self.place_swap_order("toETF", self.num_etf)
+            await self.place_order("ETF", self.num_etf, Side.SELL, etf_bid)
         elif diff < -ETF_COST:
+            # ETF underpriced: buy ETF at ask, redeem for components, sell at bid in parallel
             print(f"[ETF] ETF underpriced by {abs(diff):.1f}, redeeming ETF")
-            await self.place_order("ETF", self.num_etf, Side.BUY, etf_mid)
-            await self.place_swap_order("fromETF", 1)
-            await self.place_order("A", self.num_etf, Side.SELL, mid_a)
-            await self.place_order("B", self.num_etf, Side.SELL, mid_b)
-            await self.place_order("C", self.num_etf, Side.SELL, mid_c)
+            await self.place_order("ETF", self.num_etf, Side.BUY, etf_ask)
+            await self.place_swap_order("fromETF", self.num_etf)
+            await asyncio.gather(
+                self.place_order("A", self.num_etf, Side.SELL, bid_a),
+                self.place_order("B", self.num_etf, Side.SELL, bid_b),
+                self.place_order("C", self.num_etf, Side.SELL, bid_c),
+            )
 
     async def start(self):
         def _handle_trade_exception(task):
