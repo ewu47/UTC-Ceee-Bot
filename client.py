@@ -10,7 +10,7 @@ PE_A = 10
 PE0_C = 14.0
 EPS0 = 2.00
 Y0 = 0.045
-B0_N = 40
+B0_OVER_N = 40
 D = 7.5
 C = 55.0
 LAMBDA = 0.65
@@ -342,11 +342,11 @@ class StockCStrategy:
         self.client = client
 
     def calc_fair_value(self, eps):
-        expected_rate_change = 25 * self.client.fed_probs["hike"] - 25 * self.client.fed_probs["cut"]
+        expected_rate_change = 25 * self.client.fair_values["R_HIKE"] - 25 * self.client.fair_values["R_CUT"]
         delta_y = BETA * expected_rate_change
         pe = PE0_C * math.exp(-GAMMA * delta_y)
-        delta_b_b0 = -D * delta_y + 0.5 * C * delta_y ** 2
-        return eps * pe + LAMBDA * B0_N * delta_b_b0
+        delta_b_over_b0 = -D * delta_y + 0.5 * C * delta_y ** 2
+        return eps * pe + LAMBDA * B0_OVER_N * delta_b_over_b0
 
     async def on_book_update(self):
         pass
@@ -413,29 +413,33 @@ class FedStrategy:
         self.client = client
         self.cpi_sensitivity = 100  # tweak — surprises are ~0.0003-0.0007, so need large multiplier
         self.fedspeak_shift = 0.03  # how much each headline shifts probs (tweak)
+        self.fed_probs = {"R_HIKE": None, "R_HOLD": None, "R_CUT": None}
+        self.edge_threshold = 0.05 # edge before trading (tweak)
+        self.fed_qty = 1 # tweak (do we want to minimize exposure?)
 
     def update_probs_from_book(self):
         """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs."""
-        for contract, key in [("R_HIKE", "hike"), ("R_HOLD", "hold"), ("R_CUT", "cut")]:
+        for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
             best_bid, best_ask = self.client.get_best_bid_ask(contract)
             if best_bid is not None and best_ask is not None:
                 mid = (best_bid + best_ask) / 2
-                self.client.fed_probs[key] = mid / 1000
+                self.fed_probs[contract] = mid / 1000
 
     def on_cpi_news(self, forecast, actual):
-        """Shift fed probs based on CPI surprise."""
+        """Shift fair value estimation of fed probs based on CPI surprise."""
         surprise = actual - forecast
         print(f"[FED] CPI surprise={surprise:+.6f} ({'hawkish' if surprise > 0 else 'dovish'})")
         shift = self.cpi_sensitivity * abs(surprise)
         if surprise > 0:
-            actual_shift = min(shift, self.client.fed_probs["cut"])
-            self.client.fed_probs["cut"] -= actual_shift
-            self.client.fed_probs["hike"] += actual_shift
+            actual_shift = min(shift, self.client.fair_values["R_CUT"])
+            self.client.fair_values["R_CUT"] -= actual_shift
+            self.client.fair_values["R_HIKE"] += actual_shift
         else:
-            actual_shift = min(shift, self.client.fed_probs["hike"])
-            self.client.fed_probs["hike"] -= actual_shift
-            self.client.fed_probs["cut"] += actual_shift
-        print(f"[FED] probs after CPI: {self.client.fed_probs}")
+            actual_shift = min(shift, self.client.fair_values["R_HIKE"])
+            self.client.fair_values["R_HIKE"] -= actual_shift
+            self.client.fair_values["R_CUT"] += actual_shift
+        print(f"[FED] probs after CPI: R_HIKE={self.client.fair_values["R_HIKE"]}, \
+            R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
 
     def on_fedspeak(self, content):
         """Parse unstructured FEDSPEAK for dovish/hawkish signals."""
@@ -444,24 +448,44 @@ class FedStrategy:
         hawkish = any(kw in text for kw in self.HAWKISH_KEYWORDS)
 
         if dovish and not hawkish:
-            shift = min(self.fedspeak_shift, self.client.fed_probs["hike"])
-            self.client.fed_probs["hike"] -= shift
-            self.client.fed_probs["cut"] += shift
-            print(f"[FED] DOVISH: '{content}' → probs={self.client.fed_probs}")
+            shift = min(self.fedspeak_shift, self.client.fair_values["R_HIKE"])
+            self.client.fair_values["R_HIKE"] -= shift
+            self.client.fair_values["R_CUT"] += shift
+            print(f"[FED] DOVISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
+                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
         elif hawkish and not dovish:
-            shift = min(self.fedspeak_shift, self.client.fed_probs["cut"])
-            self.client.fed_probs["cut"] -= shift
-            self.client.fed_probs["hike"] += shift
-            print(f"[FED] HAWKISH: '{content}' → probs={self.client.fed_probs}")
+            shift = min(self.fedspeak_shift, self.client.fair_values["R_CUT"])
+            self.client.fair_values["R_CUT"] -= shift
+            self.client.fair_values["R_HIKE"] += shift
+            print(f"[FED] HAWKISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
+                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
         else:
             print(f"[FED] NEUTRAL: '{content}'")
 
     async def trade_prediction_market(self):
-        """Trade R contracts when our probs diverge from market probs."""
-        # TODO: compare self.client.fed_probs with market-implied probs
-        # If our prob > market prob, buy that contract
-        # If our prob < market prob, sell that contract
-        pass
+        """Trade R contracts when our probs diverge from market probs.
+
+        - If our prob > market prob, buy that contract
+        - If our prob < market prob, sell that contract
+        """
+        for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
+            market_prob = self.fed_probs[contract]
+            estimated_fv_prob = self.client.fair_values[contract]
+            divergence = estimated_fv_prob - market_prob
+            best_bid, best_ask = self.client.get_best_bid_ask(contract)
+            if best_bid is None or best_ask is None:
+                continue
+            
+            if divergence > self.edge_threshold:
+                # we think this outcome is more likely than market does -> buy
+                print(f"[FED] {contract} underpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} -> BUY")
+                await self.client.place_order(contract, self.fed_qty, Side.BUY, best_ask)
+            elif divergence < -self.edge_threshold:
+                # we think this outcome is less likely than market does -> sell
+                print(f"[FED] {contract} overpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} -> SELL")
+                await self.client.place_order(contract, self.fed_qty, Side.SELL, best_bid)
+    
+    # TODO: how to change hold probability?
 
 
 class ETFStrategy:
@@ -474,7 +498,7 @@ class ETFStrategy:
 
     def __init__(self, client):
         self.client = client
-        self.num_etf = 1  # tweak
+        self.etf_qty = 1  # tweak - create function to calculate based on position
 
     async def check_arb(self):
         if self.client.fair_values["A"] is None or self.client.fair_values["C"] is None:
@@ -497,22 +521,25 @@ class ETFStrategy:
             # ETF overpriced: buy components at ask, swap to ETF, sell ETF at bid
             print(f"[ETF] overpriced by {diff:.1f}, creating ETF")
             await asyncio.gather(
-                self.client.place_order("A", self.num_etf, Side.BUY, ask_a),
-                self.client.place_order("B", self.num_etf, Side.BUY, ask_b),
-                self.client.place_order("C", self.num_etf, Side.BUY, ask_c),
+                self.client.place_order("A", self.etf_qty, Side.BUY, ask_a),
+                self.client.place_order("B", self.etf_qty, Side.BUY, ask_b),
+                self.client.place_order("C", self.etf_qty, Side.BUY, ask_c),
             )
-            await self.client.place_swap_order("toETF", self.num_etf)
-            await self.client.place_order("ETF", self.num_etf, Side.SELL, etf_bid)
+            await self.client.place_swap_order("toETF", self.etf_qty)
+            await self.client.place_order("ETF", self.etf_qty, Side.SELL, etf_bid)
         elif diff < -ETF_COST:
             # ETF underpriced: buy ETF at ask, redeem, sell components at bid
             print(f"[ETF] underpriced by {abs(diff):.1f}, redeeming ETF")
-            await self.client.place_order("ETF", self.num_etf, Side.BUY, etf_ask)
-            await self.client.place_swap_order("fromETF", self.num_etf)
+            await self.client.place_order("ETF", self.etf_qty, Side.BUY, etf_ask)
+            await self.client.place_swap_order("fromETF", self.etf_qty)
             await asyncio.gather(
-                self.client.place_order("A", self.num_etf, Side.SELL, bid_a),
-                self.client.place_order("B", self.num_etf, Side.SELL, bid_b),
-                self.client.place_order("C", self.num_etf, Side.SELL, bid_c),
+                self.client.place_order("A", self.etf_qty, Side.SELL, bid_a),
+                self.client.place_order("B", self.etf_qty, Side.SELL, bid_b),
+                self.client.place_order("C", self.etf_qty, Side.SELL, bid_c),
             )
+    
+    # TODO: make etf_qty rely on current position
+    # (want to minimize exposure/risk)
 
 
 # ── Main client ─────────────────────────────────────────────────────
@@ -522,9 +549,7 @@ class MyXchangeClient(XChangeClient):
         super().__init__(host, username, password)
 
         # Shared state
-        self.eps = {"A": None, "C": None}
-        self.fair_values = {"A": None, "C": None, "ETF": None}
-        self.fed_probs = {"hike": 0.39, "hold": 0.42, "cut": 0.19}  # tweak starting probs
+        self.fair_values = {"A": None, "C": None, "ETF": None, "R_HIKE": 0.33, "R_HOLD": 0.33, "R_CUT": 0.34} #tweak starting probs
         self.my_quote_ids = set()
 
         # Risk limits
