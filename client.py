@@ -361,6 +361,8 @@ class StockCStrategy:
         """Recalculate C fair value after fed prob changes."""
         pass
 
+    # TODO: calculate beta and gamma
+
 
 class OptionsStrategy:
     """B options arbitrage. European calls/puts at strikes 950, 1000, 1050.
@@ -486,6 +488,7 @@ class FedStrategy:
                 await self.client.place_order(contract, self.fed_qty, Side.SELL, best_bid)
     
     # TODO: how to change hold probability?
+    # limit order size
 
 
 class ETFStrategy:
