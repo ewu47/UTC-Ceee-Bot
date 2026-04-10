@@ -610,6 +610,11 @@ class ETFStrategy:
     def __init__(self, client):
         self.client = client
         self.etf_qty = 1  # tweak - create function to calculate based on position
+        self.pending_etf_create = False
+        self.pending_etf_redeem = False
+        self.filled_components = {"A": 0, "B": 0, "C": 0}
+        self.filled_etf = 0
+        self._target_qty = 0
 
     async def check_arb(self):
         if self.client.fair_values["A"] is None or self.client.fair_values["C"] is None:
@@ -628,26 +633,24 @@ class ETFStrategy:
         diff = etf_mid - nav
         print(f"[ETF] etf_mid={etf_mid:.1f} nav={nav:.1f} diff={diff:.1f}")
 
-        if diff > ETF_COST:
+        if diff > ETF_COST and not self.pending_etf_create:
             # ETF overpriced: buy components at ask, swap to ETF, sell ETF at bid
             print(f"[ETF] overpriced by {diff:.1f}, creating ETF")
+            self.pending_etf_create = True
+            self.filled_components = {"A": 0, "B": 0, "C": 0}
+            self._target_qty = self.etf_qty
             await asyncio.gather(
                 self.client.place_order("A", self.etf_qty, Side.BUY, ask_a),
                 self.client.place_order("B", self.etf_qty, Side.BUY, ask_b),
                 self.client.place_order("C", self.etf_qty, Side.BUY, ask_c),
             )
-            await self.client.place_swap_order("toETF", self.etf_qty)
-            await self.client.place_order("ETF", self.etf_qty, Side.SELL, etf_bid)
-        elif diff < -ETF_COST:
+        elif diff < -ETF_COST and not self.pending_etf_redeem:
             # ETF underpriced: buy ETF at ask, redeem, sell components at bid
             print(f"[ETF] underpriced by {abs(diff):.1f}, redeeming ETF")
+            self.pending_etf_redeem = True
+            self.filled_etf = 0
+            self._target_qty = self.etf_qty
             await self.client.place_order("ETF", self.etf_qty, Side.BUY, etf_ask)
-            await self.client.place_swap_order("fromETF", self.etf_qty)
-            await asyncio.gather(
-                self.client.place_order("A", self.etf_qty, Side.SELL, bid_a),
-                self.client.place_order("B", self.etf_qty, Side.SELL, bid_b),
-                self.client.place_order("C", self.etf_qty, Side.SELL, bid_c),
-            )
     
     # TODO: make etf_qty rely on current position
     # (want to minimize exposure/risk)
@@ -721,6 +724,27 @@ class MyXchangeClient(XChangeClient):
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
         self.strat_a.pending_cancels.discard(order_id)
         print(f"[FILL] order {order_id}: {qty} @ {price}")
+        sym = self.open_orders[order_id][0].symbol  # get symbol before it's removed
+        if self.strat_etf.pending_etf_create and sym in ("A", "B", "C"):
+            self.strat_etf.filled_components[sym] += qty
+            if all(self.strat_etf.filled_components[s] >= self.strat_etf._target_qty
+                for s in ("A", "B", "C")):
+                await self.place_swap_order("toETF", self.strat_etf._target_qty)
+                self.strat_etf.pending_etf_create = False
+        elif self.strat_etf.pending_etf_redeem and sym == "ETF":
+            self.strat_etf.filled_etf += qty
+            if self.strat_etf.filled_etf >= self.strat_etf._target_qty:
+                await self.place_swap_order("fromETF", self.strat_etf._target_qty)
+                bid_a, _, _ = self.get_bba_mid("A")
+                bid_b, _, _ = self.get_bba_mid("B")
+                bid_c, _, _ = self.get_bba_mid("C")
+                await asyncio.gather(
+                    self.place_order("A", self.strat_etf._target_qty, Side.SELL, bid_a),
+                    self.place_order("B", self.strat_etf._target_qty, Side.SELL, bid_b),
+                    self.place_order("C", self.strat_etf._target_qty, Side.SELL, bid_c),
+                )
+                self.strat_etf.pending_etf_redeem = False
+                self.strat_etf.filled_etf = 0
 
     async def bot_handle_order_rejected(self, order_id: str, reason: str) -> None:
         self.strat_a.on_order_rejected(order_id)
