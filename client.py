@@ -349,15 +349,117 @@ class StockAStrategy:
 class StockCStrategy:
     """Large-cap insurance company. Price depends on earnings + bond portfolio + fed rates."""
 
+    MIN_OBS = 30
+    FIT_EVERY = 10
+    STABILITY_WINDOW = 3
+
     def __init__(self, client):
         self.client = client
+        self.observations = []  # (expected_rate_change_bps, c_mid, eps)
+        self._obs_since_last_fit = 0
+        self._recent_estimates = []
+        self._committed = False
+
+        # Learning rate and iterations for gradient descent
+        # if fit diverges/oscillates, lower by factor of 10
+        # if fit converges too slowly, raise by factor of 10
+        self.lr_beta = 1e-9
+        self.lr_gamma = 1e-6
+        self.n_iter = 500
 
     def calc_fair_value(self, eps):
+        if BETA is None or GAMMA is None:
+            return None
         expected_rate_change = 25 * self.client.fair_values["R_HIKE"] - 25 * self.client.fair_values["R_CUT"]
         delta_y = BETA * expected_rate_change
         pe = PE0_C * math.exp(-GAMMA * delta_y)
         delta_b_over_b0 = -D * delta_y + 0.5 * C * delta_y ** 2
         return eps * pe + LAMBDA * B0_OVER_N * delta_b_over_b0
+
+    async def record_observation(self):
+        if self._committed:
+            return
+        eps = self.client.eps.get("C")
+        if eps is None:
+            eps = EPS0
+        c_bid, c_ask = self.client.get_best_bid_ask("C")
+        if c_bid is None or c_ask is None:
+            return
+        c_mid = (c_bid + c_ask) / 2
+        erc = 25 * self.client.fair_values["R_HIKE"] - 25 * self.client.fair_values["R_CUT"]
+        self.observations.append((erc, c_mid, eps))
+        self._obs_since_last_fit += 1
+        if len(self.observations) >= self.MIN_OBS and self._obs_since_last_fit >= self.FIT_EVERY:
+            self._obs_since_last_fit = 0
+            self.estimate()
+
+    def _predict(self, beta, gamma, erc, eps):
+        delta_y = beta * erc
+        pe = PE0_C * math.exp(-gamma * delta_y)
+        bond_term = LAMBDA * B0_OVER_N * (-D * delta_y + 0.5 * C * delta_y ** 2)
+        return eps * pe + bond_term
+
+    def estimate(self):
+        global BETA, GAMMA
+
+        data = self.observations[-200:]
+        beta = 0.004   # initial guess
+        gamma = 15.0   # initial guess
+
+        for _ in range(self.n_iter):
+            grad_beta = 0.0
+            grad_gamma = 0.0
+            for erc, c_mid, eps in data:
+                delta_y = beta * erc
+                pred = self._predict(beta, gamma, erc, eps)
+                err = pred - c_mid
+
+                # Partial derivatives via chain rule
+                d_pred_d_deltay = (
+                    eps * PE0_C * math.exp(-gamma * delta_y) * (-gamma)
+                    + LAMBDA * B0_OVER_N * (-D + C * delta_y)
+                )
+                d_pred_d_gamma = eps * PE0_C * math.exp(-gamma * delta_y) * (-delta_y)
+
+                grad_beta  += err * d_pred_d_deltay * erc
+                grad_gamma += err * d_pred_d_gamma
+
+            n = len(data)
+            beta  -= self.lr_beta  * (2 / n) * grad_beta
+            gamma -= self.lr_gamma * (2 / n) * grad_gamma
+
+            # Clamp to reasonable ranges
+            beta  = max(0.0001, min(0.05, beta))
+            gamma = max(0.1,    min(100.0, gamma))
+
+        print(f"[C] fit: BETA={beta:.5f} GAMMA={gamma:.2f}")
+        self._recent_estimates.append((beta, gamma))
+        if len(self._recent_estimates) > self.STABILITY_WINDOW:
+            self._recent_estimates.pop(0)
+        self._maybe_commit()
+
+    def _maybe_commit(self):
+        global BETA, GAMMA
+        if len(self._recent_estimates) < self.STABILITY_WINDOW:
+            return
+        betas  = [e[0] for e in self._recent_estimates]
+        gammas = [e[1] for e in self._recent_estimates]
+        if max(betas) - min(betas) < 0.0005 and max(gammas) - min(gammas) < 1.0:
+            BETA  = sum(betas)  / len(betas)
+            GAMMA = sum(gammas) / len(gammas)
+            self._committed = True
+            print(f"[C] *** COMMITTED: BETA={BETA:.5f} GAMMA={GAMMA:.2f} ***")
+
+    def recalc_fair_value(self):
+        """Recalculate C fair value after fed prob changes."""
+        eps = self.client.eps.get("C")
+        if eps is None or BETA is None or GAMMA is None:
+            return
+        new_fv = self.calc_fair_value(eps)
+        old_fv = self.client.fair_values.get("C")
+        self.client.fair_values["C"] = new_fv
+        if old_fv is None or abs(new_fv - old_fv) > 1.0:
+            print(f"[C] recalc FV={new_fv:.1f}")
 
     async def on_book_update(self):
         pass
@@ -366,13 +468,10 @@ class StockCStrategy:
         pass
 
     async def on_earnings(self, eps):
-        pass
+        self.client.eps["C"] = eps
+        self.recalc_fair_value()
 
-    def recalc_fair_value(self):
-        """Recalculate C fair value after fed prob changes."""
-        pass
-
-    # TODO: calculate beta and gamma
+    # TODO: implement trading strategy using fair value calculations
 
 
 class OptionsStrategy:
@@ -498,12 +597,16 @@ class FedStrategy:
     DOVISH_KEYWORDS = [
         "easing", "cooling", "dovish", "cut", "lower rates",
         "easing inflation", "slowing growth", "policy easing",
-        "expectations of policy easing",
+        "expectations of policy easing", 
     ]
     HAWKISH_KEYWORDS = [
         "restrictive", "hawkish", "hike", "inflation risks",
         "stay restrictive", "tightening", "higher for longer",
-        "restrictive for longer",
+        "restrictive for longer", 
+    ]
+    NEUTRAL_KEYWORDS = [
+        "wide range of views", "stay firm", "weighing", "uncertainties",
+        "questions", "complicates", "not in a hurry", "either direction",
     ]
 
     def __init__(self, client):
@@ -559,13 +662,14 @@ class FedStrategy:
             self.client.fair_values["R_CUT"] += actual_shift
         self.normalize_probs()
         print(f"[FED] probs after CPI: R_HIKE={self.client.fair_values["R_HIKE"]}, \
-            R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
 
     def on_fedspeak(self, content):
         """Parse unstructured FEDSPEAK for dovish/hawkish signals."""
         text = content.lower()
         dovish = any(kw in text for kw in self.DOVISH_KEYWORDS)
         hawkish = any(kw in text for kw in self.HAWKISH_KEYWORDS)
+        neutral = any(kw in text for kw in self.NEUTRAL_KEYWORDS)
 
         if dovish and not hawkish:
             shift = min(self.fedspeak_shift, self.client.fair_values["R_HIKE"])
@@ -579,11 +683,14 @@ class FedStrategy:
             self.client.fair_values["R_HIKE"] += shift
             print(f"[FED] HAWKISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
                 R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
-        else:
+        elif neutral:
             self.client.fair_values["R_HIKE"] -= self.toward_hold
             self.client.fair_values["R_CUT"] -= self.toward_hold
             self.client.fair_values["R_HOLD"] += self.toward_hold * 2
-            print(f"[FED] NEUTRAL: '{content}'")
+            print(f"[FED] NEUTRAL: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
+                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+        else:
+            print(f"[FED] NONE: '{content}'")
         self.normalize_probs()
 
     async def trade_prediction_market(self):
@@ -615,8 +722,7 @@ class FedStrategy:
                 print(f"[FED] {contract} overpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} -> SELL")
                 await self.client.place_order(contract, self.fed_qty, Side.SELL, best_bid)
     
-    # TODO: how to change hold probability?
-    # limit order size
+    # TODO: update parser to sort neutral news for hold
 
 
 class ETFStrategy:
@@ -629,17 +735,53 @@ class ETFStrategy:
 
     def __init__(self, client):
         self.client = client
-        self.etf_qty = 1  # tweak - create function to calculate based on position
+        self.max_etf_qty = 5  # tweak - create function to calculate based on position
         self.pending_etf_create = False
         self.pending_etf_redeem = False
         self.filled_components = {"A": 0, "B": 0, "C": 0}
         self.filled_etf = 0
         self._target_qty = 0
 
-    async def check_arb(self):
-        if self.client.fair_values["A"] is None or self.client.fair_values["C"] is None:
-            return
+    def calc_etf_qty(self):
+        """Size the arb based on current positions to minimize risk.
+        
+        For creates (buy A+B+C, sell ETF):
+            - Limited by how short A already is (don't go more negative)
+            - Limited by how short C already is
+            - Limited by ETF position (don't accumulate too many)
+        
+        For redeems (buy ETF, sell A+B+C):
+            - Limited by how long A already is (don't go more positive)
+            - Limited by ETF holdings (can't redeem more than we have)
+        """
+        pos_a = self.client.positions.get("A", 0)
+        pos_b = self.client.positions.get("B", 0)
+        pos_c = self.client.positions.get("C", 0)
+        pos_etf = self.client.positions.get("ETF", 0)
 
+        MAX_POS = 50  # max absolute position in any single component from ETF arb
+
+        # How much room do we have before hitting limits?
+        room_a_long  = MAX_POS - pos_a   # room to buy more A (create leg)
+        room_c_long  = MAX_POS - pos_c
+        room_etf_short = MAX_POS - pos_etf  # room to sell more ETF
+
+        room_a_short = MAX_POS + pos_a   # room to sell more A (redeem leg)
+        room_c_short = MAX_POS + pos_c
+        room_etf_long  = pos_etf          # ETF we actually hold to redeem
+
+        create_qty = max(0, min(room_a_long, room_c_long, room_etf_short, self.max_etf_qty))
+        redeem_qty = max(0, min(room_a_short, room_c_short, room_etf_long, self.max_etf_qty))
+
+        return create_qty, redeem_qty
+
+    async def check_arb(self):
+        if self.pending_etf_create or self.pending_etf_redeem:
+            return
+        create_qty, redeem_qty = self.calc_etf_qty()
+
+        fv_a = self.client.fair_values["A"]
+        fv_c = self.client.fair_values["C"]
         etf_bid, etf_ask, etf_mid = self.client.get_bba_mid("ETF")
         if etf_mid is None:
             return
@@ -649,31 +791,31 @@ class ETFStrategy:
         if mid_a is None or mid_b is None or mid_c is None:
             return
 
-        nav = self.client.fair_values["A"] + mid_b + self.client.fair_values["C"]
+        fv_a = fv_a if fv_a is not None else mid_a
+        fv_c = fv_c if fv_c is not None else mid_c
+        nav = fv_a + mid_b + fv_c
         diff = etf_mid - nav
         print(f"[ETF] etf_mid={etf_mid:.1f} nav={nav:.1f} diff={diff:.1f}")
+        print(f"[ETF] components: fv_a={fv_a} fv_c={fv_c} mid_b={mid_b} sum={fv_a+mid_b+fv_c}")
 
-        if diff > ETF_COST and not self.pending_etf_create:
+        if diff > ETF_COST and create_qty > 0:
             # ETF overpriced: buy components at ask, swap to ETF, sell ETF at bid
-            print(f"[ETF] overpriced by {diff:.1f}, creating ETF")
+            print(f"[ETF] overpriced by {diff:.1f}, creating {create_qty} ETF")
             self.pending_etf_create = True
             self.filled_components = {"A": 0, "B": 0, "C": 0}
-            self._target_qty = self.etf_qty
+            self._target_qty = create_qty
             await asyncio.gather(
-                self.client.place_order("A", self.etf_qty, Side.BUY, ask_a),
-                self.client.place_order("B", self.etf_qty, Side.BUY, ask_b),
-                self.client.place_order("C", self.etf_qty, Side.BUY, ask_c),
+                self.client.place_order("A", create_qty, Side.BUY, ask_a),
+                self.client.place_order("B", create_qty, Side.BUY, ask_b),
+                self.client.place_order("C", create_qty, Side.BUY, ask_c),
             )
-        elif diff < -ETF_COST and not self.pending_etf_redeem:
+        elif diff < -ETF_COST and redeem_qty > 0:
             # ETF underpriced: buy ETF at ask, redeem, sell components at bid
-            print(f"[ETF] underpriced by {abs(diff):.1f}, redeeming ETF")
+            print(f"[ETF] underpriced by {abs(diff):.1f}, redeeming {redeem_qty} ETF")
             self.pending_etf_redeem = True
             self.filled_etf = 0
-            self._target_qty = self.etf_qty
-            await self.client.place_order("ETF", self.etf_qty, Side.BUY, etf_ask)
-    
-    # TODO: make etf_qty rely on current position
-    # (want to minimize exposure/risk)
+            self._target_qty = redeem_qty
+            await self.client.place_order("ETF", redeem_qty, Side.BUY, etf_ask)
 
 
 # ── Main client ─────────────────────────────────────────────────────
@@ -750,6 +892,9 @@ class MyXchangeClient(XChangeClient):
             if all(self.strat_etf.filled_components[s] >= self.strat_etf._target_qty
                 for s in ("A", "B", "C")):
                 await self.place_swap_order("toETF", self.strat_etf._target_qty)
+                etf_bid, _, _ = self.get_bba_mid("ETF")
+                if etf_bid is not None:
+                    await self.place_order("ETF", self.strat_etf._target_qty, Side.SELL, etf_bid)
                 self.strat_etf.pending_etf_create = False
         elif self.strat_etf.pending_etf_redeem and sym == "ETF":
             self.strat_etf.filled_etf += qty
@@ -758,11 +903,12 @@ class MyXchangeClient(XChangeClient):
                 bid_a, _, _ = self.get_bba_mid("A")
                 bid_b, _, _ = self.get_bba_mid("B")
                 bid_c, _, _ = self.get_bba_mid("C")
-                await asyncio.gather(
-                    self.place_order("A", self.strat_etf._target_qty, Side.SELL, bid_a),
-                    self.place_order("B", self.strat_etf._target_qty, Side.SELL, bid_b),
-                    self.place_order("C", self.strat_etf._target_qty, Side.SELL, bid_c),
-                )
+                if all(x is not None for x in (bid_a, bid_b, bid_c)):
+                    await asyncio.gather(
+                        self.place_order("A", self.strat_etf._target_qty, Side.SELL, bid_a),
+                        self.place_order("B", self.strat_etf._target_qty, Side.SELL, bid_b),
+                        self.place_order("C", self.strat_etf._target_qty, Side.SELL, bid_c),
+                    )
                 self.strat_etf.pending_etf_redeem = False
                 self.strat_etf.filled_etf = 0
 
@@ -827,6 +973,7 @@ class MyXchangeClient(XChangeClient):
         while True:
             await self.strat_a.update_quotes()
             await self.strat_c.update_quotes()
+            await self.strat_c.record_observation()
             await self.strat_etf.check_arb()
             await self.strat_options.run()
             await self.strat_fed.trade_prediction_market()
