@@ -514,6 +514,9 @@ class FedStrategy:
         self.edge_threshold = 0.05 # edge before trading (tweak)
         self.fed_qty = 1 # tweak (do we want to minimize exposure?)
         self.book_reads = 0  # warmup counter — don't trade until we've read the book
+        self.surprise_threshold = 0.0001 # tweak
+        self.toward_hold = 0.05 # tweak
+        self.min_prob = 0.05
 
     def update_probs_from_book(self):
         """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs."""
@@ -529,12 +532,24 @@ class FedStrategy:
         if updated == 3:
             self.book_reads += 1
 
+    def normalize_probs(self):
+        "Normalize probs to sum to 1"
+        for c in ["R_HIKE", "R_HOLD", "R_CUT"]:
+            self.client.fair_values[c] = max(0.05, self.client.fair_values[c])
+        total = sum(self.client.fair_values[c] for c in ["R_HIKE", "R_HOLD", "R_CUT"])
+        for c in ["R_HIKE", "R_HOLD", "R_CUT"]:
+            self.client.fair_values[c] /= total
+
     def on_cpi_news(self, forecast, actual):
         """Shift fair value estimation of fed probs based on CPI surprise."""
         surprise = actual - forecast
         print(f"[FED] CPI surprise={surprise:+.6f} ({'hawkish' if surprise > 0 else 'dovish'})")
         shift = self.cpi_sensitivity * abs(surprise)
-        if surprise > 0:
+        if abs(surprise) < self.surprise_threshold:
+            self.client.fair_values["R_HIKE"] -= self.toward_hold
+            self.client.fair_values["R_CUT"] -= self.toward_hold
+            self.client.fair_values["R_HOLD"] += self.toward_hold * 2
+        elif surprise > 0:
             actual_shift = min(shift, self.client.fair_values["R_CUT"])
             self.client.fair_values["R_CUT"] -= actual_shift
             self.client.fair_values["R_HIKE"] += actual_shift
@@ -542,6 +557,7 @@ class FedStrategy:
             actual_shift = min(shift, self.client.fair_values["R_HIKE"])
             self.client.fair_values["R_HIKE"] -= actual_shift
             self.client.fair_values["R_CUT"] += actual_shift
+        self.normalize_probs()
         print(f"[FED] probs after CPI: R_HIKE={self.client.fair_values["R_HIKE"]}, \
             R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
 
@@ -564,7 +580,11 @@ class FedStrategy:
             print(f"[FED] HAWKISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
                 R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
         else:
+            self.client.fair_values["R_HIKE"] -= self.toward_hold
+            self.client.fair_values["R_CUT"] -= self.toward_hold
+            self.client.fair_values["R_HOLD"] += self.toward_hold * 2
             print(f"[FED] NEUTRAL: '{content}'")
+        self.normalize_probs()
 
     async def trade_prediction_market(self):
         """Trade R contracts when our probs diverge from market probs.
