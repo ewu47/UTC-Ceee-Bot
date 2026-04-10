@@ -56,18 +56,17 @@ class StockAStrategy:
         self.post_earnings_ticks = 10
 
         # ── Stop loss params ──
-        self.stop_loss_ticks = 8
-        self.cash_floor = -200      # stop opening new positions if cash below this
 
         # ── State ──
         self.earnings_countdown = 0
         self.prev_fv = None
         self.pending_cancels = set()
         self.last_book_snipe_time = 0.0
-        # Track our own outstanding vol with a simple counter
-        # Incremented on place_order, decremented on fill/cancel/reject
         self.my_outstanding_vol = 0
         self.my_open_order_count = 0
+        # Track last placed quotes to avoid pointless cancel+replace churn
+        self.last_bid = None   # (price, size)
+        self.last_ask = None   # (price, size)
 
     # ── Limit tracking: use ACTUAL exchange state, no optimistic assumptions ──
 
@@ -76,7 +75,7 @@ class StockAStrategy:
         This counts ALL open orders including pending cancels,
         because the exchange hasn't processed those cancels yet."""
         total = 0
-        for oid, info in self.client.open_orders.items():
+        for info in self.client.open_orders.values():
             if info and info[0].symbol == "A" and not info[2]:
                 total += info[1]
         return total
@@ -84,7 +83,7 @@ class StockAStrategy:
     def _open_order_count_actual(self):
         """What the exchange considers our open order count for A."""
         count = 0
-        for oid, info in self.client.open_orders.items():
+        for info in self.client.open_orders.values():
             if info and info[0].symbol == "A" and not info[2]:
                 count += 1
         return count
@@ -116,38 +115,27 @@ class StockAStrategy:
         if qty <= 0:
             return None
 
-        # Cash floor: don't open NEW positions if we're broke
-        cash = self.client.positions.get("cash", 0)
-        if cash < self.cash_floor:
-            # Only allow orders that REDUCE position
-            if side == Side.BUY and pos >= 0:
-                print(f"[A] BLOCKED: cash={cash} < floor={self.cash_floor}, won't increase long")
-                return None
-            if side == Side.SELL and pos <= 0:
-                print(f"[A] BLOCKED: cash={cash} < floor={self.cash_floor}, won't increase short")
-                return None
-
         oid = await self.client.place_order("A", qty, side, price)
         return oid
 
     def calc_fair_value(self, eps):
-        return eps * PE_A
+        # NOTE: EPS arrives as a float in dollars (e.g. 1.023), but exchange
+        # prices are integer cents (e.g. 1023). Multiply by 100 to match units.
+        # Verify: print("[A] raw EPS", eps) and compare to market mid on first run.
+        return eps * PE_A * 100
 
     # ── Cancel helper ──
 
     async def _cancel_a_quotes(self):
-        """Cancel our quote-ids for A."""
-        self.client.my_quote_ids = {
-            oid for oid in self.client.my_quote_ids if oid in self.client.open_orders
-        }
+        """Cancel ALL open orders for A — quotes, snipes, and stop-loss orders.
+        Using all open_orders (not just my_quote_ids) prevents stale orders accumulating."""
         to_cancel = [
-            oid for oid in self.client.my_quote_ids
-            if self.client.open_orders[oid][0].symbol == "A"
+            oid for oid, info in self.client.open_orders.items()
+            if info and info[0].symbol == "A" and oid not in self.pending_cancels
         ]
         for oid in to_cancel:
             self.client.my_quote_ids.discard(oid)
             self.pending_cancels.add(oid)
-        for oid in to_cancel:
             await self.client.cancel_order(oid)
 
     def on_cancel_confirmed(self, order_id):
@@ -156,69 +144,57 @@ class StockAStrategy:
     def on_order_rejected(self, order_id):
         self.pending_cancels.discard(order_id)
 
-    # ── Stop loss ──
-
-    async def _check_stop_loss(self):
-        """If holding a big position and market moving against us, cut it."""
-        fv = self.client.fair_values.get("A")
-        if fv is None:
-            return
-        pos = self.client.positions["A"]
-        if abs(pos) < 15:
-            return
-
-        best_bid, best_ask = self.client.get_best_bid_ask("A")
-        if best_bid is None or best_ask is None:
-            return
-        mid = (best_bid + best_ask) / 2
-
-        if pos > 0 and mid < fv - self.stop_loss_ticks:
-            cut_qty = min(abs(pos) // 2, self.MAX_ORDER_SIZE)
-            oid = await self._place_order_a(cut_qty, Side.SELL, best_bid)
-            if oid:
-                print(f"[A] STOP LOSS: long {pos}, mid={mid:.0f} << FV={fv:.0f}, selling {cut_qty} @ {best_bid}")
-        elif pos < 0 and mid > fv + self.stop_loss_ticks:
-            cut_qty = min(abs(pos) // 2, self.MAX_ORDER_SIZE)
-            oid = await self._place_order_a(cut_qty, Side.BUY, best_ask)
-            if oid:
-                print(f"[A] STOP LOSS: short {pos}, mid={mid:.0f} >> FV={fv:.0f}, buying {cut_qty} @ {best_ask}")
+    # ── Stop loss removed ──
+    # The stop loss was creating a buy-sell loop with the passive MM:
+    # MM sells at FV+2, market fills it (short), stop loss buys at market,
+    # MM sells again → net loss every cycle. Position risk is managed
+    # purely through spread widening and inventory skew instead.
 
     # ── Aggressive: sweep stale orders after earnings ──
 
     async def _sweep_stale_orders(self):
-        """Walk the book and pick off every resting order better than FV."""
+        """Walk the book and pick off every resting order better than FV.
+
+        Sweep only reduces position toward 0 — never overshoots to the other side.
+        If already flat or on the wrong side, skip that sweep direction.
+        """
         fv = self.client.fair_values.get("A")
         if fv is None:
             return
         book = self.client.order_books["A"]
         pos = self.client.positions["A"]
 
-        # Buy side: sweep asks below FV (cheapest first)
-        stale_asks = sorted(
-            [(px, qty) for px, qty in book.asks.items() if qty > 0 and px < fv - 1],
-            key=lambda x: x[0]
-        )
-        for px, qty in stale_asks:
-            buy_qty = min(qty, self.snipe_size)
-            oid = await self._place_order_a(buy_qty, Side.BUY, px)
-            if oid is None:
-                break  # hit a limit, stop sweeping
-            pos += buy_qty
-            print(f"[A] SNIPE BUY {buy_qty} @ {px} | edge={fv - px:.0f} | pos→{pos}")
+        # Buy side: only sweep if short (buying reduces position toward 0)
+        if pos < 0:
+            stale_asks = sorted(
+                [(px, qty) for px, qty in book.asks.items() if qty > 0 and px < fv - 1],
+                key=lambda x: x[0]
+            )
+            for px, qty in stale_asks:
+                if pos >= 0:
+                    break  # don't overshoot to long
+                buy_qty = min(qty, self.snipe_size, abs(pos))
+                oid = await self._place_order_a(buy_qty, Side.BUY, px)
+                if oid is None:
+                    break
+                pos += buy_qty
+                print(f"[A] SNIPE BUY {buy_qty} @ {px} | edge={fv - px:.0f} | pos→{pos}")
 
-        # Sell side: sweep bids above FV (most expensive first)
-        pos = self.client.positions["A"]
-        stale_bids = sorted(
-            [(px, qty) for px, qty in book.bids.items() if qty > 0 and px > fv + 1],
-            key=lambda x: -x[0]
-        )
-        for px, qty in stale_bids:
-            sell_qty = min(qty, self.snipe_size)
-            oid = await self._place_order_a(sell_qty, Side.SELL, px)
-            if oid is None:
-                break
-            pos -= sell_qty
-            print(f"[A] SNIPE SELL {sell_qty} @ {px} | edge={px - fv:.0f} | pos→{pos}")
+        # Sell side: only sweep if long (selling reduces position toward 0)
+        if pos > 0:
+            stale_bids = sorted(
+                [(px, qty) for px, qty in book.bids.items() if qty > 0 and px > fv + 1],
+                key=lambda x: -x[0]
+            )
+            for px, qty in stale_bids:
+                if pos <= 0:
+                    break  # don't overshoot to short
+                sell_qty = min(qty, self.snipe_size, pos)
+                oid = await self._place_order_a(sell_qty, Side.SELL, px)
+                if oid is None:
+                    break
+                pos -= sell_qty
+                print(f"[A] SNIPE SELL {sell_qty} @ {px} | edge={px - fv:.0f} | pos→{pos}")
 
     async def on_book_update(self):
         """On book update, check for mispriced orders. Rate-limited to avoid spam."""
@@ -274,11 +250,7 @@ class StockAStrategy:
         if self.earnings_countdown > 0:
             self.earnings_countdown -= 1
 
-        # ── Check stop loss ──
-        await self._check_stop_loss()
-
-        # ── Cancel our existing quotes for A (tracked as pending) ──
-        await self._cancel_a_quotes()
+        best_bid, best_ask = self.client.get_best_bid_ask("A")
 
         # ── Dynamic spread: widen when position is large ──
         pos_frac = abs(pos) / max(self.max_position, 1)
@@ -292,20 +264,55 @@ class StockAStrategy:
         if bid >= ask:
             ask = bid + 1
 
+        # ── At position limits: force unwind at market price ──
+        # When pinned at MAX_ABS_POS, FV-based quotes may be far from market.
+        # Override to market price so we can actually get out.
+        if pos >= self.MAX_ABS_POS and best_bid is not None:
+            ask = best_bid  # sell at best bid to guarantee fill
+        if pos <= -self.MAX_ABS_POS and best_ask is not None:
+            bid = best_ask  # buy at best ask to guarantee fill
+
+        # ── Don't place a quote that would be immediately filled at a loss ──
+        # Skip only when NOT at position limits (limits override above handles that case).
+        if abs(pos) < self.MAX_ABS_POS:
+            if best_ask is not None and bid >= best_ask:
+                bid = 0
+            if best_bid is not None and ask <= best_bid:
+                ask = 0
+
         # ── Size: reduce on the side that would increase risk ──
         bid_size = self.quote_size if pos < self.max_position else max(2, self.quote_size // 3)
         ask_size = self.quote_size if pos > -self.max_position else max(2, self.quote_size // 3)
 
-        # ── Place quotes — _place_order_a enforces all limits ──
-        bid_id = await self._place_order_a(bid_size, Side.BUY, bid)
-        if bid_id:
-            self.client.my_quote_ids.add(bid_id)
+        # ── Skip cancel+replace if quotes haven't changed — avoids flooding exchange ──
+        # Compare intended quotes (not whether they were placed) so a blocked ask
+        # doesn't cause an infinite cancel+replace loop.
+        if (bid, bid_size) == self.last_bid and (ask, ask_size) == self.last_ask:
+            return
+
+        # Record intended quotes immediately — even if orders get blocked below,
+        # the intention hasn't changed so we won't loop.
+        self.last_bid = (bid, bid_size)
+        self.last_ask = (ask, ask_size)
+
+        # ── Cancel existing quotes then place new ones ──
+        await self._cancel_a_quotes()
+
+        if bid > 0:
+            bid_id = await self._place_order_a(bid_size, Side.BUY, bid)
+            if bid_id:
+                self.client.my_quote_ids.add(bid_id)
+            else:
+                bid_size = 0
         else:
             bid_size = 0
 
-        ask_id = await self._place_order_a(ask_size, Side.SELL, ask)
-        if ask_id:
-            self.client.my_quote_ids.add(ask_id)
+        if ask > 0:
+            ask_id = await self._place_order_a(ask_size, Side.SELL, ask)
+            if ask_id:
+                self.client.my_quote_ids.add(ask_id)
+            else:
+                ask_size = 0
         else:
             ask_size = 0
 
@@ -327,6 +334,10 @@ class StockAStrategy:
 
         # Enter aggressive mode
         self.earnings_countdown = self.post_earnings_ticks
+
+        # Force quotes to be re-placed after earnings even if prices are numerically the same
+        self.last_bid = None
+        self.last_ask = None
 
         # Cancel our existing quotes immediately so we don't get picked off
         await self._cancel_a_quotes()
@@ -367,28 +378,112 @@ class StockCStrategy:
 class OptionsStrategy:
     """B options arbitrage. European calls/puts at strikes 950, 1000, 1050.
 
-    Key formulas:
-    - Put-call parity: C - P = S0 - K * e^(-r*T)
-    - Box spread: bull call spread + bear put spread = K2 - K1
+    With RF_RATE = 0, formulas simplify to:
+    - Put-call parity: C - P = S - K
+    - Box spread: (long C K1, short C K2, short P K1, long P K2) = K2 - K1
+
+    PCP arb legs:
+      If C - P > S - K:  sell call, buy put, buy stock
+      If C - P < S - K:  buy call, sell put, sell stock
+
+    Box arb legs:
+      Buy box  (cost < K2-K1): buy C K1, sell C K2, sell P K1, buy P K2
+      Sell box (receipt > K2-K1): sell C K1, buy C K2, buy P K1, sell P K2
     """
+
+    BOX_PAIRS = [(950, 1000), (1000, 1050)]
 
     def __init__(self, client):
         self.client = client
+        self.arb_qty = 1
+        self.min_edge = 3
+        # Per-arb cooldown: keyed by arb identifier, value is last-fired time.
+        # Prevents re-entering the same arb every tick when legs are getting rejected.
+        self._last_arb_time = {}
+        self.arb_cooldown = 5.0  # seconds between re-entries of same arb
 
-    async def on_book_update(self, symbol):
-        pass
+    def _bba(self, symbol):
+        return self.client.get_best_bid_ask(symbol)
+
+    def _cooled_down(self, key):
+        """Return True if enough time has passed to re-enter this arb."""
+        now = asyncio.get_event_loop().time()
+        if now - self._last_arb_time.get(key, 0) < self.arb_cooldown:
+            return False
+        self._last_arb_time[key] = now
+        return True
 
     async def check_pcp_arb(self, strike):
-        """Put-call parity arbitrage at a given strike."""
-        pass
+        """Put-call parity: C - P = S - K (r=0)."""
+        c_bid, c_ask = self._bba(f"B_C_{strike}")
+        p_bid, p_ask = self._bba(f"B_P_{strike}")
+        s_bid, s_ask = self._bba("B")
+
+        if None in (c_bid, c_ask, p_bid, p_ask, s_bid, s_ask):
+            return
+
+        buy_call_edge = p_bid + s_bid - c_ask - strike
+        if buy_call_edge > self.min_edge and self._cooled_down(f"pcp_buy_{strike}"):
+            print(f"[OPT] PCP K={strike}: buy call, sell put, sell B | edge={buy_call_edge}")
+            await self.client.place_order(f"B_C_{strike}", self.arb_qty, Side.BUY, c_ask)
+            await self.client.place_order(f"B_P_{strike}", self.arb_qty, Side.SELL, p_bid)
+            await self.client.place_order("B", self.arb_qty, Side.SELL, s_bid)
+            return
+
+        sell_call_edge = c_bid - p_ask - s_ask + strike
+        if sell_call_edge > self.min_edge and self._cooled_down(f"pcp_sell_{strike}"):
+            print(f"[OPT] PCP K={strike}: sell call, buy put, buy B | edge={sell_call_edge}")
+            await self.client.place_order(f"B_C_{strike}", self.arb_qty, Side.SELL, c_bid)
+            await self.client.place_order(f"B_P_{strike}", self.arb_qty, Side.BUY, p_ask)
+            await self.client.place_order("B", self.arb_qty, Side.BUY, s_ask)
 
     async def check_box_spread(self, strike_low, strike_high):
-        """Box spread arbitrage between two strikes."""
+        """Box spread always worth K2 - K1 at expiry (r=0)."""
+        k1, k2 = strike_low, strike_high
+        c1_bid, c1_ask = self._bba(f"B_C_{k1}")
+        c2_bid, c2_ask = self._bba(f"B_C_{k2}")
+        p1_bid, p1_ask = self._bba(f"B_P_{k1}")
+        p2_bid, p2_ask = self._bba(f"B_P_{k2}")
+
+        if None in (c1_bid, c1_ask, c2_bid, c2_ask, p1_bid, p1_ask, p2_bid, p2_ask):
+            return
+
+        theoretical = k2 - k1
+
+        buy_cost = c1_ask - c2_bid + p2_ask - p1_bid
+        buy_edge = theoretical - buy_cost
+        if buy_edge > self.min_edge and self._cooled_down(f"box_buy_{k1}_{k2}"):
+            print(f"[OPT] BOX BUY ({k1},{k2}): cost={buy_cost} theoretical={theoretical} edge={buy_edge}")
+            await self.client.place_order(f"B_C_{k1}", self.arb_qty, Side.BUY, c1_ask)
+            await self.client.place_order(f"B_C_{k2}", self.arb_qty, Side.SELL, c2_bid)
+            await self.client.place_order(f"B_P_{k1}", self.arb_qty, Side.SELL, p1_bid)
+            await self.client.place_order(f"B_P_{k2}", self.arb_qty, Side.BUY, p2_ask)
+            return
+
+        sell_receipt = c1_bid - c2_ask + p2_bid - p1_ask
+        sell_edge = sell_receipt - theoretical
+        if sell_edge > self.min_edge and self._cooled_down(f"box_sell_{k1}_{k2}"):
+            print(f"[OPT] BOX SELL ({k1},{k2}): receipt={sell_receipt} theoretical={theoretical} edge={sell_edge}")
+            await self.client.place_order(f"B_C_{k1}", self.arb_qty, Side.SELL, c1_bid)
+            await self.client.place_order(f"B_C_{k2}", self.arb_qty, Side.BUY, c2_ask)
+            await self.client.place_order(f"B_P_{k1}", self.arb_qty, Side.BUY, p1_ask)
+            await self.client.place_order(f"B_P_{k2}", self.arb_qty, Side.SELL, p2_bid)
+
+    async def on_book_update(self, _symbol):
+        # Intentionally a no-op — run() handles periodic sweeps.
+        # on_book_update was causing double-firing and flooding the exchange.
         pass
 
     async def run(self):
-        """Called each tick from the trade loop."""
-        pass
+        """Sweep all arbs every 2 seconds."""
+        now = asyncio.get_event_loop().time()
+        if now - self._last_arb_time.get("_run", 0) < 2.0:
+            return
+        self._last_arb_time["_run"] = now
+        for strike in OPTION_STRIKES:
+            await self.check_pcp_arb(strike)
+        for k1, k2 in self.BOX_PAIRS:
+            await self.check_box_spread(k1, k2)
 
 
 class FedStrategy:
@@ -418,14 +513,21 @@ class FedStrategy:
         self.fed_probs = {"R_HIKE": None, "R_HOLD": None, "R_CUT": None}
         self.edge_threshold = 0.05 # edge before trading (tweak)
         self.fed_qty = 1 # tweak (do we want to minimize exposure?)
+        self.book_reads = 0  # warmup counter — don't trade until we've read the book
 
     def update_probs_from_book(self):
         """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs."""
+        updated = 0
         for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
             best_bid, best_ask = self.client.get_best_bid_ask(contract)
             if best_bid is not None and best_ask is not None:
                 mid = (best_bid + best_ask) / 2
                 self.fed_probs[contract] = mid / 1000
+                # Seed our fair value estimate from the book so we start close to market
+                self.client.fair_values[contract] = mid / 1000
+                updated += 1
+        if updated == 3:
+            self.book_reads += 1
 
     def on_cpi_news(self, forecast, actual):
         """Shift fair value estimation of fed probs based on CPI surprise."""
@@ -470,9 +572,15 @@ class FedStrategy:
         - If our prob > market prob, buy that contract
         - If our prob < market prob, sell that contract
         """
+        # Don't trade until we've read the book at least 3 times — avoids
+        # trading against 33/33/34 priors when the market already has strong views
+        if self.book_reads < 3:
+            return
         for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
             market_prob = self.fed_probs[contract]
             estimated_fv_prob = self.client.fair_values[contract]
+            if market_prob is None or estimated_fv_prob is None:
+                continue
             divergence = estimated_fv_prob - market_prob
             best_bid, best_ask = self.client.get_best_bid_ask(contract)
             if best_bid is None or best_ask is None:
@@ -553,6 +661,7 @@ class MyXchangeClient(XChangeClient):
 
         # Shared state
         self.fair_values = {"A": None, "C": None, "ETF": None, "R_HIKE": 0.33, "R_HOLD": 0.33, "R_CUT": 0.34} #tweak starting probs
+        self.eps = {"A": None, "C": None}
         self.my_quote_ids = set()
 
         # Risk limits
@@ -672,13 +781,11 @@ class MyXchangeClient(XChangeClient):
         await asyncio.sleep(5)
 
         while True:
-            await asyncio.gather(
-                self.strat_a.update_quotes(),
-                self.strat_c.update_quotes(),
-                self.strat_etf.check_arb(),
-                self.strat_options.run(),
-                self.strat_fed.trade_prediction_market(),
-            )
+            await self.strat_a.update_quotes()
+            await self.strat_c.update_quotes()
+            await self.strat_etf.check_arb()
+            await self.strat_options.run()
+            await self.strat_fed.trade_prediction_market()
             await asyncio.sleep(0.1)
 
     async def start(self):
