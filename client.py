@@ -366,9 +366,9 @@ class StockAStrategy:
 class StockCStrategy:
     """Large-cap insurance company. Price depends on earnings + bond portfolio + fed rates."""
 
-    MIN_OBS = 30
-    FIT_EVERY = 10
-    STABILITY_WINDOW = 3
+    MIN_OBS = 10
+    FIT_EVERY = 15
+    STABILITY_WINDOW = 2
 
     def __init__(self, client):
         self.client = client
@@ -382,7 +382,7 @@ class StockCStrategy:
         # if fit converges too slowly, raise by factor of 10
         self.lr_beta = 1e-9
         self.lr_gamma = 1e-6
-        self.n_iter = 500
+        self.n_iter = 100
 
     def calc_fair_value(self, eps):
         if BETA is None or GAMMA is None:
@@ -411,7 +411,8 @@ class StockCStrategy:
         self._obs_since_last_fit += 1
         if len(self.observations) >= self.MIN_OBS and self._obs_since_last_fit >= self.FIT_EVERY:
             self._obs_since_last_fit = 0
-            self.estimate()
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, self.estimate())
 
     def _predict(self, beta, gamma, erc, eps):
         delta_y = beta * erc
@@ -697,6 +698,8 @@ class FedStrategy:
     NEUTRAL_KEYWORDS = [
         "wide range of views", "stay firm", "weighing", "uncertainties",
         "questions", "complicates", "not in a hurry", "either direction",
+        "both", "no clear", "options open", "conflict", "balanced",
+        "mixed"
     ]
 
     def __init__(self, client):
@@ -811,8 +814,6 @@ class FedStrategy:
             elif divergence < -self.edge_threshold and pos > -max_fed_pos:
                 log(f"[FED] {contract} overpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} pos={pos} -> SELL", "fed.log")
                 await self.client.safe_place_order(contract, self.fed_qty, Side.SELL, best_bid)
-    
-    # TODO: update parser to sort neutral news for hold
 
 
 class ETFStrategy:
