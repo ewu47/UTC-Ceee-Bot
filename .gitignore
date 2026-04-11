@@ -7,10 +7,4 @@ __pycache__/
 dist/
 build/
 .DS_Store
-fed.log
-fills.log
-pnl.log
-meta.log
-news.log
-trades.log
-bot.log
+*.log
