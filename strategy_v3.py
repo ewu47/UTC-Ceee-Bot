@@ -370,6 +370,21 @@ class StockAStrategy:
     # regardless of our current position.  We sweep to the position
     # limit and then make markets at the new price.
 
+    def _snipe_qty(self, book_qty: int, side: Side) -> int:
+        """Compute the right snipe size given actual book depth and our limit headroom.
+
+        Clamping to book_qty prevents resting leftover units from eating outstanding vol.
+        Clamping to vol headroom prevents hitting the 120-unit limit mid-sweep.
+        Clamping to pos room prevents hitting MAX_ABS_POS and triggering rejections.
+        """
+        pos      = self.client.positions["A"]
+        vol_room = max(0, self.MAX_OUTSTANDING_VOL - self._outstanding_vol())
+        if side == Side.BUY:
+            pos_room = max(0, self.MAX_ABS_POS - pos)
+        else:
+            pos_room = max(0, self.MAX_ABS_POS + pos)
+        return min(book_qty, self.SNIPE_SIZE, vol_room, pos_room)
+
     async def _sweep_book(self) -> None:
         fv = self.client.fair_values.get("A")
         if fv is None:
@@ -383,7 +398,9 @@ class StockAStrategy:
             key=lambda x: x[0]
         )
         for px, qty in stale_asks:
-            buy_qty = min(qty, self.SNIPE_SIZE)
+            buy_qty = self._snipe_qty(qty, Side.BUY)
+            if buy_qty <= 0:
+                break
             oid = await self._place(buy_qty, Side.BUY, px)
             if oid is None:
                 break
@@ -395,7 +412,9 @@ class StockAStrategy:
             key=lambda x: -x[0]
         )
         for px, qty in stale_bids:
-            sell_qty = min(qty, self.SNIPE_SIZE)
+            sell_qty = self._snipe_qty(qty, Side.SELL)
+            if sell_qty <= 0:
+                break
             oid = await self._place(sell_qty, Side.SELL, px)
             if oid is None:
                 break
@@ -418,13 +437,19 @@ class StockAStrategy:
         fv_adj   = fv + flow_adj
 
         if best_ask is not None and best_ask < fv_adj - self.EDGE_THRESHOLD:
-            oid = await self._place(self.SNIPE_SIZE, Side.BUY, best_ask)
-            if oid:
-                log(f"[A] SNIPE BUY  @ {best_ask} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
+            book_qty = self.client.order_books["A"].asks.get(best_ask, 0)
+            qty = self._snipe_qty(book_qty if book_qty > 0 else self.SNIPE_SIZE, Side.BUY)
+            if qty > 0:
+                oid = await self._place(qty, Side.BUY, best_ask)
+                if oid:
+                    log(f"[A] SNIPE BUY  {qty} @ {best_ask} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
         elif best_bid is not None and best_bid > fv_adj + self.EDGE_THRESHOLD:
-            oid = await self._place(self.SNIPE_SIZE, Side.SELL, best_bid)
-            if oid:
-                log(f"[A] SNIPE SELL @ {best_bid} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
+            book_qty = self.client.order_books["A"].bids.get(best_bid, 0)
+            qty = self._snipe_qty(book_qty if book_qty > 0 else self.SNIPE_SIZE, Side.SELL)
+            if qty > 0:
+                oid = await self._place(qty, Side.SELL, best_bid)
+                if oid:
+                    log(f"[A] SNIPE SELL {qty} @ {best_bid} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
 
     # ── Passive MM ────────────────────────────────────────────────
 
@@ -475,18 +500,15 @@ class StockAStrategy:
         if bid >= ask:
             ask = bid + 1
 
-        # At hard position limits: force unwind by crossing spread
-        if pos >= self.MAX_ABS_POS and best_bid is not None:
-            ask = best_bid
-        if pos <= -self.MAX_ABS_POS and best_ask is not None:
-            bid = best_ask
-
-        # Don't quote if it would immediately cross the book
-        if abs(pos) < self.MAX_ABS_POS:
-            if best_ask is not None and bid >= best_ask:
-                bid = 0
-            if best_bid is not None and ask <= best_bid:
-                ask = 0
+        # Don't quote if it would immediately cross the book (applied at ALL position sizes).
+        # At ±MAX_ABS_POS with FV far from market, FV-based quotes are on the wrong side
+        # of the book and would get zeroed here — which is correct. The bot sits flat,
+        # correctly positioned, and earns via snipes. Forcing a market-cross quote at
+        # position limits creates a treadmill: snipe sells at 850, MM buys at 860 = -10/share.
+        if best_ask is not None and bid >= best_ask:
+            bid = 0
+        if best_bid is not None and ask <= best_bid:
+            ask = 0
 
         # Quote size: reduce when inventory-constrained
         bid_size = self.QUOTE_SIZE if pos < self.SOFT_POS_LIMIT  else max(2, self.QUOTE_SIZE // 3)
@@ -564,7 +586,14 @@ class StockAStrategy:
     # ── Book update ───────────────────────────────────────────────
 
     async def on_book_update(self) -> None:
+        now = asyncio.get_running_loop().time()
         if time.time() < self._earnings_end_time:
+            # Rate-limit to 5/sec during earnings — book updates can fire 30-50x/sec
+            # and each _sweep_book call attempts up to SNIPE_SIZE * book_levels orders.
+            # Without this, outstanding vol fills in the first few calls and the rest reject.
+            if now - self._last_snipe_time < 0.2:
+                return
+            self._last_snipe_time = now
             await self._sweep_book()
         else:
             await self._snipe()
