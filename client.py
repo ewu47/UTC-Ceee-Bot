@@ -139,7 +139,7 @@ class StockAStrategy:
         fv_cents = eps * PE_A          # if EPS is already in cents
         fv_dollars = eps * PE_A * 100  # if EPS is in dollars
         print(f"[A] DEBUG: raw EPS={eps} | fv_cents={fv_cents:.0f} fv_dollars={fv_dollars:.0f} | market_mid={mid}")
-        return eps * PE_A * 100
+        return eps * PE_A
 
     # ── Cancel helper ──
 

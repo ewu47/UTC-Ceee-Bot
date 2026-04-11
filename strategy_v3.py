@@ -652,6 +652,10 @@ class StockCStrategy:
         self._SNIPE_RATE_SECS  = 0.3   # max 3 snipes/sec from book updates
         self._SNIPE_MAX_PENDING = 3    # stop if this many C orders already resting
                                        # (reduced from 6 to free order slots for options)
+        self._c_bid_id: Optional[str] = None
+        self._c_ask_id: Optional[str] = None
+        self._last_bid: Optional[tuple] = None
+        self._last_ask: Optional[tuple] = None
 
     def calc_fv(self, eps: float) -> float:
         p_hike = self.client.fair_values["R_HIKE"]
@@ -714,7 +718,7 @@ class StockCStrategy:
             beta  = max(0.00005, min(0.05,  beta  - self.LR_BETA  * (2 / n) * gb))
             gamma = max(0.1,     min(100.0, gamma - self.LR_GAMMA * (2 / n) * gg))
 
-        print(f"[C] fit: β={beta:.5f} γ={gamma:.2f}")
+        log(f"[C] fit: β={beta:.5f} γ={gamma:.2f}")
 
         # Sanity-check: predicted FV should be within 25% of market mid
         eps   = self.client.eps.get("C") or EPS0_C
@@ -724,7 +728,7 @@ class StockCStrategy:
         if c_bid and c_ask:
             mid = (c_bid + c_ask) / 2
             if mid > 0 and abs(pred - mid) / mid > 0.25:
-                print(f"[C] fit REJECTED (pred={pred:.1f} vs mid={mid:.1f} — {abs(pred-mid)/mid:.0%} off)")
+                log(f"[C] fit REJECTED (pred={pred:.1f} vs mid={mid:.1f} — {abs(pred-mid)/mid:.0%} off)")
                 self._recent_fits.clear()
                 return
 
@@ -739,7 +743,7 @@ class StockCStrategy:
             gammas = [e[1] for e in self._recent_fits]
             if max(betas) - min(betas) < 0.0005 and max(gammas) - min(gammas) < 1.0:
                 self._committed = True
-                print(f"[C] *** COMMITTED β={self.beta:.5f} γ={self.gamma:.2f} ***")
+                log(f"[C] *** COMMITTED β={self.beta:.5f} γ={self.gamma:.2f} ***")
 
     async def on_book_update(self) -> None:
         fv = self.client.fair_values.get("C")
@@ -799,11 +803,22 @@ class StockCStrategy:
         bid_sz = qs if pos < max_p  else max(2, qs // 3)
         ask_sz = qs if pos > -max_p else max(2, qs // 3)
 
-        await self.client.cancel_quotes_for("C")
+        # Skip if quotes haven't changed
+        if (bid, bid_sz) == self._last_bid and (ask, ask_sz) == self._last_ask:
+            return
+        self._last_bid = (bid, bid_sz)
+        self._last_ask = (ask, ask_sz)
+
+        # Only cancel our own tracked MM quotes, not all C orders (snipes stay)
+        for oid in (self._c_bid_id, self._c_ask_id):
+            if oid and oid in self.client.open_orders:
+                await self.client.cancel_order(oid)
+        self._c_bid_id = self._c_ask_id = None
+
         if bid > 0:
-            await self.client.safe_place_order("C", bid_sz, Side.BUY, bid)
+            self._c_bid_id = await self.client.safe_place_order("C", bid_sz, Side.BUY, bid)
         if ask > 0:
-            await self.client.safe_place_order("C", ask_sz, Side.SELL, ask)
+            self._c_ask_id = await self.client.safe_place_order("C", ask_sz, Side.SELL, ask)
 
     async def on_earnings(self, eps: float, tick: int) -> None:
         self.client.eps["C"] = eps
@@ -825,7 +840,12 @@ class StockCStrategy:
         if fv is None:
             return
         self._last_quote_time = 0.0  # force immediate re-quote
-        await self.client.cancel_quotes_for("C")
+        self._last_bid = None
+        self._last_ask = None
+        for oid in (self._c_bid_id, self._c_ask_id):
+            if oid and oid in self.client.open_orders:
+                await self.client.cancel_order(oid)
+        self._c_bid_id = self._c_ask_id = None
         book  = self.client.order_books["C"]
         edge  = 2
 
@@ -846,6 +866,10 @@ class StockCStrategy:
         self._last_quote_time = 0.0
         self._last_snipe_time = 0.0
         # Do NOT reset beta, gamma, committed, recent_fits — model knowledge persists
+        self._last_bid = None
+        self._last_ask = None
+        self._c_bid_id = None
+        self._c_ask_id = None
 
 
 # ═══════════════════════════════════════════════════════════════════════
