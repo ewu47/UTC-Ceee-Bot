@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Bot — Strategy Dictionary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090f;
+  --s1: #111118;
+  --s2: #161620;
+  --s3: #1c1c28;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #e8b84b;
+  --gold2: #f5d07a;
+  --red: #e85555;
+  --green: #4ecb71;
+  --blue: #5b8df5;
+  --purple: #9b6dff;
+  --teal: #3ecfcf;
+  --orange: #e8834b;
+  --text: #f0eee8;
+  --muted: #7a7890;
+  --dim: #3a3850;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dim) transparent;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+
+.sidebar-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.sidebar-logo span { color: var(--muted); font-weight: 400; display: block; font-size: 10px; margin-top: 2px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+
+.nav-section {
+  padding: 8px 20px 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-top: 8px;
+}
+.nav-link {
+  display: block;
+  padding: 7px 20px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1.3;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--gold); border-left-color: var(--gold); background: rgba(232,184,75,0.06); }
+
+/* ── Main content ── */
+#main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 48px 64px;
+  max-width: 1000px;
+}
+
+/* ── Section headers ── */
+.section {
+  margin-bottom: 64px;
+  scroll-margin-top: 40px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.section-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.section-header p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 300;
+}
+
+/* ── Entry cards ── */
+.entry {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.entry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.entry-head:hover { background: rgba(255,255,255,0.03); }
+.entry-term {
+  font-family: 'DM Mono', monospace;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.entry-short {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.5;
+  flex: 1;
+}
+.entry-tags {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.entry-body {
+  border-top: 1px solid var(--border);
+  padding: 16px 20px 20px;
+  display: none;
+  background: var(--s2);
+}
+.entry.open .entry-body { display: block; }
+.entry.open .entry-head { background: rgba(255,255,255,0.03); }
+
+/* ── Tags / badges ── */
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.tag.gold   { background: rgba(232,184,75,0.12); color: var(--gold);   border: 1px solid rgba(232,184,75,0.2); }
+.tag.green  { background: rgba(78,203,113,0.12); color: var(--green);  border: 1px solid rgba(78,203,113,0.2); }
+.tag.red    { background: rgba(232,85,85,0.12);  color: var(--red);    border: 1px solid rgba(232,85,85,0.2); }
+.tag.blue   { background: rgba(91,141,245,0.12); color: var(--blue);   border: 1px solid rgba(91,141,245,0.2); }
+.tag.purple { background: rgba(155,109,255,0.12);color: var(--purple); border: 1px solid rgba(155,109,255,0.2); }
+.tag.teal   { background: rgba(62,207,207,0.12); color: var(--teal);   border: 1px solid rgba(62,207,207,0.2); }
+.tag.orange { background: rgba(232,131,75,0.12); color: var(--orange); border: 1px solid rgba(232,131,75,0.2); }
+.tag.muted  { background: rgba(122,120,144,0.12);color: var(--muted);  border: 1px solid rgba(122,120,144,0.2); }
+
+/* ── Body content elements ── */
+.entry-body p { font-size: 13.5px; color: #c0bedd; line-height: 1.7; font-weight: 300; margin-bottom: 10px; }
+.entry-body p:last-child { margin-bottom: 0; }
+.entry-body strong { color: var(--text); font-weight: 500; }
+.entry-body em { color: var(--gold2); font-style: italic; }
+
+.kv-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+.kv-table td { padding: 7px 10px; font-size: 12.5px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.kv-table td:first-child { font-family: 'DM Mono', monospace; color: var(--gold2); width: 200px; white-space: nowrap; }
+.kv-table td:last-child { color: #b0aec8; }
+.kv-table tr:last-child td { border-bottom: none; }
+
+.code-block {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  line-height: 1.8;
+  margin: 10px 0;
+  overflow-x: auto;
+  color: #b0aec8;
+}
+.code-block .kw  { color: var(--purple); }
+.code-block .fn  { color: var(--blue); }
+.code-block .st  { color: var(--green); }
+.code-block .cm  { color: var(--muted); font-style: italic; }
+.code-block .nm  { color: var(--gold); }
+.code-block .bad { color: var(--red); text-decoration: line-through; }
+.code-block .good{ color: var(--green); }
+.code-block .hi  { color: var(--gold2); }
+
+.formula {
+  font-family: 'DM Mono', monospace;
+  font-size: 12.5px;
+  background: var(--s3);
+  border: 1px solid rgba(232,184,75,0.15);
+  border-radius: 6px;
+  padding: 10px 14px;
+  text-align: center;
+  color: var(--gold2);
+  line-height: 1.8;
+  margin: 10px 0;
+}
+
+.warn-box {
+  background: rgba(232,85,85,0.07);
+  border: 1px solid rgba(232,85,85,0.2);
+  border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 10px 0;
+}
+.warn-box p { color: #d4a0a0; font-size: 12.5px; margin: 0; }
+
+.note-box {
+  background: rgba(232,184,75,0.06);
+  border: 1px solid rgba(232,184,75,0.18);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 10px 0;
+}
+.note-box p { color: #d4c080; font-size: 12.5px; margin: 0; }
+
+.good-box {
+  background: rgba(78,203,113,0.06);
+  border: 1px solid rgba(78,203,113,0.18);
+  border-left: 3px solid var(--green);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin: 10px 0;
+}
+.good-box p { color: #90d4a8; font-size: 12.5px; margin: 0; }
+
+h4 { font-size: 13px; color: var(--text); font-family: 'Syne', sans-serif; font-weight: 600; margin: 14px 0 6px; }
+ul, ol { padding-left: 18px; }
+ul li, ol li { font-size: 13px; color: #b0aec8; line-height: 1.7; font-weight: 300; margin-bottom: 4px; }
+
+/* ── Search ── */
+#search-wrap { padding: 12px 16px 16px; }
+#search {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+}
+#search::placeholder { color: var(--muted); }
+#search:focus { border-color: var(--gold); }
+
+/* ── Chevron ── */
+.chevron { color: var(--muted); transition: transform 0.2s; font-size: 12px; margin-top: 2px; }
+.entry.open .chevron { transform: rotate(90deg); color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">Strategy Dictionary<span>final_bot.py · UTC 2026 Case 1</span></div>
+  <div id="search-wrap"><input id="search" placeholder="Search terms…" autocomplete="off"></div>
+
+  <div class="nav-section">Competition</div>
+  <a class="nav-link" href="#s-competition">Competition Rules</a>
+  <a class="nav-link" href="#s-assets">Asset Universe</a>
+
+  <div class="nav-section">Strategy</div>
+  <a class="nav-link" href="#s-pnl">PnL Sources</a>
+  <a class="nav-link" href="#s-stock-a">Stock A</a>
+  <a class="nav-link" href="#s-stock-c">Stock C</a>
+  <a class="nav-link" href="#s-fed">Fed Markets</a>
+  <a class="nav-link" href="#s-etf">ETF</a>
+  <a class="nav-link" href="#s-options">Options</a>
+
+  <div class="nav-section">Architecture</div>
+  <a class="nav-link" href="#s-classes">Classes</a>
+  <a class="nav-link" href="#s-constants">Constants</a>
+  <a class="nav-link" href="#s-params">Parameters</a>
+  <a class="nav-link" href="#s-state">State Variables</a>
+  <a class="nav-link" href="#s-flow">Event Flow</a>
+  <a class="nav-link" href="#s-loop">Main Loop</a>
+
+  <div class="nav-section">Operations</div>
+  <a class="nav-link" href="#s-commands">Runtime Commands</a>
+  <a class="nav-link" href="#s-logs">Log Messages</a>
+  <a class="nav-link" href="#s-risk">Risk Limits</a>
+  <a class="nav-link" href="#s-changes">The 8 Changes</a>
+  <a class="nav-link" href="#s-mistakes">What Not To Do</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ MAIN -->
+<main id="main">
+
+<!-- ═══ COMPETITION ═══ -->
+<div class="section" id="s-competition">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,184,75,0.12);">🏆</div>
+    <div><h2>Competition Rules</h2><p>Everything you need to know about scoring and format</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Scoring formula</span>
+      <span class="entry-short">How leaderboard positions convert to competition points</span>
+      <div class="entry-tags"><span class="tag gold">critical</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">Score = (n − 1)²  where n = leaderboard position that round</div>
+      <table class="kv-table">
+        <tr><td>Rank 1 (first)</td><td>Score = 0 — <strong>best possible</strong></td></tr>
+        <tr><td>Rank 4</td><td>Score = 9</td></tr>
+        <tr><td>Rank 7</td><td>Score = 36</td></tr>
+        <tr><td>Rank 42</td><td>Score = 1681 — <strong>catastrophic</strong></td></tr>
+      </table>
+      <div class="warn-box"><p>The quadratic penalty means <strong>one rank-42 round (1681 points) costs more than 46 rank-4 rounds (9 each = 414 total)</strong>. Avoiding catastrophic rounds matters more than winning rounds.</p></div>
+      <p>Scores are <strong>summed</strong> across all rounds. Lower aggregate score = better final rank. Consistent top-5 finishes beat volatile performance.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Round structure</span>
+      <span class="entry-short">15-minute rounds, 10 days each, increasing difficulty</span>
+      <div class="entry-tags"><span class="tag blue">timing</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Round duration</td><td>15 minutes = 900 seconds</td></tr>
+        <tr><td>Days per round</td><td>10 days × 90 seconds = 900 ticks-time</td></tr>
+        <tr><td>Ticks per second</td><td>5</td></tr>
+        <tr><td>Ticks per day</td><td>450 (5 ticks/sec × 90 sec)</td></tr>
+        <tr><td>Earnings timing</td><td>Second 22 and second 88 of every day → 20 events/round</td></tr>
+        <tr><td>Earnings in ticks</td><td>Tick 110 and tick 440 within each day</td></tr>
+        <tr><td>Difficulty scaling</td><td>Later rounds: opponent bots faster, spreads tighter, assets more volatile</td></tr>
+        <tr><td>Positions</td><td>Reset to zero at start of each round</td></tr>
+        <tr><td>Auto-flatten</td><td>Bot flattens all positions at T-20s before round end</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Position limits (exchange)</span>
+      <span class="entry-short">Hard limits enforced by the exchange — violations → order rejection</span>
+      <div class="entry-tags"><span class="tag red">hard limit</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Max order size</td><td>40 units per single order</td></tr>
+        <tr><td>Max outstanding vol</td><td>120 units total unfilled orders per symbol</td></tr>
+        <tr><td>Max open orders</td><td>50 resting limit orders per symbol</td></tr>
+        <tr><td>Max absolute position</td><td>200 units (long or short) per symbol</td></tr>
+      </table>
+      <p>Exceeding any of these → <strong>order rejected silently</strong>. The bot does not always know which limit it hit. Our <code>safe_place_order</code> checks all four before submitting.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ASSETS ═══ -->
+<div class="section" id="s-assets">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(91,141,245,0.12);">📊</div>
+    <div><h2>Asset Universe</h2><p>All 13 tradable instruments and their mechanics</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stock A</span>
+      <span class="entry-short">Small-cap equity. EPS-driven. Constant P/E ratio within a round.</span>
+      <div class="entry-tags"><span class="tag green">primary alpha</span><span class="tag gold">deterministic FV</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">FV_A = EPS × PE_A × EPS_SCALE_A</div>
+      <table class="kv-table">
+        <tr><td>PE_A</td><td>10 (constant within a round, competition-wide constant)</td></tr>
+        <tr><td>EPS_SCALE_A</td><td>Auto-calibrated — starts at 1, updates from market observations</td></tr>
+        <tr><td>Earnings timing</td><td>Seconds 22 and 88 of every 90-second day (20 events/round)</td></tr>
+        <tr><td>News subtype</td><td>"earnings" with asset="A" and value=EPS</td></tr>
+        <tr><td>Edge source</td><td>Book orders priced at old FV become stale the instant new EPS fires</td></tr>
+      </table>
+      <div class="note-box"><p>PE_A is constant per round but may differ between rounds. EPS_SCALE_A converts between EPS units (e.g. dollars) and price units (e.g. cents). Always verify: if FV = 1000 but book mid = 100, EPS_SCALE_A is 10× too high.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stock B</span>
+      <span class="entry-short">Semiconductor company. No direct news. Price known only via options PCP.</span>
+      <div class="entry-tags"><span class="tag muted">no direct news</span><span class="tag blue">implied via options</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>There is no earnings or news for B. Its true price is inferred using <strong>Put-Call Parity</strong> across all three option strikes.</p>
+      <div class="formula">B_implied = C_mid − P_mid + K  (per strike, then weighted average)</div>
+      <p>Weights = 1 / (C_spread + P_spread). Tighter-spread strikes → more reliable estimate → higher weight.</p>
+      <p>B_implied is used by: (1) ETF NAV calculation, (2) optional PCP arb check for options strategy.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stock C</span>
+      <span class="entry-short">Insurance company. EPS + Fed-rate sensitive bond portfolio. Two-component price.</span>
+      <div class="entry-tags"><span class="tag gold">new alpha</span><span class="tag blue">ERC-driven</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Full formula (case spec):</strong></p>
+      <div class="formula">Pt = EPSt × PE0 × exp(−γ × Δy) + λ × (B0/N) × (−D×Δy + ½C×Δy²) + noise<br><small style="color:var(--muted);">where Δy = β × E[Δr],  E[Δr] = 25×P_hike − 25×P_cut</small></div>
+      <p><strong>Our simplified model:</strong></p>
+      <div class="formula">C_FV = anchor_mid + sensitivity × (current_ERC − anchor_ERC)</div>
+      <table class="kv-table">
+        <tr><td>ERC</td><td>Expected Rate Change = 25×P_hike − 25×P_cut (our Fed probability estimate)</td></tr>
+        <tr><td>sensitivity</td><td>ΔC_mid / ΔERC — measured empirically from first significant CPI print</td></tr>
+        <tr><td>anchor_mid</td><td>C book mid at the calibration moment</td></tr>
+        <tr><td>anchor_ERC</td><td>ERC at the calibration moment</td></tr>
+        <tr><td>Sign of sensitivity</td><td>Always negative: higher ERC (hawkish) → higher yields → C falls</td></tr>
+        <tr><td>PE0_C</td><td>14.0 — only used for PE_C_scale calibration hint on first earnings</td></tr>
+      </table>
+      <div class="warn-box"><p>If calibrated sensitivity is positive, type <code>sens -X</code> immediately. A positive sensitivity means the model is inverted and will trade in the wrong direction.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">ETF</span>
+      <span class="entry-short">Basket of exactly 1A + 1B + 1C. Swap mechanism for creation/redemption.</span>
+      <div class="entry-tags"><span class="tag teal">NAV arb</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">NAV = A_fv + B_implied + C_fv</div>
+      <table class="kv-table">
+        <tr><td>Swap toETF</td><td>Give 1A + 1B + 1C → receive 1 ETF. Costs 5 ticks cash.</td></tr>
+        <tr><td>Swap fromETF</td><td>Give 1 ETF → receive 1A + 1B + 1C. Costs 5 ticks cash.</td></tr>
+        <tr><td>No-arb band</td><td>NAV ± 5 ticks. Beyond this, arbitrage is theoretically possible.</td></tr>
+        <tr><td>Case hint</td><td>"ETF is the more likely mispriced leg" → trade ETF against basket, not reverse</td></tr>
+        <tr><td>One-sided threshold</td><td>ETF deviates by > 11 ticks from NAV (swap cost 5 + threshold 6)</td></tr>
+        <tr><td>Full-swap threshold</td><td>ETF deviates by > 17 ticks from NAV</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Options (B_C_950, B_P_950, etc.)</span>
+      <span class="entry-short">European calls and puts on B. Strikes 950, 1000, 1050. Expire at round end.</span>
+      <div class="entry-tags"><span class="tag muted">arb rarely fires</span><span class="tag blue">PCP signal source</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Six contracts: B_C_950, B_P_950, B_C_1000, B_P_1000, B_C_1050, B_P_1050.</p>
+      <div class="formula">Put-Call Parity (r=0): C − P = S − K  →  S = C_mid − P_mid + K</div>
+      <div class="warn-box"><p>Box spread and PCP arb are structurally unprofitable: 4-leg friction ≈ 12 ticks > any realistic mispricing on a 50-tick box. We check anyway with MIN_EDGE=2 in case a bot makes an error, but do not expect PnL from options in normal conditions.</p></div>
+      <p>The primary value of options: <strong>they give us the implied B price</strong> via PCP, which improves ETF NAV accuracy.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">R_HIKE / R_HOLD / R_CUT</span>
+      <span class="entry-short">Fed prediction markets. Settle at 1000 (win) or 0 (loss) at round end.</span>
+      <div class="entry-tags"><span class="tag purple">binary settlement</span><span class="tag gold">Kelly-sized</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Settlement</td><td>1000 if the contract's outcome happens; 0 otherwise</td></tr>
+        <tr><td>Signal sources</td><td>CPI prints (structured) + fedspeak headlines (unstructured)</td></tr>
+        <tr><td>Our probabilities</td><td>Updated by CPI surprise + keyword parsing. Sum = 1 always.</td></tr>
+        <tr><td>Market prices</td><td>Seeds our initial estimates (first 3 book reads)</td></tr>
+        <tr><td>Position cap</td><td>±25 units per contract (our self-imposed limit, enforced by max_abs_position)</td></tr>
+        <tr><td>Settlement trade</td><td>Up to 35 units in final T-90s to T-20s window</td></tr>
+        <tr><td>Price units</td><td>Prices are in milliprobabilities: price 650 = 0.65 implied probability</td></tr>
+      </table>
+      <div class="note-box"><p>Prices for Fed contracts are scaled differently from equities. When reading book prices, divide by 1000 to get probability: <code>mkt_prob = (bid + ask) / 2 / 1000.0</code></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PNL SOURCES ═══ -->
+<div class="section" id="s-pnl">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(78,203,113,0.12);">💰</div>
+    <div><h2>PnL Sources</h2><p>Ranked by reliability and expected magnitude</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">PnL hierarchy (full ranking)</span>
+      <span class="entry-short">Ordered by reliability — higher = more consistent, less model-dependent</span>
+      <div class="entry-tags"><span class="tag gold">reference</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>1. A earnings sweep</td><td style="color:var(--green)">+6k–18k/round. Most reliable. Deterministic FV, 20 events. Speed-dependent but not model-dependent.</td></tr>
+        <tr><td>2. A passive MM</td><td style="color:var(--green)">+5k–15k/round. Spread income between earnings. Enhanced by FlowTracker.</td></tr>
+        <tr><td>3. C CPI trades</td><td style="color:var(--gold)">+5k–12k/round. NEW. Fires after first CPI calibration (~minute 3). 5-7 events × 10 units.</td></tr>
+        <tr><td>4. ETF arb</td><td style="color:var(--blue)">+2k–8k/round. One-sided trades when ETF drifts from NAV by >11 ticks.</td></tr>
+        <tr><td>5. Fed directional</td><td style="color:var(--blue)">+1k–5k/round. Kelly-sized. Positive EV if signals are 60%+ accurate.</td></tr>
+        <tr><td>6. Fed settlement</td><td style="color:var(--gold)">+1k–4k/round. NEW. Terminal T-90s bet when our_p ≥ 0.78.</td></tr>
+        <tr><td>7. C passive MM</td><td style="color:var(--blue)">+1k–3k/round. Spread income after C is calibrated. Wide before.</td></tr>
+        <tr><td>8. Options arb</td><td style="color:var(--muted)">≈0/round. Checks run but friction exceeds available edge in normal conditions.</td></tr>
+      </table>
+      <p>Total expected range: <strong style="color:var(--green)">+21k–65k per round</strong> in harder later rounds. No catastrophic rounds (old worst case −150k now impossible due to Fed cap fix).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STOCK A ═══ -->
+<div class="section" id="s-stock-a">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(78,203,113,0.12);">A</div>
+    <div><h2>Stock A Strategy</h2><p>StockAStrategy class — primary alpha engine</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Earnings sweep</span>
+      <span class="entry-short">Unconditional book sweep immediately after every EPS release</span>
+      <div class="entry-tags"><span class="tag green">highest alpha</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>When EPS fires: new FV = EPS × PE_A × EPS_SCALE_A. All asks below FV−2 are <strong>immediately swept</strong> (BUY). All bids above FV+2 are immediately swept (SELL). Unconditional means we do this regardless of current position — we sweep to the 200-unit limit.</p>
+      <div class="code-block">
+sweep edge = <span class="nm">2</span>  <span class="cm"># ticks of buffer</span>
+buy  if ask_price &lt; FV − <span class="nm">2</span>  → guaranteed profit = FV − ask_price − 2
+sell if bid_price &gt; FV + <span class="nm">2</span>  → guaranteed profit = bid_price − FV − 2
+      </div>
+      <p>Post-earnings aggressive mode lasts 2 seconds (<code>POST_EARNINGS_SECS = 2.0</code>). During this window, on_book_update also calls _sweep_book continuously to catch any new stale orders that appear.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">EPS_SCALE_A auto-calibration</span>
+      <span class="entry-short">Self-corrects if the initial scale assumption is wrong</span>
+      <div class="entry-tags"><span class="tag gold">safety</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>On every earnings event, the bot records the implied scale: <code>implied = book_mid / (eps × PE_A)</code>. After 3+ observations, it takes the <strong>median</strong> (not mean — resistant to a single bad reading) and updates EPS_SCALE_A if it differs by more than 1.0.</p>
+      <div class="code-block">
+<span class="cm"># Example: eps=1.126, PE_A=10, book mid=1126</span>
+implied_scale = <span class="nm">1126</span> / (<span class="nm">1.126</span> × <span class="nm">10</span>) = <span class="nm">100.0</span>
+<span class="cm"># After 3 obs with implied≈100: EPS_SCALE_A = 100</span>
+      </div>
+      <p><strong>Persistence:</strong> _scale_obs list is NOT cleared on round reset. Calibration accumulates across the entire competition session. By round 3, scale is rock-solid before the first earnings fires.</p>
+      <div class="note-box"><p>Sanity bounds: only observations where 20 < implied_scale < 500 are recorded. Extreme values are discarded as likely noise from a thin book.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Pre-cancellation timer</span>
+      <span class="entry-short">Cancels all A quotes 3 seconds before expected earnings</span>
+      <div class="entry-tags"><span class="tag blue">timing edge</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>After each earnings event, EarningsTimer calculates exactly when the <em>next</em> earnings will fire (either 66 seconds or 24 seconds away, depending on which of the two daily events just fired). It sets an alarm for 3 seconds before that time.</p>
+      <p><strong>Why:</strong> In harder rounds, faster bots have already priced in the next EPS before the news event fires. If our quotes are resting at stale prices in those final 3 seconds, they get picked off. Pre-cancel avoids this adverse selection.</p>
+      <table class="kv-table">
+        <tr><td>After second 22 fires</td><td>Next earnings in 66 seconds (88 − 22 = 66). Cancel at T+63s.</td></tr>
+        <tr><td>After second 88 fires</td><td>Next earnings in 24 seconds (90 − 88 + 22 = 24). Cancel at T+21s.</td></tr>
+        <tr><td>PRE_CANCEL_SECS</td><td>3.0 seconds</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Passive market making</span>
+      <span class="entry-short">Quotes bid/ask around FV with inventory skew and flow adjustment</span>
+      <div class="entry-tags"><span class="tag green">spread income</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">bid = FV_adj − spread/2 − total_skew<br>ask = FV_adj + spread/2 − total_skew</div>
+      <table class="kv-table">
+        <tr><td>BASE_SPREAD</td><td>4 ticks half-spread at zero inventory</td></tr>
+        <tr><td>Dynamic spread</td><td>Widens as position grows: spread = 4 + int(|pos|/100 × 4)</td></tr>
+        <tr><td>Inventory skew</td><td>0.15 × pos — shifts both quotes away from heavy side</td></tr>
+        <tr><td>Flow skew</td><td>FlowTracker.fv_adjustment() × 0.5 — adjusts toward smart money direction</td></tr>
+        <tr><td>At pos = +200</td><td>bid = 0 (suppressed). Ask continues normally to reduce long.</td></tr>
+        <tr><td>At pos = −200</td><td>ask = 0 (suppressed). Bid continues normally to reduce short.</td></tr>
+        <tr><td>Re-quote rate limit</td><td>Maximum once per second (avoids cancelling/replacing every 100ms)</td></tr>
+        <tr><td>Quote size</td><td>10 at normal inventory; max(2, 10//3)=3 near soft limit (100)</td></tr>
+      </table>
+      <div class="note-box"><p>Cross-book check: if bid ≥ best_ask, set bid=0. If ask ≤ best_bid, set ask=0. This check is <strong>unconditional</strong> (applies even at position limits). Old bug: check was gated on abs(pos) &lt; MAX_ABS_POS, allowing spread-crossing at limits.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FlowTracker (ALPHA = 0.05)</span>
+      <span class="entry-short">Detects smart money direction from aggressive trade prints</span>
+      <div class="entry-tags"><span class="tag purple">signal</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Observes every trade print. If trade price ≥ best_ask → aggressive buy → +qty to rolling window. If price ≤ best_bid → aggressive sell → −qty. Ambiguous trades (between spread) are ignored.</p>
+      <div class="formula">fv_adjustment = ALPHA × net_signed_volume<br>ALPHA = 0.05,  window = 60 recent trades</div>
+      <p>Applied to FV for both quoting and snipe decisions. Positive net signed volume → FV shifts up (smart money is buying). Negative → FV shifts down.</p>
+      <div class="good-box"><p>Safe to use because EPS_SCALE_A is now auto-calibrated. Without correct scale, a wrong FV could create a death spiral (wrong FV → sell → flow sees sell pressure → FV drops further → more selling). With correct scale, flow is a genuine edge.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STOCK C ═══ -->
+<div class="section" id="s-stock-c">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,184,75,0.12);">C</div>
+    <div><h2>Stock C Strategy</h2><p>StockCStrategy class — ERC empirical model</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Three-phase lifecycle</span>
+      <span class="entry-short">C trades in three distinct phases per round — only Phase 3 has directional alpha</span>
+      <div class="entry-tags"><span class="tag gold">important</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Phase 1</td><td><strong>Before first C earnings.</strong> FV=None. Passive MM ±12 ticks, 3 units/side. No sniping. No directional trades.</td></tr>
+        <tr><td>Phase 2</td><td><strong>After first C earnings, before first calibration CPI.</strong> PE_C_scale known. FV still None (no ERC anchor yet). Wide passive MM continues.</td></tr>
+        <tr><td>Phase 3</td><td><strong>After first significant CPI.</strong> Sensitivity calibrated. FV active. Tight MM ±5 ticks / 8 units. Sniping enabled. Directional CPI trades.</td></tr>
+      </table>
+      <p>The transition to Phase 3 requires: |ΔERC| > 2.0 from the CPI print. A CPI that barely moves probabilities (surprise near zero) does not calibrate.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">pre_cpi_snapshot()</span>
+      <span class="entry-short">Must be called BEFORE Fed processes CPI — captures baseline state</span>
+      <div class="entry-tags"><span class="tag red">order-critical</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Captures: current ERC (<code>_pre_cpi_erc</code>) and current C book mid (<code>_pre_cpi_mid</code>).</p>
+      <p>This snapshot is essential for two purposes:</p>
+      <ol>
+        <li><strong>Calibration</strong>: ΔERC = new_ERC − pre_cpi_ERC and ΔC = new_C_mid − pre_cpi_mid give the empirical sensitivity.</li>
+        <li><strong>Directional trades</strong>: expected_dc = sensitivity × ΔERC. We need ΔERC relative to the pre-CPI baseline.</li>
+      </ol>
+      <div class="warn-box"><p>If pre_cpi_snapshot is called AFTER Fed updates probabilities, both measurements will be post-CPI and ΔERC will be 0. The entire C model depends on this call order being correct.</p></div>
+      <p><strong>Call order in bot_handle_news (CPI):</strong></p>
+      <div class="code-block">
+<span class="nm">1.</span> strat_c.pre_cpi_snapshot()      <span class="cm"># snapshot BEFORE ERC changes</span>
+<span class="nm">2.</span> strat_fed.on_cpi(fore, act)     <span class="cm"># Fed updates probabilities → ERC changes</span>
+<span class="nm">3.</span> strat_c.recalc_fv()             <span class="cm"># update C FV with new ERC</span>
+<span class="nm">4.</span> await strat_c.on_cpi(fore, act) <span class="cm"># calibrate / directional trade</span>
+<span class="nm">5.</span> await strat_fed.trade()         <span class="cm"># immediate Fed trade on news</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Sensitivity calibration</span>
+      <span class="entry-short">Single-parameter fit from first significant CPI. No gradient descent.</span>
+      <div class="entry-tags"><span class="tag gold">replaces old BETA/GAMMA</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">sensitivity = ΔC_mid / ΔERC<br><small style="color:var(--muted)">where Δ = post-CPI minus pre-CPI snapshot</small></div>
+      <p>This works because the full C formula is approximately linear in ERC for small deviations. The gradient <code>dC/dERC ≈ −β × (EPS×PE0×γ + λ×B0/N×D)</code> is a single round-constant that we measure directly.</p>
+      <p><strong>Guard conditions for calibration:</strong></p>
+      <ul>
+        <li>|ΔERC| must exceed 2.0 (too small = noise-dominated)</li>
+        <li>If |ΔC_mid| < 1.0 but |ΔERC| > 3.0: wait for a cleaner observation (C book may not have repriced yet)</li>
+        <li>First significant CPI calibrates and does NOT trade. All subsequent CPIs trade directionally.</li>
+      </ul>
+      <p><strong>Anchor update on C earnings:</strong> When EPS changes, we adjust anchor_mid by <code>(eps_new − eps_old) × PE_C_scale</code> so the anchor remains valid after the earnings shift. PE_C_scale persists across rounds; sensitivity resets each round.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">CPI directional trade</span>
+      <span class="entry-short">Trade C before the market reprices after each CPI event</span>
+      <div class="entry-tags"><span class="tag gold">new alpha</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>On each CPI event (after calibration), if the expected C price change exceeds the minimum threshold:</p>
+      <div class="code-block">
+expected_dc = sensitivity × ΔERC
+<span class="kw">if</span> expected_dc &lt; <span class="nm">-4</span>:     <span class="cm"># C should fall — sell before market reprices</span>
+    qty = min(<span class="nm">10</span>, C_MAX_POS + pos)  <span class="cm"># up to 10 units, never exceed ±20</span>
+    SELL at best bid
+<span class="kw">elif</span> expected_dc &gt; <span class="nm">+4</span>:   <span class="cm"># C should rise — buy before market reprices</span>
+    qty = min(<span class="nm">10</span>, C_MAX_POS - pos)
+    BUY at best ask
+      </div>
+      <table class="kv-table">
+        <tr><td>CPI_TRADE_QTY</td><td>10 units per event</td></tr>
+        <tr><td>C_MAX_POS</td><td>±20 units from CPI directional trades alone</td></tr>
+        <tr><td>CPI_MIN_EXPECTED_DC</td><td>4 ticks — minimum change to bother trading</td></tr>
+        <tr><td>max_abs_position["C"]</td><td>50 (enforced by safe_place_order)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FED ═══ -->
+<div class="section" id="s-fed">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(155,109,255,0.12);">₣</div>
+    <div><h2>Fed Strategy</h2><p>FedStrategy class — Kelly-sized prediction market trading</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">The position limit bug (fixed)</span>
+      <span class="entry-short">The critical fix that converts Fed from lottery ticket to consistent edge</span>
+      <div class="entry-tags"><span class="tag red">was the #1 bug</span><span class="tag green">now fixed</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="cm"># OLD (broken) — placed orders past the stated MAX_POS=25 cap</span>
+<span class="kw">return</span> <span class="bad">max(1,</span> min(target, MAX_POS - pos))
+<span class="cm"># At pos=25: max(1, min(target, 0)) = max(1, 0) = 1 → places order!</span>
+<span class="cm"># AND max_abs_position["R_HIKE"] defaulted to 200</span>
+<span class="cm"># Result: fires every 0.1s → ±200 in minutes</span>
+
+<span class="cm"># NEW (correct)</span>
+<span class="kw">return</span> <span class="good">max(0,</span> min(target, MAX_POS - pos))
+<span class="cm"># At pos=25: max(0, min(target, 0)) = 0 → stops correctly</span>
+      </div>
+      <p><strong>Two-layer fix:</strong></p>
+      <ol>
+        <li><code>_kelly_size</code>: <code>max(0,...)</code> instead of <code>max(1,...)</code></li>
+        <li><code>MyXchangeClient.__init__</code>: <code>max_abs_position["R_HIKE"] = max_abs_position["R_HOLD"] = max_abs_position["R_CUT"] = 25</code></li>
+      </ol>
+      <p>With the fix: worst-case Fed loss = 25 units × 1000 ticks = −25,000. Old worst case: 200 units × 1000 = −200,000.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Half-Kelly sizing</span>
+      <span class="entry-short">Position size proportional to edge, capped at MAX_POS=25</span>
+      <div class="entry-tags"><span class="tag purple">sizing</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">For BUY:  kf = (our_p − mkt_p) / (1 − mkt_p)<br>For SELL: kf = (mkt_p − our_p) / mkt_p<br>size = max(0, min(floor(0.5 × kf × MAX_POS), MAX_POS − current_pos))</div>
+      <table class="kv-table">
+        <tr><td>MAX_POS</td><td>25 units per contract</td></tr>
+        <tr><td>EDGE_MIN</td><td>0.04 — minimum divergence between our_p and mkt_p to trade</td></tr>
+        <tr><td>Half-Kelly (0.5×)</td><td>Conservative: protects against model error. Full Kelly would be 2× more aggressive.</td></tr>
+      </table>
+      <p>Example: our_p=0.65, mkt_p=0.45, pos=0. kf=(0.65-0.45)/(1-0.45)=0.364. size=floor(0.5×0.364×25)=4 units.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">CPI probability update</span>
+      <span class="entry-short">How a CPI print changes our Fed probability estimates</span>
+      <div class="entry-tags"><span class="tag blue">signal</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">surprise = actual − forecast<br>shift = CPI_SENS × |surprise|  (CPI_SENS = 80)</div>
+      <table class="kv-table">
+        <tr><td>surprise > 0 (hawkish)</td><td>R_CUT probability -= shift; R_HIKE += shift</td></tr>
+        <tr><td>surprise &lt; 0 (dovish)</td><td>R_HIKE probability -= shift; R_CUT += shift</td></tr>
+        <tr><td>|surprise| &lt; 0.0001</td><td>Near-zero — nudge R_HOLD +0.10, reduce HIKE and CUT by 0.05 each</td></tr>
+      </table>
+      <p>After any update, <code>_normalize()</code> is called: floor all probabilities at 0.04, then divide by sum to maintain Σ=1.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Fedspeak keyword parsing</span>
+      <span class="entry-short">Hawkish/dovish/neutral classification from unstructured news headlines</span>
+      <div class="entry-tags"><span class="tag blue">signal</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>HAWKISH keywords</td><td>"restrictive", "hawkish", "hike", "inflation risks", "stay restrictive", "tightening", "higher for longer", "restrictive for longer"</td></tr>
+        <tr><td>DOVISH keywords</td><td>"easing", "cooling", "dovish", "cut", "lower rates", "easing inflation", "slowing growth", "policy easing", "expectations of policy easing"</td></tr>
+        <tr><td>NEUTRAL keywords</td><td>"wide range of views", "weighing", "uncertainties", "not in a hurry", "either direction", "balanced", "mixed", "no clear", "options open"</td></tr>
+        <tr><td>SPEAK_SHIFT</td><td>0.03 per hawkish or dovish headline</td></tr>
+        <tr><td>FEDSPEAK_MSG_TYPES</td><td>"FEDSPEAK", "fedspeak", "FED_SPEAK"</td></tr>
+      </table>
+      <p>Logic: if dovish and not hawkish → dovish shift. If hawkish and not dovish → hawkish shift. If neutral → neutral shift. If mixed or unclassified → logged but no probability change.</p>
+      <div class="note-box"><p>On competition day: verify the actual message_type string from news.log during practice. It must match one of FEDSPEAK_MSG_TYPES or it will be logged as "UNKNOWN TYPE" and not processed.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Settlement trade</span>
+      <span class="entry-short">End-of-round concentrated bet when conviction is high and EV is positive</span>
+      <div class="entry-tags"><span class="tag gold">new alpha</span><span class="tag gold">fires once/round</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Fires <strong>once per round</strong> in the T-90s to T-20s window (70-second opportunity).</p>
+      <p><strong>Three conditions must all be true:</strong></p>
+      <ol>
+        <li><code>our_p ≥ 0.78</code> for the leading contract</li>
+        <li>Positive EV: <code>ask &lt; 1000 × our_p</code> (expected payout exceeds cost)</li>
+        <li>Position room: current pos &lt; SETTLE_MAX_POS = 35</li>
+      </ol>
+      <table class="kv-table">
+        <tr><td>SETTLE_MIN_P</td><td>0.78 — probability threshold</td></tr>
+        <tr><td>SETTLE_MAX_POS</td><td>35 units (larger than normal 25-unit cap)</td></tr>
+        <tr><td>Quantity</td><td>min(10, room) where room = 35 − current_pos</td></tr>
+        <tr><td>Order type</td><td>place_order() directly (bypasses 25-unit safe_place_order cap)</td></tr>
+        <tr><td>Rationale</td><td>Near round end, all CPI prints accumulated → most accurate probability estimate → largest justified bet</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Trade cadence</span>
+      <span class="entry-short">15-second rate limit in main loop; bypassed on news events</span>
+      <div class="entry-tags"><span class="tag blue">timing</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>The main loop calls <code>strat_fed.trade()</code> at most once every 15 seconds. This prevents 9,000 order attempts per round (old behaviour at 0.1s cadence).</p>
+      <p>However, <code>bot_handle_news</code> calls <code>await strat_fed.trade()</code> <strong>immediately</strong> after CPI and fedspeak. This preserves all news alpha — we trade the moment a signal arrives.</p>
+      <p><code>trade()</code> always: (1) reads book probs, (2) cancels all existing Fed quotes, (3) places new Kelly-sized orders. The cancel-replace happens every trade call.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ETF ═══ -->
+<div class="section" id="s-etf">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(62,207,207,0.12);">ETF</div>
+    <div><h2>ETF Strategy</h2><p>ETFStrategy class — NAV arbitrage</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">NAV computation</span>
+      <span class="entry-short">Uses calibrated FV for A/C and PCP-implied price for B</span>
+      <div class="entry-tags"><span class="tag teal">improved in final bot</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="formula">NAV = A_component + B_component + C_component</div>
+      <table class="kv-table">
+        <tr><td>A_component</td><td>fair_values["A"] if set and positive; else A book mid</td></tr>
+        <tr><td>B_component</td><td>PCP-implied B price (BPriceTracker) if available; else B book mid</td></tr>
+        <tr><td>C_component</td><td>fair_values["C"] if set and positive; else C book mid</td></tr>
+      </table>
+      <p>Using the calibrated FV for A (known after first earnings) and PCP-implied B (known as soon as options have a book) produces a more accurate NAV than using raw book mids, especially right after earnings or during rapid B movement.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">One-sided trade</span>
+      <span class="entry-short">Trade only the ETF leg — lower risk than full 3-component swap</span>
+      <div class="entry-tags"><span class="tag green">preferred mode</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>ETF overpriced trigger</td><td>ETF_mid − NAV > ETF_SWAP_COST + ONE_SIDED_THRESHOLD = 5 + 6 = 11 ticks</td></tr>
+        <tr><td>ETF underpriced trigger</td><td>NAV − ETF_mid > 11 ticks</td></tr>
+        <tr><td>Action if overpriced</td><td>SELL ETF at best bid. No component trades.</td></tr>
+        <tr><td>Action if underpriced</td><td>BUY ETF at best ask. No component trades.</td></tr>
+        <tr><td>ONE_SIDED_QTY</td><td>8 units per trade</td></tr>
+        <tr><td>ONE_SIDED_COOLDOWN</td><td>3 seconds between consecutive one-sided trades</td></tr>
+        <tr><td>MAX_POS (ETF)</td><td>±40 units</td></tr>
+      </table>
+      <div class="note-box"><p>The cooldown prevents the old behaviour of placing 8 ETF orders every 0.5 seconds (16 per second) when the threshold was continuously met. This could exhaust the outstanding volume limit with ETF orders alone.</p></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Full-swap arbitrage</span>
+      <span class="entry-short">Buy A+B+C, swap to ETF, sell ETF — or the reverse</span>
+      <div class="entry-tags"><span class="tag orange">higher risk, higher reward</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Threshold</td><td>ETF_SWAP_COST + FULL_SWAP_THRESHOLD = 5 + 12 = 17 ticks from NAV</td></tr>
+        <tr><td>Max qty</td><td>FULL_SWAP_MAX_QTY = 5 units</td></tr>
+        <tr><td>Abort timeout</td><td>10 seconds. If legs don't all fill, cancel everything and reset.</td></tr>
+        <tr><td>Fill tracking</td><td>pending_create/pending_redeem flag. filled_comps dict tracks per-leg qty. Once all legs filled, swap is placed.</td></tr>
+        <tr><td>Mutually exclusive</td><td>One-sided and full-swap are never attempted on the same check_arb call.</td></tr>
+      </table>
+      <p>Execution risk: all three component orders (A, B, C) must fill for the swap to work. If any leg partially fills and the round ends, we have an unhedged partial position.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPTIONS ═══ -->
+<div class="section" id="s-options">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(91,141,245,0.12);">⋔</div>
+    <div><h2>Options Strategy</h2><p>OptionsStrategy class — arb checks + implied B price</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Why options arb rarely fires</span>
+      <span class="entry-short">Mathematical proof that friction exceeds available edge</span>
+      <div class="entry-tags"><span class="tag muted">structural</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Box spread (4 legs):</strong></p>
+      <div class="formula">Theoretical value = K2 − K1 = 50 (for adjacent strikes)<br>Buy friction = C1_ask − C2_bid + P2_ask − P1_bid ≈ 4 × 3 = 12 ticks<br>Buy edge = 50 − (50 + 12) = −12  ✗ never profitable</div>
+      <p><strong>PCP arbitrage (3 legs):</strong></p>
+      <div class="formula">3-leg friction ≈ 3 × 3 = 9 ticks<br>Exchange option bots maintain PCP within 1-2 ticks<br>Available mispricing ≈ 2 ticks &lt; 9 ticks friction  ✗</div>
+      <p>We still run these checks every 1.5 seconds with MIN_EDGE=2. On the rare occasion an exchange bot makes a pricing error, we would capture it.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">No-cancel-before-recheck (fix)</span>
+      <span class="entry-short">Resting arb orders should stay in the book, not be cancelled every 1.5 seconds</span>
+      <div class="entry-tags"><span class="tag green">fixed in final bot</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Old strategy.py cancelled all B and option orders before every arb check (every 1.5s). This caused two problems:</p>
+      <ol>
+        <li><strong>Profitable orders cancelled:</strong> A resting arb order at a good price is a lottery ticket with positive EV. Cancelling it throws it away.</li>
+        <li><strong>Vol-quota race:</strong> The exchange still counts being-cancelled orders against the outstanding volume limit for a brief period. Immediately placing new orders then hit the limit and were rejected.</li>
+      </ol>
+      <p>Fix: remove the cancellation loop entirely. The <code>_cold()</code> cooldown (4 seconds per arb type) prevents firing the same arb too often. Resting orders stay in the book until they fill or the round ends.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLASSES ═══ -->
+<div class="section" id="s-classes">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(155,109,255,0.12);">{ }</div>
+    <div><h2>Class Definitions</h2><p>Every class, its purpose, and what it owns</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">MyXchangeClient</span>
+      <span class="entry-short">The main bot class. Inherits XChangeClient. Owns all strategies.</span>
+      <div class="entry-tags"><span class="tag purple">root class</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Inherits from <code>XChangeClient</code> (the competition library). Overrides <code>bot_handle_*</code> methods to dispatch to the appropriate strategy. Owns the shared state that strategies read from (<code>fair_values</code>, <code>eps</code>, <code>positions</code>, <code>order_books</code>).</p>
+      <p><strong>Key responsibilities:</strong> safe_place_order (limit enforcement), cancel_quotes_for, round reset detection, auto-flatten, command listener, main trade loop.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">StockAStrategy</span>
+      <span class="entry-short">Earnings sweep, passive MM, pre-cancel, EPS_SCALE_A calibration</span>
+      <div class="entry-tags"><span class="tag green">primary alpha</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Called by:</strong> bot_handle_book_update("A"), bot_handle_news(earnings), main loop (update_quotes, check_pre_cancel).</p>
+      <p><strong>Owns:</strong> EarningsTimer, pending_cancels set, _scale_obs list (persists across rounds), quote tracking.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">StockCStrategy</span>
+      <span class="entry-short">ERC sensitivity model. Three-phase lifecycle. CPI directional trades.</span>
+      <div class="entry-tags"><span class="tag gold">new alpha</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Called by:</strong> bot_handle_book_update("C"), bot_handle_news(CPI and earnings), bot_handle_book_update(Fed), main loop (update_quotes).</p>
+      <p><strong>Owns:</strong> _c_pe_scale (persists), _c_sensitivity / _c_anchor_mid / _c_anchor_erc / _c_calibrated (reset each round), _pre_cpi_erc / _pre_cpi_mid (reset each CPI).</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FedStrategy</span>
+      <span class="entry-short">Probability estimates, Kelly trades, CPI/fedspeak signals, settlement</span>
+      <div class="entry-tags"><span class="tag purple">prediction market</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Called by:</strong> bot_handle_news(CPI and fedspeak), bot_handle_book_update(Fed), main loop (trade, settlement_trade).</p>
+      <p><strong>Owns:</strong> _mkt_probs dict, _book_reads counter, _settle_done flag (reset each round). Probability estimates persist across rounds.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">ETFStrategy</span>
+      <span class="entry-short">NAV computation, one-sided + full-swap arb, fill tracking</span>
+      <div class="entry-tags"><span class="tag teal">arb</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Called by:</strong> main loop (check_arb every 0.5s), bot_handle_order_fill (fill tracking for full-swap).</p>
+      <p><strong>Owns:</strong> BPriceTracker, pending_create/redeem flags, filled_comps dict, _last_one_sided_time cooldown.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">OptionsStrategy</span>
+      <span class="entry-short">PCP + box spread arb checks. Also provides implied B via BPriceTracker.</span>
+      <div class="entry-tags"><span class="tag muted">low priority</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Called by:</strong> main loop (run() every 0.5s, gated to fire at most every 1.5s internally).</p>
+      <p><strong>Owns:</strong> BPriceTracker, _last dict (timestamps for _cold() cooldown).</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FlowTracker</span>
+      <span class="entry-short">Rolling window of signed trade volume. Detects smart-money direction.</span>
+      <div class="entry-tags"><span class="tag purple">signal</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>WINDOW</td><td>60 — rolling window of last 60 trade observations per symbol</td></tr>
+        <tr><td>ALPHA</td><td>0.05 — fv_adjustment = 0.05 × net_signed_volume</td></tr>
+        <tr><td>observe()</td><td>Called from bot_handle_trade_msg. Records +qty (aggressive buy) or −qty (aggressive sell).</td></tr>
+        <tr><td>fv_adjustment()</td><td>Returns ALPHA × net_signed_volume. Positive = buy pressure → raise FV estimate.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">EarningsTimer</span>
+      <span class="entry-short">Predicts next earnings wall-clock time from tick numbers</span>
+      <div class="entry-tags"><span class="tag blue">timing</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>PRE_CANCEL_SECS</td><td>3.0 — cancel quotes this many seconds before next earnings</td></tr>
+        <tr><td>record_earnings(tick)</td><td>Called every time an earnings fires. Computes when next one fires.</td></tr>
+        <tr><td>should_cancel_now()</td><td>Returns True once when we enter the pre-cancel window. Resets after firing.</td></tr>
+        <tr><td>secs_to_next_earnings()</td><td>Seconds until next earnings (used for debugging / status prints)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">BPriceTracker</span>
+      <span class="entry-short">Extracts implied B price from put-call parity across all three strikes</span>
+      <div class="entry-tags"><span class="tag blue">signal</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Used by both ETFStrategy (NAV) and OptionsStrategy (PCP arb check with implied B price as an alternative to book B).</p>
+      <div class="formula">S_implied(K) = C_mid(K) − P_mid(K) + K<br>weight(K) = 1 / (C_spread(K) + P_spread(K))<br>B_implied = Σ(S_implied × weight) / Σ(weight)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONSTANTS ═══ -->
+<div class="section" id="s-constants">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,184,75,0.12);">π</div>
+    <div><h2>Constants</h2><p>All module-level values and what changing them does</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">All constants reference</span>
+      <span class="entry-short">Complete list with values and purpose</span>
+      <div class="entry-tags"><span class="tag gold">reference</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <h4>Stock A</h4>
+      <table class="kv-table">
+        <tr><td>PE_A = 10</td><td>Price-to-earnings ratio for A. Constant within a round. Verify on first earnings.</td></tr>
+        <tr><td>EPS_SCALE_A = 1</td><td>Converts EPS units to price units. Auto-calibrated. Override with <code>scale X</code> command.</td></tr>
+      </table>
+      <h4>Stock C model parameters (used only for hints)</h4>
+      <table class="kv-table">
+        <tr><td>PE0_C = 14.0</td><td>Prior P/E for C. Only used to provide PE_C_scale calibration hint.</td></tr>
+        <tr><td>EPS0_C = 2.00</td><td>Prior EPS for C before first earnings event.</td></tr>
+      </table>
+      <h4>ETF</h4>
+      <table class="kv-table">
+        <tr><td>ETF_SWAP_COST = 5</td><td>Cash cost per unit for toETF or fromETF swap. Bakes into arb threshold.</td></tr>
+      </table>
+      <h4>Timing</h4>
+      <table class="kv-table">
+        <tr><td>TICKS_PER_SEC = 5</td><td>Exchange tick rate. 5 ticks per real second.</td></tr>
+        <tr><td>SECS_PER_DAY = 90</td><td>Each simulated trading day = 90 real seconds.</td></tr>
+        <tr><td>TICKS_PER_DAY = 450</td><td>5 × 90 = 450 ticks per day.</td></tr>
+        <tr><td>EARNINGS_SECS = (22, 88)</td><td>Earnings fire at second 22 and second 88 of every day.</td></tr>
+        <tr><td>EARNINGS_TICKS = (110, 440)</td><td>Same in ticks: 22×5=110, 88×5=440.</td></tr>
+        <tr><td>ROUND_DURATION_SECS = 900</td><td>15 minutes per round.</td></tr>
+        <tr><td>FLATTEN_LEAD_SECS = 20</td><td>Auto-flatten begins 20 seconds before round end.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PARAMETERS ═══ -->
+<div class="section" id="s-params">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(91,141,245,0.12);">⚙</div>
+    <div><h2>Strategy Parameters</h2><p>Class-level constants that tune behavior</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">StockAStrategy parameters</span>
+      <span class="entry-short">Controls sweep aggression, MM spread, and inventory management</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>MAX_ORDER_SIZE = 40</td><td>Max units per single order (matches exchange limit)</td></tr>
+        <tr><td>MAX_OUTSTANDING_VOL = 120</td><td>Max total unfilled A orders at once</td></tr>
+        <tr><td>MAX_OPEN_ORDERS = 50</td><td>Max resting limit orders for A at once</td></tr>
+        <tr><td>MAX_ABS_POS = 200</td><td>Hard position limit for A. Set high to allow full sweep alpha.</td></tr>
+        <tr><td>BASE_SPREAD = 4</td><td>Half-spread at zero inventory. Bid = FV−4, Ask = FV+4.</td></tr>
+        <tr><td>SKEW_PER_UNIT = 0.15</td><td>How much to shift quotes per unit of inventory.</td></tr>
+        <tr><td>QUOTE_SIZE = 10</td><td>Units per passive MM quote side.</td></tr>
+        <tr><td>SOFT_POS_LIMIT = 100</td><td>Beyond this, quote size reduced to max(2, 10//3) = 3.</td></tr>
+        <tr><td>EDGE_THRESHOLD = 2</td><td>Min edge to snipe opportunistically outside earnings window.</td></tr>
+        <tr><td>SNIPE_SIZE = 30</td><td>Max units per snipe order.</td></tr>
+        <tr><td>POST_EARNINGS_SECS = 2.0</td><td>Aggressive sweep window after earnings fires.</td></tr>
+        <tr><td>SCALE_MIN_OBS = 3</td><td>Minimum EPS observations before auto-updating EPS_SCALE_A.</td></tr>
+        <tr><td>PRE_CANCEL_SECS = 3.0</td><td>Cancel quotes this many seconds before expected earnings.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">StockCStrategy parameters</span>
+      <span class="entry-short">Controls calibration sensitivity and trade sizing</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>C_MAX_POS = 20</td><td>Per-direction cap for CPI directional trades.</td></tr>
+        <tr><td>CPI_TRADE_QTY = 10</td><td>Units per CPI directional trade.</td></tr>
+        <tr><td>CPI_MIN_EXPECTED_DC = 4</td><td>Min |expected ΔC| in ticks to execute a CPI trade.</td></tr>
+        <tr><td>MIN_CALIBRATE_DERC = 2.0</td><td>Min |ΔERC| to attempt sensitivity calibration from a CPI.</td></tr>
+        <tr><td>SPREAD_UNCALIB = 12</td><td>Half-spread before calibration (wide = no directional risk).</td></tr>
+        <tr><td>SPREAD_CALIB = 5</td><td>Half-spread after calibration (tight = more fills).</td></tr>
+        <tr><td>QUOTE_SIZE_UNCALIB = 3</td><td>Units per side before calibration.</td></tr>
+        <tr><td>QUOTE_SIZE_CALIB = 8</td><td>Units per side after calibration.</td></tr>
+        <tr><td>QUOTE_RATE_LIMIT = 1.5</td><td>Minimum seconds between passive MM re-quotes for C.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FedStrategy parameters</span>
+      <span class="entry-short">Controls position sizing, signal sensitivity, and settlement threshold</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>MAX_POS = 25</td><td>Maximum units per Fed contract during normal trading.</td></tr>
+        <tr><td>EDGE_MIN = 0.04</td><td>Minimum our_p − mkt_p divergence to place a Fed trade.</td></tr>
+        <tr><td>CPI_SENS = 80</td><td>Probability shift = CPI_SENS × |surprise|. Controls CPI reactivity.</td></tr>
+        <tr><td>SPEAK_SHIFT = 0.03</td><td>Probability shift per fedspeak headline.</td></tr>
+        <tr><td>SETTLE_MIN_P = 0.78</td><td>Minimum our_p for the best contract to fire settlement trade.</td></tr>
+        <tr><td>SETTLE_MAX_POS = 35</td><td>Settlement trade can extend position to 35 (vs normal cap of 25).</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">ETFStrategy parameters</span>
+      <span class="entry-short">Controls arb thresholds, quantities, and timing</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>ONE_SIDED_THRESHOLD = 6</td><td>Extra ticks above swap cost to trigger one-sided trade.</td></tr>
+        <tr><td>FULL_SWAP_THRESHOLD = 12</td><td>Extra ticks above swap cost to trigger full swap arb.</td></tr>
+        <tr><td>ONE_SIDED_QTY = 8</td><td>Units per one-sided trade.</td></tr>
+        <tr><td>FULL_SWAP_MAX_QTY = 5</td><td>Max units per full-swap arb attempt.</td></tr>
+        <tr><td>LEG_TIMEOUT_SECS = 10.0</td><td>Abort full-swap if component legs don't all fill within 10s.</td></tr>
+        <tr><td>ONE_SIDED_COOLDOWN = 3.0</td><td>Minimum seconds between one-sided ETF trades.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">OptionsStrategy parameters</span>
+      <span class="entry-short">Controls arb detection and cooldown</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>MIN_EDGE = 2</td><td>Minimum profit (ticks) to execute an arb trade.</td></tr>
+        <tr><td>COOLDOWN = 4.0</td><td>Minimum seconds between firings of the same arb type.</td></tr>
+        <tr><td>BOX_PAIRS</td><td>[(950,1000), (1000,1050), (950,1050)] — all three pairings checked.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Position limits (client)</span>
+      <span class="entry-short">Our self-imposed position caps enforced by safe_place_order</span>
+      <div class="entry-tags"><span class="tag red">critical</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>A, B, ETF</td><td>max_abs_position = 200 (exchange limit; rely on strategy-level caps)</td></tr>
+        <tr><td>C</td><td>max_abs_position = 50 (model uncertainty risk cap)</td></tr>
+        <tr><td>R_HIKE, R_HOLD, R_CUT</td><td>max_abs_position = 25 (matches FedStrategy.MAX_POS)</td></tr>
+        <tr><td>Options</td><td>max_abs_position = 200 (arb-sized, rarely matters)</td></tr>
+        <tr><td>All</td><td>max_order_size=40, max_open_orders=50, max_outstanding_vol=120</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STATE VARIABLES ═══ -->
+<div class="section" id="s-state">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,131,75,0.12);">◉</div>
+    <div><h2>State Variables</h2><p>What persists across rounds vs. what resets</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Persists across rounds</span>
+      <span class="entry-short">Knowledge that carries over — gets smarter through the competition</span>
+      <div class="entry-tags"><span class="tag green">accumulates</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>EPS_SCALE_A (global)</td><td>Auto-calibrated A scale. Median of all observations since bot started.</td></tr>
+        <tr><td>StockAStrategy._scale_obs</td><td>List of all implied_scale observations. Grows each earnings event.</td></tr>
+        <tr><td>StockCStrategy._c_pe_scale</td><td>C price-to-earnings ratio. Stable across rounds.</td></tr>
+        <tr><td>FedStrategy probs (R_HIKE etc.)</td><td>Probability estimates carry over to next round (prior from last round's signals).</td></tr>
+        <tr><td>StockCStrategy.beta / gamma</td><td>Not used in final bot (gradient descent removed).</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Resets each round</span>
+      <span class="entry-short">State cleared in _on_round_start() or individual reset() methods</span>
+      <div class="entry-tags"><span class="tag orange">resets</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>fair_values["C"]</td><td>Set to None. Prevents stale prior-round C FV from triggering premature sniping.</td></tr>
+        <tr><td>fill_tracker</td><td>All fill history cleared (cost basis resets).</td></tr>
+        <tr><td>open_orders</td><td>Cleared. Prior-round orders are invalid.</td></tr>
+        <tr><td>strat_c._c_sensitivity</td><td>Reset to None. C must re-calibrate from first CPI each round.</td></tr>
+        <tr><td>strat_c._c_calibrated</td><td>Reset to False. Reverts to Phase 1.</td></tr>
+        <tr><td>strat_c._c_anchor_mid / erc</td><td>Reset to None / 0.0.</td></tr>
+        <tr><td>strat_fed._settle_done</td><td>Reset to False. Settlement trade can fire in each new round.</td></tr>
+        <tr><td>strat_fed._book_reads</td><td>Reset to 0. Re-seeds Fed probabilities from book in first 3 reads.</td></tr>
+        <tr><td>strat_a.timer state</td><td>Pre-cancel timer state preserved (if round starts mid-earnings-cycle, helps).</td></tr>
+        <tr><td>strat_options._last</td><td>Cooldown timestamps cleared.</td></tr>
+        <tr><td>strat_etf</td><td>All ETF arb state reset (pending flags, fill tracking, cooldown).</td></tr>
+        <tr><td>_round_start_wall</td><td>Set to time.time(). Resets settlement and flatten timing.</td></tr>
+        <tr><td>_flatten_triggered</td><td>Set to False. New round allows new flatten trigger.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EVENT FLOW ═══ -->
+<div class="section" id="s-flow">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(62,207,207,0.12);">⟳</div>
+    <div><h2>Event Flow</h2><p>What happens on every type of event</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">CPI print event</span>
+      <span class="entry-short">Most complex event — affects Fed, C, and triggers immediate trades</span>
+      <div class="entry-tags"><span class="tag gold">critical path</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> strat_c.pre_cpi_snapshot()          <span class="cm"># capture ERC + C_mid BEFORE Fed updates</span>
+<span class="nm">2.</span> strat_fed.on_cpi(forecast, actual)  <span class="cm"># update Fed probabilities (changes ERC)</span>
+<span class="nm">3.</span> strat_c.recalc_fv()                 <span class="cm"># update C_FV with new ERC</span>
+<span class="nm">4.</span> await strat_c.on_cpi(fore, act)     <span class="cm"># calibrate (if first) OR trade directionally</span>
+<span class="nm">5.</span> await strat_fed.trade()             <span class="cm"># immediate Kelly trade (bypasses 15s limit)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">A earnings event</span>
+      <span class="entry-short">FV update + auto-calibrate scale + sweep + re-arm timer</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> Record implied_scale = mid / (eps × PE_A) → _scale_obs
+<span class="nm">2.</span> Update EPS_SCALE_A if 3+ obs and median diverges by >1.0
+<span class="nm">3.</span> Compute new_fv = eps × PE_A × EPS_SCALE_A
+<span class="nm">4.</span> Set fair_values["A"] = new_fv
+<span class="nm">5.</span> timer.record_earnings(tick) → arm next pre-cancel
+<span class="nm">6.</span> Set _earnings_end_time = now + 2.0s (aggressive sweep window)
+<span class="nm">7.</span> Cancel all A quotes
+<span class="nm">8.</span> _sweep_book(): buy all asks below new_fv−2, sell all bids above new_fv+2
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">C earnings event</span>
+      <span class="entry-short">Calibrate PE_C_scale, update anchor, sweep if calibrated</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> Record old_eps. Update eps["C"] = eps.
+<span class="nm">2.</span> If PE_C_scale is None: set PE_C_scale = C_mid / eps
+<span class="nm">3.</span> If calibrated: adjust anchor_mid += (eps − old_eps) × PE_C_scale
+<span class="nm">4.</span> Call recalc_fv() → update fair_values["C"]
+<span class="nm">5.</span> If FV is available: cancel C quotes and sweep stale book orders
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Fedspeak headline</span>
+      <span class="entry-short">Keyword parse → probability update → immediate Fed trade</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> strat_fed.on_fedspeak(content)   <span class="cm"># hawkish / dovish / neutral shift</span>
+<span class="nm">2.</span> strat_c.recalc_fv()              <span class="cm"># update C FV with new ERC</span>
+<span class="nm">3.</span> await strat_fed.trade()          <span class="cm"># immediate Kelly trade</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Book update (A)</span>
+      <span class="entry-short">During earnings window: sweep. Otherwise: opportunistic snipe.</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="kw">if</span> time.time() &lt; _earnings_end_time:
+    _sweep_book()          <span class="cm"># keep sweeping for 2s after earnings</span>
+<span class="kw">else</span>:
+    _snipe()               <span class="cm"># opportunistic if best_ask &lt; FV−2 or best_bid &gt; FV+2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Book update (Fed symbols)</span>
+      <span class="entry-short">Continuously seeds market probability estimates and C FV</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> strat_fed._read_book_probs()  <span class="cm"># update _mkt_probs from book mids</span>
+<span class="nm">2.</span> strat_c.recalc_fv()           <span class="cm"># update C FV with new ERC (no-op pre-calibration)</span>
+      </div>
+      <p>This runs every time R_HIKE, R_HOLD, or R_CUT has a book update — which is frequently. Keeps our market probability estimates current without placing orders every tick.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Order fill</span>
+      <span class="entry-short">Update fill_tracker, clear A pending_cancels, handle ETF leg tracking</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="nm">1.</span> strat_a.on_cancel_confirmed(order_id)   <span class="cm"># clears A's pending_cancels set</span>
+<span class="nm">2.</span> Update fill_tracker[sym] = (signed_qty, cost)
+<span class="nm">3.</span> Log to fills.log
+<span class="nm">4.</span> If ETF full-swap pending: track leg fill; when all legs done → place swap → sell ETF
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Round start (position_snapshot with near-zero positions)</span>
+      <span class="entry-short">Deferred async reset triggered by position_snapshot</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <div class="code-block">
+<span class="cm"># In handle_position_snapshot (sync):</span>
+<span class="kw">if</span> Σ|position| &lt; 5: _pending_round_reset = True
+
+<span class="cm"># In main loop (async, next iteration):</span>
+<span class="nm">1.</span> fill_tracker.clear()
+<span class="nm">2.</span> open_orders.clear()
+<span class="nm">3.</span> fair_values["C"] = None
+<span class="nm">4.</span> Call reset() on all strategies
+<span class="nm">5.</span> _round_start_wall = time.time()
+<span class="nm">6.</span> _flatten_triggered = False
+<span class="nm">7.</span> Reset last_fed_trade timer
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN LOOP ═══ -->
+<div class="section" id="s-loop">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(155,109,255,0.12);">∞</div>
+    <div><h2>Main Loop</h2><p>The trade() coroutine — what runs every iteration and at what cadence</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Full cadence reference</span>
+      <span class="entry-short">Complete schedule of what runs when</span>
+      <div class="entry-tags"><span class="tag gold">reference</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>Every 0.1s (every iter)</td><td>Round reset check; auto-flatten check; strat_a.check_pre_cancel(); strat_a.update_quotes(); strat_c.update_quotes(); strat_meta.trade()</td></tr>
+        <tr><td>Every 0.5s</td><td>strat_etf.check_arb(); strat_options.run() (internally rate-limited to 1.5s)</td></tr>
+        <tr><td>Every 15s</td><td>strat_fed.trade() — rate-limited loop call</td></tr>
+        <tr><td>Immediately on CPI/fedspeak</td><td>strat_fed.trade() — bypasses 15s limit from bot_handle_news</td></tr>
+        <tr><td>T-90s to T-20s (once)</td><td>strat_fed.settlement_trade() — fires once per round in this window</td></tr>
+        <tr><td>T-20s (once)</td><td>flatten_all() — cancel all quotes, hit market prices to close positions</td></tr>
+        <tr><td>Every 10s (status)</td><td>print_status() — logs positions, FVs, Fed probs, C sensitivity, A scale to pnl.log</td></tr>
+        <tr><td>Loop sleep</td><td>asyncio.sleep(0.1) — yields control every 100ms</td></tr>
+      </table>
+      <div class="note-box"><p>After flatten is triggered, the loop does nothing but sleep(0.5) until the round resets. This prevents accidentally placing new orders in the final 20 seconds.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RUNTIME COMMANDS ═══ -->
+<div class="section" id="s-commands">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(78,203,113,0.12);">$</div>
+    <div><h2>Runtime Commands</h2><p>Type these into stdin while the bot is running</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">All commands reference</span>
+      <span class="entry-short">Complete list — no restart required</span>
+      <div class="entry-tags"><span class="tag gold">reference</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>f</td><td>Manual flatten: cancel all quotes, hit market prices for all non-zero positions. Use if round ending early or in distress.</td></tr>
+        <tr><td>s</td><td>Print full status: all positions, avg cost, mid, uPnL, FV_A, FV_C, C sensitivity, C calibrated flag, Fed probabilities, EPS_SCALE_A.</td></tr>
+        <tr><td>scale &lt;number&gt;</td><td>Override EPS_SCALE_A manually. Example: <code>scale 100</code> sets scale to 100 and immediately recomputes FV_A if EPS is known. Use when auto-calibration is too slow or producing bad values.</td></tr>
+        <tr><td>sens &lt;float&gt;</td><td>Manually set C sensitivity. Example: <code>sens -2.5</code>. Also sets _c_calibrated=True and anchors to current book mid. Use when C calibration gave a positive sensitivity (wrong sign) or no CPI with sufficient ΔERC has fired yet.</td></tr>
+        <tr><td>meta &lt;SYM1&gt; &lt;SYM2&gt;</td><td>Register meta prediction market symbols (revealed on competition day). Example: <code>meta M_YES M_NO</code>. Sets fair_values[sym]=0.5 as prior and activates MetaStrategy.</td></tr>
+      </table>
+      <div class="warn-box"><p>All commands work live without restarting. Commands are lowercase (the listener does .lower() on input).</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LOG MESSAGES ═══ -->
+<div class="section" id="s-logs">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,184,75,0.12);">📋</div>
+    <div><h2>Log Messages</h2><p>What every log line means and when to act</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stock A log messages</span>
+      <span class="entry-short">Earnings, sweeps, calibration — all go to bot.log and console</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>[A] *** EARNINGS ***</td><td>EPS fired. Shows raw_eps, scale, old→new FV, delta, book mid, implied_scale, current position. <em>Check: is implied_scale close to EPS_SCALE_A?</em></td></tr>
+        <tr><td>[A] AUTO-SCALE X→Y</td><td>Scale updated automatically. <em>Normal — no action needed.</em></td></tr>
+        <tr><td>[A] SWEEP BUY N @ P | edge=E</td><td>Swept N units of A at price P, earning E ticks. <em>Good — primary alpha.</em></td></tr>
+        <tr><td>[A] SWEEP SELL N @ P | edge=E</td><td>Same for sell side.</td></tr>
+        <tr><td>[A] SNIPE BUY @ P | fv_adj=F</td><td>Opportunistic snipe outside earnings window.</td></tr>
+        <tr><td>[A] PRE-CANCEL: 3s before expected earnings</td><td>Quotes cancelled before next EPS. Normal.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stock C log messages</span>
+      <span class="entry-short">Calibration is the key event to watch</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>[C] PE_C calibrated: X</td><td>First C earnings processed. PE_C_scale set. Normal.</td></tr>
+        <tr><td>[C] *** CALIBRATED *** sensitivity=X</td><td>Phase 3 begins. <em>Critical: if sensitivity is positive, type <code>sens -X</code> immediately.</em></td></tr>
+        <tr><td>[C] CPI: |ΔERC|=X &lt; 2.0 — skipping</td><td>CPI had tiny ERC move. No calibration attempt. Normal.</td></tr>
+        <tr><td>[C] CPI: ΔC=X suspiciously small</td><td>C book may not have repriced yet. Waiting. Normal.</td></tr>
+        <tr><td>[C] CPI SELL N @ P | exp_dc=X</td><td>Directional trade executed. X should be negative (C should fall).</td></tr>
+        <tr><td>[C] CPI BUY N @ P | exp_dc=X</td><td>Directional trade. X should be positive.</td></tr>
+        <tr><td>[C] FV recalc: X→Y</td><td>C fair value updated. Normal.</td></tr>
+        <tr><td>[C] anchor adjusted for earnings</td><td>C anchor updated after EPS change. Normal.</td></tr>
+        <tr><td>[C] SWEEP BUY/SELL</td><td>C earnings sweep executed (only after calibration).</td></tr>
+        <tr><td>[C] SNIPE BUY/SELL</td><td>C book crossed FV by 3+ ticks. Opportunistic fill.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Fed log messages</span>
+      <span class="entry-short">Written to both console and fed.log</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>[FED] CPI surprise=+X (hawk)</td><td>CPI processed. X = actual − forecast.</td></tr>
+        <tr><td>[FED] post-CPI: H=X N=Y C=Z</td><td>Updated probabilities. Should sum to 1.0.</td></tr>
+        <tr><td>[FED] DOVISH: &lt;headline&gt;</td><td>Fedspeak classified dovish. R_HIKE down, R_CUT up.</td></tr>
+        <tr><td>[FED] HAWKISH: &lt;headline&gt;</td><td>Fedspeak classified hawkish. R_CUT down, R_HIKE up.</td></tr>
+        <tr><td>[FED] NEUTRAL: &lt;headline&gt;</td><td>Fedspeak neutral. R_HOLD up slightly.</td></tr>
+        <tr><td>[FED] UNCLASSIFIED: &lt;headline&gt;</td><td>No keyword matched. No probability change. Check if keywords list needs updating.</td></tr>
+        <tr><td>[FED] BUY R_HIKE 8u | our=0.72 mkt=0.55 div=+0.17</td><td>Kelly-sized Fed trade placed.</td></tr>
+        <tr><td>[FED] SETTLE: BUY 10x R_HIKE @ 780 | p=0.82 ev=42</td><td>Settlement trade executed. p=our_p, ev=expected value.</td></tr>
+        <tr><td>[FED] SETTLE: skip — best=R_HIKE p=0.65 &lt; 0.78</td><td>Settlement not confident enough. Normal.</td></tr>
+        <tr><td>[FED] SETTLE: negative EV — ask=900 >= 820</td><td>Settlement would lose money at current price. Skipped. Normal.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">ETF log messages</span>
+      <span class="entry-short">Written to console every check_arb call</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>[ETF] mid=X nav=Y diff=+Z</td><td>Logged every 0.5s. Shows current ETF price vs NAV.</td></tr>
+        <tr><td>[ETF] ONE-SIDED SELL N ETF @ P | diff=+Z</td><td>ETF overpriced, selling. Normal alpha capture.</td></tr>
+        <tr><td>[ETF] ONE-SIDED BUY N ETF @ P | diff=-Z</td><td>ETF underpriced, buying.</td></tr>
+        <tr><td>[ETF] FULL-SWAP CREATE N</td><td>Large-edge arb: buying components, will swap to ETF then sell.</td></tr>
+        <tr><td>[ETF] ABORT — timing out partial arb</td><td>Component legs didn't fill within 10s. All ETF/component orders cancelled. Normal recovery.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">System log messages</span>
+      <span class="entry-short">Rejections, fills, round resets — critical operational events</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <table class="kv-table">
+        <tr><td>[REJECTED] oid: reason</td><td>Order rejected by exchange. Check reason. If "position limit" — hit exchange hard limit. If "outstanding volume" — too many pending orders.</td></tr>
+        <tr><td>[CANCEL-FAIL] oid: reason</td><td>Cancel failed. Usually "no such order" meaning it already filled or was already cancelled. Harmless.</td></tr>
+        <tr><td>[FILL] SYM BUY N @ P pos=X</td><td>Written to fills.log. Shows every fill with resulting position.</td></tr>
+        <tr><td>[ROUND] New round detected — resetting</td><td>Round start detected. All per-round state reset.</td></tr>
+        <tr><td>[AUTO-FLATTEN] T-20s</td><td>Auto-flatten triggered. All positions being closed.</td></tr>
+        <tr><td>[SWAP] toETF x3 OK</td><td>ETF creation swap succeeded.</td></tr>
+        <tr><td>[SWAP] toETF x3 FAILED</td><td>Swap failed (insufficient inventory or cash). ETF arb aborted.</td></tr>
+        <tr><td>[PAYOUT] +25000 from FED_HIKE</td><td>Fed contract resolved and we held the winner.</td></tr>
+        <tr><td>[NEWS] *** UNKNOWN TYPE 'X'</td><td>News message type not in any known list. Log it, update keywords or meta symbols accordingly.</td></tr>
+        <tr><td>[META/PETITION] asset=A new=500 cumul=2000</td><td>Petition news (unimplemented). Log to meta.log for inspection on competition day.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RISK LIMITS ═══ -->
+<div class="section" id="s-risk">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,85,85,0.12);">⛔</div>
+    <div><h2>Risk Limits</h2><p>All position and order limits, and how they interact</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Three-layer protection system</span>
+      <span class="entry-short">Strategy limits → client limits → exchange limits</span>
+      <div class="entry-tags"><span class="tag red">reference</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Layer 1 — Strategy-level (per-strategy logic):</strong></p>
+      <table class="kv-table">
+        <tr><td>A inventory skew</td><td>Quote size halves at pos > SOFT_POS_LIMIT=100. Bid suppressed at pos ≥ 200.</td></tr>
+        <tr><td>C max CPI trades</td><td>C_MAX_POS=20 per direction from CPI trades. max_abs_position enforces 50 total.</td></tr>
+        <tr><td>Fed kelly_size</td><td>Returns 0 when pos ≥ MAX_POS=25. Kelly fractions &lt; EDGE_MIN=0.04 not traded.</td></tr>
+        <tr><td>ETF MAX_POS=40</td><td>One-sided and full-swap both check this limit before ordering.</td></tr>
+      </table>
+      <p><strong>Layer 2 — safe_place_order (enforced before every order):</strong></p>
+      <table class="kv-table">
+        <tr><td>max_order_size[sym]</td><td>40 units — single order cap</td></tr>
+        <tr><td>max_outstanding_vol[sym]</td><td>120 units — total unfilled for this symbol</td></tr>
+        <tr><td>max_open_orders[sym]</td><td>50 orders — count of resting limit orders</td></tr>
+        <tr><td>max_abs_position[sym]</td><td>200 default; 50 for C; 25 for Fed contracts</td></tr>
+      </table>
+      <p><strong>Layer 3 — Exchange (enforced by exchange, results in rejection):</strong></p>
+      <table class="kv-table">
+        <tr><td>Max order size</td><td>40 — same as our limit</td></tr>
+        <tr><td>Max outstanding vol</td><td>120 — same</td></tr>
+        <tr><td>Max open orders</td><td>50 — same</td></tr>
+        <tr><td>Max abs position</td><td>200 — our C=50, Fed=25 limits are stricter than exchange</td></tr>
+      </table>
+      <div class="good-box"><p>Note: StockAStrategy._place() has its own additional set of limit checks, redundant with safe_place_order, providing an extra safety net specifically for A's sweep logic.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ THE 8 CHANGES ═══ -->
+<div class="section" id="s-changes">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,184,75,0.12);">Δ</div>
+    <div><h2>The 8 Changes</h2><p>Everything changed from strategy.py to final_bot.py, with exact reasoning</p></div>
+  </div>
+
+  <div class="entry open">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 1 — Fed position bug (CRITICAL)</span>
+      <span class="entry-short">max(1,...)→max(0,...) + max_abs_position=25 + 15s cadence</span>
+      <div class="entry-tags"><span class="tag red">was causing -150k rounds</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Bug:</strong> <code>_kelly_size</code> returned <code>max(1, ...)</code>, always returning at least 1 even when pos=MAX_POS=25. <code>safe_place_order</code> used <code>max_abs_position=200</code> (not 25). Every 0.1s loop iteration placed another order. Fed accumulated to ±200.</p>
+      <p><strong>Fix 1:</strong> Change to <code>max(0, min(target, MAX_POS - pos))</code>.</p>
+      <p><strong>Fix 2:</strong> In __init__, <code>max_abs_position["R_HIKE"] = max_abs_position["R_HOLD"] = max_abs_position["R_CUT"] = 25</code>.</p>
+      <p><strong>Fix 3:</strong> Call <code>strat_fed.trade()</code> every 15s in main loop (not every 0.1s). Still fires immediately on CPI/fedspeak.</p>
+      <p><strong>Impact:</strong> Worst-case Fed loss: 25×1000 = -25k (was -200k). Eliminates rank-42 rounds from Fed blowup.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 2 — EPS_SCALE_A auto-calibration</span>
+      <span class="entry-short">Self-corrects scale from market observations. Median of 3+ events.</span>
+      <div class="entry-tags"><span class="tag gold">from v3, kept</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>On each A earnings: record <code>implied = mid / (eps × PE_A)</code>. After 3+ observations, update EPS_SCALE_A to the median if it diverges by more than 1.0. _scale_obs persists across rounds.</p>
+      <p><strong>Why needed:</strong> If EPS_SCALE_A is wrong, the first sweep goes in the completely wrong direction, generating large losses before the model self-corrects.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 3 — Remove A cross-spread at limit</span>
+      <span class="entry-short">At pos=±200, suppress accumulating side instead of crossing spread</span>
+      <div class="entry-tags"><span class="tag blue">alpha preservation</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Old code:</strong> <code>if pos >= MAX_ABS_POS: ask = best_bid</code> — set ask price equal to the bid, crossing the spread to force a fill. This cost the full spread as a loss.</p>
+      <p><strong>New code:</strong> <code>if pos >= MAX_ABS_POS: bid = 0</code> — suppress the accumulating side. The reducing side (ask) continues to quote normally, attracting natural contra-flow without realising a spread loss.</p>
+      <p><strong>Also fixed:</strong> Cross-book check now unconditional (previously gated on <code>abs(pos) &lt; MAX_ABS_POS</code>, which was the condition that allowed the crossed-spread order to actually execute).</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 4 — Stock C model replacement</span>
+      <span class="entry-short">Gradient descent → empirical ERC sensitivity. max_abs_position=50.</span>
+      <div class="entry-tags"><span class="tag gold">largest new alpha source</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>Why gradient descent failed:</strong> ERC barely varies in early minutes → gradients ≈ 0 → BETA/GAMMA never converge → C FV is garbage → runaway accumulation in wrong direction.</p>
+      <p><strong>New model:</strong> <code>C_FV = anchor_mid + sensitivity × (current_ERC − anchor_ERC)</code>. Single parameter calibrated from one CPI observation. Valid immediately.</p>
+      <p><strong>New alpha:</strong> Directional C trades on every CPI post-calibration (±10 units). Expected +5-12k/round that was previously zero.</p>
+      <p><strong>Also fixed:</strong> C FV reset to None at round start. max_abs_position["C"] = 50.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 5 — Options cancel-before-recheck removed</span>
+      <span class="entry-short">Resting arb orders stay in book. Removed vol-quota race.</span>
+      <div class="entry-tags"><span class="tag blue">correctness fix</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Removed the loop in <code>OptionsStrategy.run()</code> that cancelled all B and option orders every 1.5s before re-checking arb. Two reasons this was wrong: (1) resting arb orders are profitable when they fill; (2) cancellation + immediate re-placement causes a brief period where the being-cancelled order still counts against the outstanding volume limit.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 6 — Fed settlement trade</span>
+      <span class="entry-short">End-of-round bet when our_p ≥ 0.78 and EV is positive</span>
+      <div class="entry-tags"><span class="tag gold">new alpha from v3</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>New method <code>FedStrategy.settlement_trade()</code>. Fires once per round in T-90s to T-20s window. Requires (1) leading contract's our_p ≥ 0.78, (2) <code>ask &lt; 1000 × our_p</code> (positive EV), (3) position room below SETTLE_MAX_POS=35.</p>
+      <p>Uses <code>place_order()</code> directly to allow positions up to 35 (vs normal safe_place_order cap of 25). The higher cap is appropriate only for this end-of-round terminal bet.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 7 — ETF: implied B + one-sided cooldown</span>
+      <span class="entry-short">PCP-implied B in NAV. 3-second rate limit on one-sided trades.</span>
+      <div class="entry-tags"><span class="tag teal">precision + safety</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p><strong>NAV improvement:</strong> ETFStrategy now holds a BPriceTracker. <code>_nav()</code> uses PCP-implied B price (when available) instead of B book mid. More accurate NAV → fewer false arb signals, more true ones captured.</p>
+      <p><strong>Rate limit:</strong> One-sided trades now capped at once per 3 seconds. Old behaviour fired every 0.5s when threshold was met, which could place 6 orders per second consuming outstanding vol quota entirely.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Change 8 — Main loop cleanup</span>
+      <span class="entry-short">Remove record_obs, add settlement window check, reset C FV at round start</span>
+      <div class="entry-tags"><span class="tag muted">hygiene</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <ul>
+        <li>Removed <code>strat_c.record_obs()</code> call — no gradient descent anymore.</li>
+        <li>Added <code>last_fed_trade</code> variable and 15-second gate in the loop.</li>
+        <li>Added settlement trade check: <code>if ROUND_DURATION_SECS - 90 ≤ elapsed &lt; ROUND_DURATION_SECS - FLATTEN_LEAD_SECS</code>.</li>
+        <li>Added <code>self.fair_values["C"] = None</code> in <code>_on_round_start()</code>.</li>
+        <li>Added <code>last_fed_trade = now</code> when round resets.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WHAT NOT TO DO ═══ -->
+<div class="section" id="s-mistakes">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(232,85,85,0.12);">✗</div>
+    <div><h2>What Not To Do</h2><p>Things that look like improvements but make the bot worse</p></div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">SNIPE_MAX_PENDING — do not add this</span>
+      <span class="entry-short">Caps pending A snipe orders. Throttles the sweep. Reduces primary alpha.</span>
+      <div class="entry-tags"><span class="tag red">known regression</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>v3 added a cap of 2 pending snipe orders for A. The intent was to prevent order pile-up. The effect was to limit how many stale book levels we could sweep in the 2-second post-earnings window. Strategy.py has no such cap and ranks higher because it sweeps more aggressively. Do not add this.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Stale order cleanup — do not add this</span>
+      <span class="entry-short">Cancels orders unfilled for >20s. But unfilled orders may be profitable resting orders.</span>
+      <div class="entry-tags"><span class="tag red">known regression</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>v3 added a function that cancelled any limit order unfilled for more than 20 seconds. The logic was to free up order slots. The effect was to cancel profitable resting orders that were waiting for the market to return to their price. A limit order resting in the book at a profitable price is a lottery ticket with positive EV. Do not cancel it.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FlowTracker.ALPHA = 0 — do not disable this</span>
+      <span class="entry-short">v3 disabled flow tracking citing "death spiral risk". Risk is now handled by auto-calibration.</span>
+      <div class="entry-tags"><span class="tag red">known regression</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>The death spiral risk was: wrong FV → sell A → flow sees sell pressure → fv_adj drops → more selling. This risk disappears once EPS_SCALE_A is correctly calibrated (which auto-calibration ensures by round 1, event 3). With correct scale, flow is a genuine edge that adjusts FV toward where smart money is trading. Keep ALPHA=0.05.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">FV_CLAMP_PCT — do not add this</span>
+      <span class="entry-short">v3 clamped A FV to ±12% of book mid. Unnecessary and limits earnings alpha.</span>
+      <div class="entry-tags"><span class="tag red">known regression</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>The clamp was v3's response to the problem of wrong EPS_SCALE_A producing a wildly incorrect FV. With auto-calibration (Change 2), the scale corrects within 3 events. The clamp is unnecessary and costs alpha when a large legitimate EPS move exceeds 12% — the clamp would have prevented the full sweep of that move.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Heavy PnL logging — do not add more logging</span>
+      <span class="entry-short">Every file write in the hot path adds latency. Latency costs sweep fills.</span>
+      <div class="entry-tags"><span class="tag red">latency risk</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>v3 added detailed PnL attribution logging to full_pnl.log, fed_pnl.log, a_pnl.log, etc. These file writes happen in the main event handling path. In a market where the post-earnings window is 2 seconds and book updates fire 30-50 times per second, extra file I/O adds measurable latency. Keep logging minimal: bot.log (console tee), fills.log, fed.log, news.log, pnl.log (status only), meta.log.</p>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head" onclick="toggle(this)">
+      <span class="entry-term">Aggressive directional C before calibration — do not add this</span>
+      <span class="entry-short">Trading C without a calibrated sensitivity is random directional betting.</span>
+      <div class="entry-tags"><span class="tag red">model risk</span></div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="entry-body">
+      <p>Before the ERC sensitivity is calibrated, we have no reliable FV for C. Trading C in this phase (as v1-v3 did, via the gradient descent model that was giving garbage BETA/GAMMA) built up large positions in wrong directions. The three-phase lifecycle is the correct design: trade C only after calibration. Be patient.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function toggle(head) {
+  const entry = head.closest('.entry');
+  entry.classList.toggle('open');
+}
+
+// Sidebar active link
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+const mainEl = document.getElementById('main');
+
+mainEl.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => {
+    if (mainEl.scrollTop >= s.offsetTop - 80) cur = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+});
+
+// Search
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.entry').forEach(entry => {
+    const text = entry.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    entry.style.display = match ? '' : 'none';
+  });
+  // Show/hide sections based on whether they have visible entries
+  document.querySelectorAll('.section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.entry')].some(e => e.style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
+  });
+});
+
+// Keyboard shortcut: / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== document.getElementById('search')) {
+    e.preventDefault();
+    document.getElementById('search').focus();
+  }
+  if (e.key === 'Escape') document.getElementById('search').blur();
+});
+</script>
+</body>
+</html>

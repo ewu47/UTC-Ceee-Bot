@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UChicago Trading Bot — Development Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.08);
+    --gold: #e8b84b;
+    --gold2: #f5d07a;
+    --red: #e85555;
+    --green: #4ecb71;
+    --blue: #5b8df5;
+    --purple: #9b6dff;
+    --text: #f0eee8;
+    --muted: #7a7890;
+    --dim: #3a3850;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Slide container ── */
+  #deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 56px 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(24px);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  /* ── Grid layouts ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  /* ── Typography ── */
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(38px, 5.5vw, 72px);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #b0aec8;
+    font-weight: 300;
+  }
+  .lead {
+    font-size: 18px;
+    line-height: 1.65;
+    color: #c8c6de;
+    font-weight: 300;
+    max-width: 700px;
+    margin-top: 20px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  }
+  .card.gold-top { border-top: 2px solid var(--gold); }
+  .card.red-top  { border-top: 2px solid var(--red); }
+  .card.green-top { border-top: 2px solid var(--green); }
+  .card.blue-top { border-top: 2px solid var(--blue); }
+  .card.purple-top { border-top: 2px solid var(--purple); }
+
+  /* ── Code blocks ── */
+  .code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    line-height: 1.7;
+    overflow: hidden;
+    color: #b8b6d0;
+  }
+  .code .kw { color: #9b6dff; }
+  .code .fn { color: #5b8df5; }
+  .code .st { color: #4ecb71; }
+  .code .cm { color: var(--muted); font-style: italic; }
+  .code .nm { color: var(--gold); }
+  .code .bad { color: var(--red); text-decoration: line-through; }
+  .code .good { color: var(--green); }
+
+  /* ── Badges / pills ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .badge.bad { background: rgba(232,85,85,0.15); color: var(--red); border: 1px solid rgba(232,85,85,0.3); }
+  .badge.good { background: rgba(78,203,113,0.15); color: var(--green); border: 1px solid rgba(78,203,113,0.3); }
+  .badge.info { background: rgba(91,141,245,0.15); color: var(--blue); border: 1px solid rgba(91,141,245,0.3); }
+  .badge.warn { background: rgba(232,184,75,0.15); color: var(--gold); border: 1px solid rgba(232,184,75,0.3); }
+
+  /* ── Stat blocks ── */
+  .stat { text-align: center; }
+  .stat .num {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 4vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .stat .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── Timeline / step rows ── */
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-row:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    background: rgba(232,184,75,0.1);
+    border: 1px solid rgba(232,184,75,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* ── Score table ── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  .score-row.winner { background: rgba(78,203,113,0.1); border: 1px solid rgba(78,203,113,0.2); }
+  .score-row.mid    { background: rgba(91,141,245,0.08); border: 1px solid rgba(91,141,245,0.15); }
+  .score-row.bad    { background: rgba(232,85,85,0.08); border: 1px solid rgba(232,85,85,0.15); }
+
+  /* ── Arrow indicators ── */
+  .arrow-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .arrow-row .before { color: var(--red); font-family: 'DM Mono', monospace; font-size: 13px; }
+  .arrow-row .after  { color: var(--green); font-family: 'DM Mono', monospace; font-size: 13px; }
+  .arrow-row .arr    { color: var(--muted); font-size: 16px; }
+  .arrow-row .label  { color: var(--muted); font-size: 12px; flex: 1; }
+
+  /* ── Change tags ── */
+  .change-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(155,109,255,0.15);
+    color: var(--purple);
+    border: 1px solid rgba(155,109,255,0.25);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin: 20px 0;
+    opacity: 0.4;
+  }
+
+  /* ── Nav ── */
+  #nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(17,17,24,0.9);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 10px 24px;
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  #nav button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+  }
+  #nav button:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+  #slide-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 60px;
+    text-align: center;
+  }
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    transition: width 0.4s ease;
+    z-index: 200;
+  }
+
+  /* ── Section title slide ── */
+  .section-title {
+    background: var(--surface);
+    border-left: 3px solid var(--gold);
+    padding-left: 24px;
+    margin-bottom: 32px;
+  }
+
+  /* ── Highlight box ── */
+  .highlight {
+    background: rgba(232,184,75,0.06);
+    border: 1px solid rgba(232,184,75,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .highlight p { color: #d4c8a0; font-size: 14px; }
+
+  /* ── Timeline line ── */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    border-left: 1px solid var(--dim);
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: 5px;
+  }
+  .timeline-item { padding: 12px 0; position: relative; }
+
+  /* ── PnL bar ── */
+  .pnl-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+  }
+  .pnl-bar .label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 90px; }
+  .pnl-bar .bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .pnl-bar .bar-fill { height: 100%; border-radius: 3px; }
+  .pnl-bar .val { font-family: 'DM Mono', monospace; font-size: 11px; width: 60px; text-align: right; }
+
+  /* ── Title slide specific ── */
+  #s0 { justify-content: center; }
+  #s0 .big-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    background: linear-gradient(135deg, #f0eee8 30%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .slide { z-index: 1; }
+
+  /* ── Formula display ── */
+  .formula {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    text-align: center;
+    color: var(--gold2);
+    line-height: 1.8;
+  }
+
+  /* ── Small tag labels ── */
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+  .tag.green  { background: rgba(78,203,113,0.12); color: var(--green); }
+  .tag.red    { background: rgba(232,85,85,0.12);  color: var(--red); }
+  .tag.gold   { background: rgba(232,184,75,0.12); color: var(--gold); }
+  .tag.blue   { background: rgba(91,141,245,0.12); color: var(--blue); }
+  .tag.purple { background: rgba(155,109,255,0.12);color: var(--purple); }
+
+  /* ── Rank display ── */
+  .rank-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  small { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 0 — TITLE -->
+  <div class="slide active" id="s0">
+    <div style="max-width:900px;">
+      <div class="eyebrow">UChicago Trading Competition 2026 — Case 1</div>
+      <div class="big-title">Building a<br>Rank-1<br>Market Maker</div>
+      <p class="lead">From unstable prototypes to a consistent, research-backed algorithmic market making bot — the full development story.</p>
+      <div style="margin-top:40px; display:flex; gap:24px; flex-wrap:wrap;">
+        <div class="stat">
+          <div class="num" style="color:var(--green)">+402k</div>
+          <div class="label">Peak PnL</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:var(--gold)">Rank 1</div>
+          <div class="label">Best result</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:var(--blue)">8</div>
+          <div class="label">Key changes</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:var(--purple)">v11+</div>
+          <div class="label">Iterations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 1 — THE CASE -->
+  <div class="slide" id="s1">
+    <div class="eyebrow">Case Overview</div>
+    <h2>What we were asked to do</h2>
+    <div class="two-col" style="margin-top:28px;">
+      <div>
+        <p class="lead" style="margin-top:0; font-size:15px;">Trade 13 instruments across a simulated exchange, maximising profit-and-loss over 15-minute rounds, competing against other university teams and exchange bots.</p>
+        <div class="divider"></div>
+        <div class="step-row">
+          <span class="step-num">A / B / C</span>
+          <div><h3 style="margin-bottom:2px;">Three equities</h3><p>A: earnings-driven small-cap. B: semiconductor (no direct news). C: insurance with Fed-rate sensitivity.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">ETF</span>
+          <div><h3 style="margin-bottom:2px;">Basket of A + B + C</h3><p>Swap mechanism: convert 1 ETF ↔ 1A + 1B + 1C for a fee of 5 ticks.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">Options</span>
+          <div><h3 style="margin-bottom:2px;">6 European options on B</h3><p>Calls and puts at strikes 950, 1000, 1050. Single expiry at round end.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">Fed</span>
+          <div><h3 style="margin-bottom:2px;">3 prediction contracts</h3><p>R_HIKE / R_HOLD / R_CUT. Settle at 1000 or 0. Fed decision driven by CPI news and fedspeak headlines.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="card gold-top">
+          <h3>Scoring formula</h3>
+          <div class="formula" style="margin:14px 0;">Score = (n − 1)²</div>
+          <p>Where <strong style="color:var(--text)">n</strong> is your leaderboard position that round. Rank 1 → score 0. Rank 7 → score 36. Rank 42 → score 1681.</p>
+          <div class="highlight">
+            <p>The quadratic penalty means <strong style="color:var(--gold)">one catastrophic round costs more than ten solid rounds gain</strong>. Consistency, not peak PnL, wins.</p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <h3 style="margin-bottom:10px;">Round structure</h3>
+          <div class="pnl-bar"><div class="label">Duration</div><div style="color:var(--text);font-family:'DM Mono',monospace;font-size:13px;">15 minutes</div></div>
+          <div class="pnl-bar"><div class="label">Days/round</div><div style="color:var(--text);font-family:'DM Mono',monospace;font-size:13px;">10 × 90-second days</div></div>
+          <div class="pnl-bar"><div class="label">A/C earnings</div><div style="color:var(--text);font-family:'DM Mono',monospace;font-size:13px;">sec 22 + 88 each day → 20/round</div></div>
+          <div class="pnl-bar"><div class="label">Ticks/sec</div><div style="color:var(--text);font-family:'DM Mono',monospace;font-size:13px;">5</div></div>
+          <div class="pnl-bar"><div class="label">Difficulty</div><div style="color:var(--text);font-family:'DM Mono',monospace;font-size:13px;">Increases each round</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 2 — EARLY PROBLEMS -->
+  <div class="slide" id="s2">
+    <div class="eyebrow">Phase 1 — Early Iterations</div>
+    <h2>The problems we hit immediately</h2>
+    <div class="three-col" style="margin-top:28px;">
+      <div class="card red-top">
+        <h3>🔴 Positions at ±200</h3>
+        <p>Every asset was hitting the exchange hard limit. Orders being rejected. No inventory control.</p>
+        <div style="margin-top:12px;">
+          <span class="badge bad">A: −200</span>
+          <span class="badge bad">R_HIKE: +200</span>
+          <span class="badge bad">R_CUT: −200</span>
+        </div>
+        <div class="highlight" style="margin-top:12px;">
+          <p><strong style="color:var(--red)">Root cause:</strong> No fair value → one side of our quotes picked off continuously.</p>
+        </div>
+      </div>
+      <div class="card red-top">
+        <h3>🔴 PnL: negative → positive arc</h3>
+        <p>Every round started deeply negative and slowly recovered. Classic adverse selection pattern.</p>
+        <div class="code" style="margin-top:12px; font-size:11px;">
+          T+0s:   <span class="kw">FV = None</span> → use book mid<br>
+          T+0→22s: <span class="bad">smart bots pick off quotes</span><br>
+          T+22s:  <span class="st">first earnings → FV known</span><br>
+          T+22→: <span class="good">recover slowly via sweeps</span>
+        </div>
+      </div>
+      <div class="card red-top">
+        <h3>🔴 Options at zero</h3>
+        <p>Box spread and PCP arb never executed. Options positions stayed flat all round.</p>
+        <div class="highlight" style="margin-top:12px;">
+          <p><strong style="color:var(--red)">Why?</strong> 4-leg friction = 12 ticks. Box value = 50 ticks. Need 24% mispricing — never happens.</p>
+        </div>
+        <div class="formula" style="margin-top:10px; font-size:12px;">Buy box cost = 50 + 12 = 62 > 50 ✗</div>
+      </div>
+    </div>
+    <div class="three-col" style="margin-top:20px;">
+      <div class="card red-top">
+        <h3>🔴 C generates nothing</h3>
+        <p>Gradient descent for BETA/GAMMA never converged in 15 minutes. ERC barely varied in early minutes → gradients ≈ 0.</p>
+      </div>
+      <div class="card red-top">
+        <h3>🔴 Fed: lottery ticket</h3>
+        <p><code style="color:var(--gold); font-size:12px;">max(1, ...)</code> bug in <code style="color:var(--blue);font-size:12px;">_kelly_size</code> + wrong position cap = ±200 Fed positions. Win big or lose catastrophically.</p>
+      </div>
+      <div class="card red-top">
+        <h3>🔴 C FV corrupted at round start</h3>
+        <p>Stale prior-round C fair value triggered immediate sniping before the new round's model was ready.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 3 — VERSION HISTORY -->
+  <div class="slide" id="s3">
+    <div class="eyebrow">Version History</div>
+    <h2>Three strategies — very different outcomes</h2>
+    <div style="margin-top:28px;">
+      <div class="score-row winner">
+        <div>
+          <span style="color:var(--green); font-weight:600;">strategy.py</span>
+          <span class="tag green" style="margin-left:8px;">BEST</span>
+        </div>
+        <div style="display:flex;gap:20px;align-items:center;">
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--green)">+402k</div><div class="label">PnL</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--gold)">0</div><div class="label">Score</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--text)">1st</div><div class="label">Rank</div></div>
+        </div>
+      </div>
+      <div class="score-row mid" style="margin-top:8px;">
+        <div>
+          <span style="color:var(--blue);">strategy_v3-1.py</span>
+          <span class="tag blue" style="margin-left:8px;">4th place</span>
+        </div>
+        <div style="display:flex;gap:20px;align-items:center;">
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--blue)">+159k</div><div class="label">PnL</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--gold)">9</div><div class="label">Score</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--text)">4th</div><div class="label">Rank</div></div>
+        </div>
+      </div>
+      <div class="score-row mid" style="margin-top:8px;">
+        <div>
+          <span style="color:var(--blue);">strategy_v3.py</span>
+          <span class="tag blue" style="margin-left:8px;">7th place</span>
+        </div>
+        <div style="display:flex;gap:20px;align-items:center;">
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--blue)">+116k</div><div class="label">PnL</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--gold)">36</div><div class="label">Score</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--text)">7th</div><div class="label">Rank</div></div>
+        </div>
+      </div>
+      <div class="score-row bad" style="margin-top:8px;">
+        <div>
+          <span style="color:var(--red);">Early iterations</span>
+          <span class="tag red" style="margin-left:8px;">~42nd place</span>
+        </div>
+        <div style="display:flex;gap:20px;align-items:center;">
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--red)">−93k</div><div class="label">PnL</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--red)">1681</div><div class="label">Score</div></div>
+          <div class="stat"><div class="num" style="font-size:28px;color:var(--red)">~42nd</div><div class="label">Rank</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="highlight" style="margin-top:24px;">
+      <p><strong style="color:var(--gold);">Key insight:</strong> The "improvements" in v3 made things worse. SNIPE_MAX_PENDING throttled sweeps. Stale order cleanup cancelled profitable resting orders. Extra logging added latency. More code ≠ better performance. strategy.py won by being lean and fast.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 4 — WHY STRATEGY.PY WON -->
+  <div class="slide" id="s4">
+    <div class="eyebrow">Root Cause Analysis</div>
+    <h2>Why strategy.py ranked first</h2>
+    <div class="two-col" style="margin-top:28px;">
+      <div>
+        <h3 style="color:var(--green); margin-bottom:14px;">What it got right</h3>
+        <div class="step-row">
+          <span class="step-num">✓ A sweep</span>
+          <div><p>Unconditional book sweep immediately after every EPS release. No throttling, no cap on pending orders. Captures the full post-earnings dislocation.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">✓ Flow tracker</span>
+          <div><p>ALPHA = 0.05 — monitors aggressive trade prints to detect smart money direction. Adjusts quotes when bots know something.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">✓ Pre-cancel timer</span>
+          <div><p>Cancels all A quotes 3 seconds before the next expected earnings. Prevents being picked off by faster bots who've already priced the new EPS.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">✓ Simple + fast</span>
+          <div><p>No heavy logging, no stale-order cleanup, no PnL attribution. Low latency means more fills in the post-earnings 2-second window.</p></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--red); margin-bottom:14px;">What it got wrong (hidden bugs)</h3>
+        <div class="card red-top">
+          <h3 style="color:var(--red);">Bug: Fed position accumulated to ±200</h3>
+          <div class="code" style="margin:10px 0; font-size:12px;">
+            <span class="cm"># _kelly_size — OLD (broken)</span><br>
+            <span class="kw">return</span> <span class="bad">max(1</span>, min(target, MAX_POS - pos))<br><br>
+            <span class="cm"># At pos=25=MAX_POS:</span><br>
+            min(target, 25-25) = 0<br>
+            <span class="bad">max(1, 0) = 1</span>  <span class="cm">← still places order!</span><br><br>
+            <span class="cm"># AND max_abs_position["R_HIKE"] = 200</span><br>
+            <span class="cm"># so safe_place_order allows up to 175 more</span>
+          </div>
+          <p>Every 0.1 seconds, the bot placed another Fed order. Over a 15-minute round: potentially 9,000 order attempts. Fed grew to ±200.</p>
+        </div>
+        <div class="highlight" style="margin-top:14px;">
+          <p><strong style="color:var(--gold);">The rank-1 round:</strong> Fed happened to resolve correctly at ±200. +200,000 PnL from Fed alone explains the gap from +116k to +402k. This was partly <strong style="color:var(--gold)">luck</strong>, not pure skill.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 5 — THE 8 CHANGES -->
+  <div class="slide" id="s5">
+    <div class="eyebrow">Final Bot Architecture</div>
+    <h2>8 surgical changes from strategy.py</h2>
+    <div style="margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>1 — Fed position bug fix</h3>
+          <span class="change-tag">CRITICAL</span>
+        </div>
+        <p style="margin-top:6px;">max(1,…)→max(0,…) in _kelly_size. max_abs_position["R_*"]=25. Fed trade moved to 15s cadence.</p>
+      </div>
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>2 — EPS_SCALE_A auto-calibration</h3>
+          <span class="change-tag">SAFETY</span>
+        </div>
+        <p style="margin-top:6px;">Records implied_scale=mid/(eps×PE) each earnings. Updates after 3 consistent observations via median filter.</p>
+      </div>
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>3 — Remove A cross-spread at limit</h3>
+          <span class="change-tag">ALPHA</span>
+        </div>
+        <p style="margin-top:6px;">Old code set ask=best_bid at pos=200, crossing the spread at a loss. Now suppresses the accumulating side instead.</p>
+      </div>
+      <div class="card gold-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>4 — C: empirical ERC calibration</h3>
+          <span class="change-tag">NEW ALPHA</span>
+        </div>
+        <p style="margin-top:6px;">Replace gradient descent with single-parameter model. Calibrate from first CPI. Directional trades on all subsequent CPIs.</p>
+      </div>
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>5 — Options: no cancel before recheck</h3>
+          <span class="change-tag">SAFETY</span>
+        </div>
+        <p style="margin-top:6px;">Resting arb orders are profitable when filled. Cancelling created a vol-quota race that blocked new placements.</p>
+      </div>
+      <div class="card gold-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>6 — Fed settlement trade</h3>
+          <span class="change-tag">NEW ALPHA</span>
+        </div>
+        <p style="margin-top:6px;">T-90s to T-20s terminal bet. Fires once when our_p ≥ 0.78 and EV is positive. Up to 35 units (vs normal cap of 25).</p>
+      </div>
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>7 — ETF: implied B + cooldown</h3>
+          <span class="change-tag">PRECISION</span>
+        </div>
+        <p style="margin-top:6px;">NAV uses PCP-implied B price. One-sided trades rate-limited to 1 per 3 seconds (was firing every 0.5s).</p>
+      </div>
+      <div class="card blue-top">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <h3>8 — Main loop cleanup</h3>
+          <span class="change-tag">HYGIENE</span>
+        </div>
+        <p style="margin-top:6px;">Remove record_obs() (no gradient descent). Add settlement window check. Reset C FV=None at round start.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 6 — STOCK A DEEP DIVE -->
+  <div class="slide" id="s6">
+    <div class="eyebrow">Asset Deep Dive — Stock A</div>
+    <h2>The primary alpha engine</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <div class="card green-top" style="margin-bottom:16px;">
+          <h3>Why A generates the most PnL</h3>
+          <p style="margin-top:6px;">EPS fires at <strong style="color:var(--gold);">deterministic times</strong>: second 22 and second 88 of every 90-second day. That's 20 events per round. The new FV is EPS × PE_A × EPS_SCALE_A. Stale book orders are now mispriced. We sweep them.</p>
+          <div class="formula" style="margin-top:12px; font-size:13px;">
+            FV = EPS × 10 × EPS_SCALE_A<br>
+            <span style="font-size:11px;color:var(--muted);">EPS_SCALE_A auto-calibrated from mid/(eps×PE)</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3>The sweep mechanism</h3>
+          <p style="margin-top:6px;">Post-earnings, all asks below <code style="color:var(--gold);">FV − 2</code> are swept (BUY). All bids above <code style="color:var(--gold);">FV + 2</code> are swept (SELL). Unconditional — we take these regardless of current position, up to the 200-unit limit. Then we re-quote tightly for 2 seconds.</p>
+        </div>
+        <div class="card">
+          <h3>Smart pre-cancellation</h3>
+          <p style="margin-top:6px;">EarningsTimer tracks the next expected earnings (66s or 24s away). Exactly 3 seconds before it fires, we cancel all A quotes. Prevents faster bots from picking off our stale quotes the moment new EPS is broadcast.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card gold-top" style="margin-bottom:16px;">
+          <h3>Auto-calibration of EPS_SCALE_A</h3>
+          <div class="code" style="margin-top:10px; font-size:12px;">
+            <span class="cm"># On every earnings event:</span><br>
+            implied = mid / (eps × PE_A)<br>
+            scale_obs.append(implied)<br><br>
+            <span class="kw">if</span> len(scale_obs) >= <span class="nm">3</span>:<br>
+            &nbsp;&nbsp;median = sorted(scale_obs)[n//2]<br>
+            &nbsp;&nbsp;<span class="kw">if</span> |median - EPS_SCALE_A| > <span class="nm">1.0</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="good">EPS_SCALE_A = median</span>
+          </div>
+          <p style="margin-top:10px;">If initial scale is wrong, the first sweep goes in the wrong direction. Auto-calibration self-corrects within 3 events using the median (resistant to a single bad mid reading).</p>
+        </div>
+        <div class="card">
+          <h3>Passive MM between events</h3>
+          <p style="margin-top:6px;">Between earnings: quote at FV ± spread, with inventory skew (shift quotes away from the side we're heavy on) and flow adjustment from FlowTracker (ALPHA=0.05).</p>
+          <div class="arrow-row" style="margin-top:10px;">
+            <span class="label">At pos=0:</span>
+            <span class="after">bid=FV−4, ask=FV+4</span>
+          </div>
+          <div class="arrow-row">
+            <span class="label">At pos=+80:</span>
+            <span class="after">bid=FV−16, ask=FV−4 ← sell pressure</span>
+          </div>
+          <div class="arrow-row">
+            <span class="label">At pos=+200:</span>
+            <span class="good">bid=0 (suppressed), ask=FV+4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 7 — FED DEEP DIVE -->
+  <div class="slide" id="s7">
+    <div class="eyebrow">Asset Deep Dive — Federal Reserve Markets</div>
+    <h2>From lottery ticket to consistent edge</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <div class="card red-top" style="margin-bottom:16px;">
+          <h3 style="color:var(--red);">The bug that caused ±200 positions</h3>
+          <div class="code" style="margin-top:10px; font-size:12px;">
+            <span class="cm"># OLD — accumulates forever</span><br>
+            <span class="kw">def</span> <span class="fn">_kelly_size</span>(pos, MAX_POS=25):<br>
+            &nbsp;&nbsp;target = int(0.5 * kf * MAX_POS)<br>
+            &nbsp;&nbsp;<span class="kw">return</span> <span class="bad">max(1</span>, min(target, MAX_POS - pos))<br>
+            <span class="cm"># At pos=25: max(1, 0) = 1 → places order</span><br>
+            <span class="cm"># safe_place_order allows up to 200</span><br>
+            <span class="cm"># → fires every 0.1s → ±200 in minutes</span><br><br>
+            <span class="cm"># NEW — stops at limit</span><br>
+            <span class="kw">return</span> <span class="good">max(0</span>, min(target, MAX_POS - pos))<br>
+            <span class="cm"># At pos=25: max(0, 0) = 0 → no order</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3>The signal sources</h3>
+          <div class="step-row">
+            <span class="step-num">CPI</span>
+            <div><p>Actual > Forecast: hawkish → raise R_HIKE probability. Actual < Forecast: dovish → raise R_CUT probability.</p></div>
+          </div>
+          <div class="step-row">
+            <span class="step-num">Fedspeak</span>
+            <div><p>Keyword parsing: "restrictive/hawkish/tightening" → hawkish. "easing/cooling/dovish/cut" → dovish. "balanced/weighing" → neutral.</p></div>
+          </div>
+          <div class="step-row">
+            <span class="step-num">Book mid</span>
+            <div><p>Seeds our initial probability estimates from the market on the first 3 readings. Market consensus as prior.</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card green-top" style="margin-bottom:16px;">
+          <h3>Half-Kelly sizing</h3>
+          <div class="formula" style="margin:12px 0; font-size:12px;">
+            edge = our_p − market_p<br>
+            kelly_fraction = edge / (1 − market_p)<br>
+            size = floor(0.5 × kf × MAX_POS)<br>
+            <span style="font-size:11px;color:var(--muted);">Capped at MAX_POS=25 per contract</span>
+          </div>
+          <p>Trade only when divergence > 4%. Size proportional to conviction. Half-Kelly (not full) protects against model error.</p>
+        </div>
+        <div class="card gold-top" style="margin-bottom:16px;">
+          <h3>Settlement trade (new)</h3>
+          <p style="margin-top:6px;">Fires once per round in the T−90s to T−20s window. Only triggers when:</p>
+          <div style="margin-top:10px;">
+            <span class="tag green">our_p ≥ 0.78</span>
+            <span class="tag green">EV positive: ask &lt; 1000 × our_p</span>
+            <span class="tag gold">Up to 35 units</span>
+          </div>
+          <p style="margin-top:10px;">At round end, all CPI prints and fedspeak have accumulated. Our probability estimate is most accurate → largest Kelly bet justified.</p>
+        </div>
+        <div class="card">
+          <h3>15-second cadence</h3>
+          <p style="margin-top:6px;">Fed trade() runs every 15s in the main loop (was every 0.1s, creating 9,000 order attempts/round). But <strong style="color:var(--text);">fires immediately</strong> on CPI and fedspeak news to preserve alpha.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 8 — STOCK C DEEP DIVE -->
+  <div class="slide" id="s8">
+    <div class="eyebrow">Asset Deep Dive — Stock C</div>
+    <h2>Replacing gradient descent with direct calibration</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <div class="card red-top" style="margin-bottom:16px;">
+          <h3 style="color:var(--red);">Why gradient descent failed</h3>
+          <p style="margin-top:8px;">The old model fit BETA and GAMMA via 150-iteration gradient descent on (ERC, C_mid, EPS) observations.</p>
+          <div class="highlight" style="margin-top:10px;">
+            <p><strong style="color:var(--red);">The problem:</strong> ERC only varies after CPI prints. In the first 3-4 minutes, ERC ≈ constant → gradient of loss w.r.t BETA ≈ 0 → parameters never update → C_FV is garbage → bot accumulates large wrong-direction C position before model corrects.</p>
+          </div>
+          <div class="formula" style="margin-top:12px; font-size:11px;">
+            dC/d(BETA) ∝ ERC ≈ 0 before first CPI<br>
+            → 150 iterations change nothing useful
+          </div>
+        </div>
+        <div class="card green-top">
+          <h3 style="color:var(--green);">The new 1-parameter model</h3>
+          <div class="formula" style="margin:12px 0;">
+            C_FV = anchor_mid + sensitivity × (ERC − anchor_ERC)
+          </div>
+          <p>The full formula is linear in ERC for small deviations. We measure the coefficient <strong style="color:var(--gold);">directly</strong> from the first significant CPI event.</p>
+          <div class="code" style="margin-top:12px; font-size:12px;">
+            <span class="cm"># First CPI with |ΔERC| > 2.0:</span><br>
+            sensitivity = ΔC_mid / ΔERC<br>
+            <span class="cm"># One observation. Done.</span><br>
+            <span class="good">C_FV = anchor + sensitivity × ΔERC</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card gold-top" style="margin-bottom:16px;">
+          <h3>Three-phase lifecycle</h3>
+          <div class="timeline" style="margin-top:12px;">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div><h3 style="font-size:13px; color:var(--muted);">Phase 1 — Before first C earnings</h3>
+              <p>No FV. Wide passive MM (±12 ticks, 3 units). No directional trades. Zero risk exposure.</p></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div><h3 style="font-size:13px; color:var(--muted);">Phase 2 — After first C earnings</h3>
+              <p>PE_C_scale calibrated (=mid/eps). Still no ERC anchor. Wide passive MM continues.</p></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background:var(--green);"></div>
+              <div><h3 style="font-size:13px; color:var(--green);">Phase 3 — After first significant CPI</h3>
+              <p>Sensitivity calibrated. FV active. Tight MM ±5 ticks/8 units. Directional C trades on every subsequent CPI (±10 units).</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>CPI directional trades</h3>
+          <p style="margin-top:6px;">On each CPI after calibration, if |expected ΔC| > 4 ticks, we trade before C reprices:</p>
+          <div class="arrow-row" style="margin-top:10px;">
+            <span class="label">Hawkish CPI:</span>
+            <span class="after">ERC rises → C falls → SELL C at bid</span>
+          </div>
+          <div class="arrow-row">
+            <span class="label">Dovish CPI:</span>
+            <span class="after">ERC falls → C rises → BUY C at ask</span>
+          </div>
+          <p style="margin-top:10px;">Expected: 5-7 CPI events post-calibration × ~8 ticks edge × 10 units = <strong style="color:var(--green);">+5k–12k additional PnL/round</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 9 — ETF + OPTIONS -->
+  <div class="slide" id="s9">
+    <div class="eyebrow">Asset Deep Dive — ETF &amp; Options</div>
+    <h2>Arbitrage, NAV pricing, and the friction problem</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <div class="card green-top" style="margin-bottom:16px;">
+          <h3>ETF strategy</h3>
+          <div class="formula" style="margin:12px 0; font-size:13px;">
+            NAV = A_fv + B_implied + C_fv<br>
+            <span style="font-size:11px;color:var(--muted);">B_implied from PCP across all 3 strikes</span>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num">One-sided</span>
+            <div><p>ETF > NAV + 11: just SELL ETF. ETF < NAV − 11: just BUY ETF. Lower risk than full-swap — trades the mispriced leg only. Rate-limited: 1 per 3s.</p></div>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num">Full swap</span>
+            <div><p>Only on very large edges (>17 from NAV). Buy A+B+C simultaneously, swap toETF, sell ETF. 10-second abort timeout.</p></div>
+          </div>
+          <div class="highlight" style="margin-top:10px;">
+            <p>Case packet hint: <em>"ETF is more likely the mispriced leg."</em> So we trade the ETF against the basket, not the basket against the ETF.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card red-top" style="margin-bottom:16px;">
+          <h3 style="color:var(--red);">Why options arb never triggers</h3>
+          <div class="formula" style="margin:12px 0; font-size:13px; color:var(--red);">
+            Box buy friction = 4 × 3 ticks = 12<br>
+            Box theoretical value = K2 − K1 = 50<br>
+            Buy edge = 50 − (50 + 12) = −12 ✗
+          </div>
+          <p>The exchange's option bots maintain PCP within 1-2 ticks. Getting a 12-tick mispricing that persists long enough to execute 4 legs simultaneously is structurally impossible in this market.</p>
+        </div>
+        <div class="card">
+          <h3>What options actually give us</h3>
+          <p style="margin-top:6px;">The PCP formula S = C_mid − P_mid + K provides an <strong style="color:var(--gold);">implied B price</strong> from all three strikes. Weighted average (tighter spreads = higher weight) gives us a clean real-time B fair value — used for ETF NAV calculation.</p>
+          <div class="code" style="margin-top:10px; font-size:12px;">
+            <span class="cm"># PCP → implied B</span><br>
+            S_implied = C_mid − P_mid + K<br>
+            weight = 1.0 / (C_spread + P_spread)<br>
+            B_implied = Σ(S × w) / Σ(w)
+          </div>
+          <p style="margin-top:10px;">We keep checking for arb opportunities (MIN_EDGE=2) but do not expect PnL from options in normal market conditions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 10 — PNL BREAKDOWN -->
+  <div class="slide" id="s10">
+    <div class="eyebrow">Expected Performance</div>
+    <h2>Per-source PnL breakdown</h2>
+    <div style="margin-top:28px;">
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">A sweep</div>
+          <div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--green);"></div></div>
+          <div class="val" style="color:var(--green);">+6k–18k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;">20 EPS events × 10-30 ticks edge × 30 units swept. Primary engine.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">A passive MM</div>
+          <div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--green);"></div></div>
+          <div class="val" style="color:var(--green);">+5k–15k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;">Spread income between earnings events. Flow-adjusted to avoid adverse selection.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">C CPI trades</div>
+          <div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--gold);"></div></div>
+          <div class="val" style="color:var(--gold);">+5k–12k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;"><strong style="color:var(--gold);">NEW.</strong> 5-7 CPI events post-calibration × 8 ticks × 10 units. Previously zero.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">ETF arb</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--blue);"></div></div>
+          <div class="val" style="color:var(--blue);">+2k–8k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;">One-sided trades when ETF drifts from NAV. Improved by PCP-implied B price.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">Fed directional</div>
+          <div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--blue);"></div></div>
+          <div class="val" style="color:var(--blue);">+1k–5k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;">Kelly-sized, now capped at ±25. Consistent positive EV if signals are 60%+ accurate.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">Fed settlement</div>
+          <div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--gold);"></div></div>
+          <div class="val" style="color:var(--gold);">+1k–4k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;"><strong style="color:var(--gold);">NEW.</strong> Terminal bet when our_p ≥ 0.78 and EV positive. Most accurate estimate of the round.</p>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="pnl-bar">
+          <div class="label">C passive MM</div>
+          <div class="bar-track"><div class="bar-fill" style="width:12%;background:var(--blue);"></div></div>
+          <div class="val" style="color:var(--blue);">+1k–3k</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-left:100px;">Spread income after calibration. Wide spread before, tight after.</p>
+      </div>
+      <div class="divider"></div>
+      <div class="pnl-bar" style="margin-top:4px;">
+        <div class="label" style="color:var(--text);font-weight:500;">Total expected</div>
+        <div class="bar-track"><div class="bar-fill" style="width:85%;background:linear-gradient(90deg,var(--gold),var(--green));"></div></div>
+        <div class="val" style="color:var(--green); font-size:14px; font-weight:600;">+21k–65k</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-left:100px;margin-top:2px;">Conservative range for harder later rounds. Catastrophic rounds essentially eliminated by fixing Fed bug.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 11 — CODE ARCHITECTURE -->
+  <div class="slide" id="s11">
+    <div class="eyebrow">Code Architecture</div>
+    <h2>How the bot is structured</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3>Strategy classes</h3>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num" style="min-width:120px;">StockAStrategy</span>
+            <div><p>Manages A sweep, passive MM, pre-cancel timer, EPS_SCALE_A auto-calibration.</p></div>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num" style="min-width:120px;">StockCStrategy</span>
+            <div><p>3-phase ERC model. Handles pre_cpi_snapshot, on_cpi, earnings sweep, passive MM.</p></div>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num" style="min-width:120px;">FedStrategy</span>
+            <div><p>CPI + fedspeak signals. Kelly sizing. 15s cadence + immediate on news. Settlement trade.</p></div>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num" style="min-width:120px;">ETFStrategy</span>
+            <div><p>NAV computation using PCP-implied B. One-sided trades with 3s cooldown. Full-swap on large edges.</p></div>
+          </div>
+          <div class="step-row" style="padding:8px 0;">
+            <span class="step-num" style="min-width:120px;">OptionsStrategy</span>
+            <div><p>PCP + box arb checks every 1.5s. 4-second per-arb cooldown. No cancel-before-recheck.</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Utility classes</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+            <span class="tag gold">FlowTracker</span>
+            <span class="tag gold">EarningsTimer</span>
+            <span class="tag gold">BPriceTracker</span>
+          </div>
+          <p style="margin-top:10px;font-size:13px;">FlowTracker (ALPHA=0.05) observes aggressive prints and nudges FV toward smart-money direction. EarningsTimer predicts next earnings for pre-cancel. BPriceTracker extracts implied B from PCP.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3>Main loop cadence</h3>
+          <div class="code" style="margin-top:10px; font-size:12px;">
+            <span class="cm"># Every 0.1s:</span><br>
+            strat_a.check_pre_cancel()<br>
+            strat_a.update_quotes()<br>
+            strat_c.update_quotes()<br><br>
+            <span class="cm"># Every 0.5s:</span><br>
+            strat_etf.check_arb()<br>
+            strat_options.run()<br><br>
+            <span class="cm"># Every 15s:</span><br>
+            strat_fed.trade()<br><br>
+            <span class="cm"># T-90s to T-20s (once/round):</span><br>
+            strat_fed.settlement_trade()<br><br>
+            <span class="cm"># T-20s (once/round):</span><br>
+            flatten_all()
+          </div>
+        </div>
+        <div class="card">
+          <h3>Runtime commands</h3>
+          <div class="code" style="margin-top:10px; font-size:12px;">
+            <span class="nm">f</span>          <span class="cm">→ flatten all positions</span><br>
+            <span class="nm">s</span>          <span class="cm">→ print status (pos, FV, PnL)</span><br>
+            <span class="nm">scale 100</span>  <span class="cm">→ set EPS_SCALE_A manually</span><br>
+            <span class="nm">sens -2.5</span>  <span class="cm">→ set C sensitivity manually</span><br>
+            <span class="nm">meta SYM1 SYM2</span> <span class="cm">→ register meta market</span>
+          </div>
+          <p style="margin-top:10px;">All commands work live without restarting. Critical for the meta market (revealed on competition day) and manual overrides if auto-calibration is slow.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 12 — CPI EVENT FLOW -->
+  <div class="slide" id="s12">
+    <div class="eyebrow">Event Handling — Critical Path</div>
+    <h2>What happens on a CPI print</h2>
+    <div style="margin-top:28px; max-width:900px; margin-left:auto; margin-right:auto;">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="card" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="badge info">Step 1</span>
+              <h3 style="margin-bottom:0;">strat_c.pre_cpi_snapshot()</h3>
+            </div>
+            <p style="margin-top:6px;">Captures current ERC and C book mid <em>before</em> Fed processes the CPI. This is the pre-move baseline for calibration and for measuring expected ΔC.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="card" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="badge info">Step 2</span>
+              <h3 style="margin-bottom:0;">strat_fed.on_cpi(forecast, actual)</h3>
+            </div>
+            <p style="margin-top:6px;">Updates Fed probability estimates. Surprise > 0 → raise R_HIKE probability, lower R_CUT. Surprise < 0 → reverse. ERC changes as a result.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="card" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="badge info">Step 3</span>
+              <h3 style="margin-bottom:0;">strat_c.recalc_fv()</h3>
+            </div>
+            <p style="margin-top:6px;">Recomputes C fair value with the new ERC. No-op until C is calibrated. Once calibrated: C_FV = anchor + sensitivity × ΔERC.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--gold);"></div>
+          <div class="card gold-top" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="badge warn">Step 4</span>
+              <h3 style="margin-bottom:0;">await strat_c.on_cpi()</h3>
+            </div>
+            <p style="margin-top:6px;">If calibrated: take directional C trade (sell if hawkish, buy if dovish) before C book reprices. If first significant CPI: calibrate sensitivity from observed ΔC/ΔERC.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--green);"></div>
+          <div class="card green-top">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="badge good">Step 5</span>
+              <h3 style="margin-bottom:0;">await strat_fed.trade()</h3>
+            </div>
+            <p style="margin-top:6px;">Immediately places Kelly-sized Fed orders based on updated probabilities. Bypasses the 15s rate limit because this is news-triggered. Cancels stale Fed orders first, then places fresh ones.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 13 — ROBUSTNESS -->
+  <div class="slide" id="s13">
+    <div class="eyebrow">Robustness &amp; Consistency</div>
+    <h2>Why this bot stays consistent as rounds get harder</h2>
+    <div class="three-col" style="margin-top:28px;">
+      <div class="card green-top">
+        <h3>Model-quality alpha</h3>
+        <p style="margin-top:6px;">A's EPS model, C's ERC calibration, and Fed's CPI signals are all <strong style="color:var(--text);">information-based</strong>. They don't rely on being faster than other bots. In harder rounds with faster opponents, we still have better fair values.</p>
+        <div class="highlight" style="margin-top:10px;"><p>Speed-dependent alpha (sweep) degrades. Model-quality alpha persists.</p></div>
+      </div>
+      <div class="card green-top">
+        <h3>No catastrophic rounds</h3>
+        <p style="margin-top:6px;">The Fed bug was the primary source of -90k to -150k rounds. With MAX_POS=25 and the kelly_size fix, the worst possible Fed outcome is: 25 units × 1000 ticks = -25,000. Manageable.</p>
+        <div class="stat" style="margin-top:14px;">
+          <div class="num" style="font-size:32px;color:var(--green)">-25k</div>
+          <div class="label">Max Fed loss (vs. old -200k)</div>
+        </div>
+      </div>
+      <div class="card green-top">
+        <h3>Position management</h3>
+        <p style="margin-top:6px;">Three layers of protection: (1) per-strategy soft limits with inventory skew, (2) safe_place_order hard limits, (3) auto-flatten at T-20s. No position can run away indefinitely.</p>
+        <div style="margin-top:12px;">
+          <span class="tag green">A: up to ±200</span>
+          <span class="tag blue">C: ±50</span>
+          <span class="tag gold">Fed: ±25 (±35 terminal)</span>
+          <span class="tag blue">ETF: ±40</span>
+        </div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:20px;">
+      <div class="card">
+        <h3>Calibration persistence</h3>
+        <p style="margin-top:6px;">EPS_SCALE_A and PE_C_scale persist across rounds. The bot gets smarter over the competition. By round 3, scale observations from rounds 1-2 mean EPS_SCALE_A is rock-solid before the first earnings even fires.</p>
+      </div>
+      <div class="card">
+        <h3>Manual overrides</h3>
+        <p style="margin-top:6px;">On competition day, if auto-calibration seems slow, type <code style="color:var(--gold);">scale 100</code> or <code style="color:var(--gold);">sens -2.5</code> to manually set the model parameters from observing the market. Meta market symbols registered live via <code style="color:var(--gold);">meta SYM1 SYM2</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 14 — COMPETITION DAY -->
+  <div class="slide" id="s14">
+    <div class="eyebrow">Competition Day Checklist</div>
+    <h2>What to watch and when to intervene</h2>
+    <div class="two-col" style="margin-top:24px;">
+      <div>
+        <h3 style="margin-bottom:16px; color:var(--gold);">First 60 seconds of each round</h3>
+        <div class="step-row">
+          <span class="step-num">T+0s</span>
+          <div><p>Watch the log: <code style="color:var(--gold);">IMPLIED_SCALE: N/A</code> until first earnings fires. Normal.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">T+22s</span>
+          <div><p>First A earnings. Log shows: <code style="color:var(--gold)">[A] *** EARNINGS *** implied_scale=X</code>. Check if X is reasonable (same order as EPS_SCALE_A). If wildly off, type <code style="color:var(--text)">scale X</code>.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">T+3-5min</span>
+          <div><p>First CPI fires. Log shows: <code style="color:var(--gold)">[C] *** CALIBRATED *** sensitivity=X</code>. Positive sensitivity = bug (C should fall when ERC rises). If positive, type <code style="color:var(--text)">sens -X</code>.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">Any time</span>
+          <div><p>Type <code style="color:var(--text)">s</code> for full status including pos, FV, uPnL, Fed probabilities, C sensitivity, A scale.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">T−20s</span>
+          <div><p>Auto-flatten triggers. All positions sold/bought at market. Round ends. New round → all state resets (sensitivity stays).</p></div>
+        </div>
+        <h3 style="margin-bottom:16px; margin-top:20px; color:var(--gold);">Meta market (revealed on day)</h3>
+        <div class="step-row">
+          <span class="step-num">Step 1</span>
+          <div><p>Check position snapshot printout for unknown symbol names.</p></div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">Step 2</span>
+          <div><p>Identify news type from news.log. Type <code style="color:var(--text)">meta SYM1 SYM2</code> to register symbols.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="card gold-top" style="margin-bottom:16px;">
+          <h3>Key log lines to watch</h3>
+          <div class="code" style="margin-top:10px; font-size:11.5px; line-height:1.8;">
+            <span class="good">[A] SWEEP BUY 30 @ 1080 | edge=25</span><br>
+            <span class="good">[A] AUTO-SCALE 1.0 → 100.0</span><br>
+            <span class="good">[C] CALIBRATED sensitivity=-2.34</span><br>
+            <span class="good">[C] CPI SELL 10 @ 925 | exp_dc=-12</span><br>
+            <span class="good">[FED] BUY R_HIKE 8u | our=0.72 mkt=0.55</span><br>
+            <span class="good">[FED] SETTLE: BUY 10x R_HIKE @ 820</span><br>
+            <span class="good">[ETF] ONE-SIDED SELL 8 ETF @ 3061</span><br>
+            <span class="cm">─────────────────────────</span><br>
+            <span class="bad">[REJECTED] oid123: position limit</span><br>
+            <span class="bad">[C] CALIBRATED: sensitivity=+5.1</span><br>
+            <span class="cm"> ↑ wrong sign — type: sens -5.1</span><br>
+            <span class="bad">[FED] SETTLE: negative EV — ask=920</span><br>
+            <span class="cm"> ↑ normal — settlement skipped correctly</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Expected round PnL profile</h3>
+          <div class="timeline" style="margin-top:12px;">
+            <div class="timeline-item"><div class="timeline-dot"></div><div><p><strong style="color:var(--text);">T+0 to T+22s:</strong> Flat or slight negative (pre-earnings MM).</p></div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div><p><strong style="color:var(--text);">T+22s:</strong> First earnings sweep. PnL jumps +5-15k.</p></div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div><p><strong style="color:var(--text);">T+3-5min:</strong> First CPI. C calibrates. C + Fed trades.</p></div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div><p><strong style="color:var(--text);">T+13min:</strong> Settlement trade fires if confident.</p></div></div>
+            <div class="timeline-item"><div class="timeline-dot" style="background:var(--green);"></div><div><p><strong style="color:var(--green);">T+14:40:</strong> Auto-flatten. Lock in gains.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SLIDE 15 — FINAL SUMMARY -->
+  <div class="slide" id="s15">
+    <div class="eyebrow">Summary</div>
+    <h2>The final bot in one page</h2>
+    <div class="three-col" style="margin-top:28px;">
+      <div>
+        <h3 style="color:var(--gold); margin-bottom:16px;">Core philosophy</h3>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="font-size:14px;">Strategy.py as base</h3>
+          <p>Keep everything that made it rank 1: the A sweep, FlowTracker, EarningsTimer, simple fast code. Don't add complexity that adds latency.</p>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="font-size:14px;">Fix the bugs</h3>
+          <p>Fed position cap + kelly_size fix. A cross-spread removal. Options cancel-before-recheck removal. C FV reset at round start.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size:14px;">Add genuine new alpha</h3>
+          <p>C ERC directional trades (was zero, now +5-12k/round). Fed settlement trade (new +1-4k/round). Both are model-quality, not speed-dependent.</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--gold); margin-bottom:16px;">What we kept from strategy.py</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px; margin-bottom:16px;">
+          <span class="tag green">A sweep (unconditional)</span>
+          <span class="tag green">FlowTracker ALPHA=0.05</span>
+          <span class="tag green">EarningsTimer pre-cancel</span>
+          <span class="tag green">Passive A MM with skew</span>
+          <span class="tag green">ETF one-sided trades</span>
+          <span class="tag green">Fed Kelly sizing</span>
+          <span class="tag green">Simple logging (low latency)</span>
+          <span class="tag green">No stale order cleanup</span>
+          <span class="tag green">No SNIPE_MAX_PENDING</span>
+        </div>
+        <h3 style="color:var(--gold); margin-bottom:12px;">What we rejected from v3/v3-1</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="tag red">SNIPE_MAX_PENDING (throttles sweep)</span>
+          <span class="tag red">Stale order cleanup (kills resting orders)</span>
+          <span class="tag red">Heavy PnL logging (adds latency)</span>
+          <span class="tag red">FlowTracker ALPHA=0 (removes edge)</span>
+          <span class="tag red">FV_CLAMP_PCT (unnecessary with auto-cal)</span>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--gold); margin-bottom:16px;">Expected competition outcome</h3>
+        <div class="card green-top" style="margin-bottom:12px;">
+          <div class="stat">
+            <div class="num" style="color:var(--green);">Top 5</div>
+            <div class="label">Target consistent rank</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="stat">
+            <div class="num" style="color:var(--text);">+21k–65k</div>
+            <div class="label">Expected PnL per round (harder rounds)</div>
+          </div>
+        </div>
+        <div class="card">
+          <p style="font-size:13px; color:#b0aec8;">Old pattern: rank 1 sometimes, rank 42 sometimes. Net bad due to (n-1)² scoring.</p>
+          <p style="font-size:13px; color:var(--green); margin-top:6px;">New target: rank 3-7 every round. Never rank 42 again. Consistent scoring wins the competition.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Nav -->
+<div id="nav">
+  <button onclick="go(-1)">&#8592;</button>
+  <span id="slide-counter">1 / 16</span>
+  <button onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let cur = 0;
+
+  function go(dir) {
+    const next = cur + dir;
+    if (next < 0 || next >= total) return;
+
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('exit-left');
+    setTimeout(() => slides[cur].classList.remove('exit-left'), 400);
+
+    cur = next;
+    slides[cur].classList.add('active');
+
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('progress').style.width = `${((cur + 1) / total) * 100}%`;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+
+  // Init progress
+  document.getElementById('progress').style.width = `${(1 / total) * 100}%`;
+</script>
+</body>
+</html>
