@@ -63,8 +63,8 @@ def log(msg: str, file: Optional[str] = None) -> None:
 
 # Stock A
 PE_A         = 10       # constant P/E for A
-EPS_SCALE_A  = 1        # 1 if EPS is in same unit as price; 100 if EPS in dollars, price in cents
-                        # VERIFY on practice round: print eps * PE_A vs book mid at earnings
+EPS_SCALE_A  = 100      # EPS arrives in dollars (e.g. 0.9), exchange prices in cents (e.g. 900)
+                        # Verified: eps≈0.9 → FV=0.9*10*100=900, matches market mid ✓
 
 # Stock C
 PE0_C        = 14.0
@@ -301,6 +301,7 @@ class StockAStrategy:
         self.timer           = EarningsTimer()
 
         self._pending_cancels: set[str]   = set()
+        self._snipe_ids: set[str]         = set()  # resting snipe order IDs to cancel before next snipe
         self._last_snipe_time: float      = 0.0
         self._last_quote_time: float      = 0.0
         self._earnings_end_time: float    = 0.0   # wall clock: when aggressive mode ends
@@ -353,9 +354,28 @@ class StockAStrategy:
 
     def on_cancel_confirmed(self, oid: str) -> None:
         self._pending_cancels.discard(oid)
+        self._snipe_ids.discard(oid)
 
     def on_order_rejected(self, oid: str) -> None:
         self._pending_cancels.discard(oid)
+        self._snipe_ids.discard(oid)
+
+    def on_fill(self, oid: str) -> None:
+        self._pending_cancels.discard(oid)
+        self._snipe_ids.discard(oid)
+
+    async def _cancel_resting_snipes(self) -> None:
+        """Cancel any snipe orders still resting in the book.
+        Snipes are meant to fill immediately — if they're resting, they're stale
+        and eating outstanding vol quota that blocks future orders."""
+        to_cancel = [
+            oid for oid in self._snipe_ids
+            if oid in self.client.open_orders and oid not in self._pending_cancels
+        ]
+        self._snipe_ids -= set(to_cancel)
+        for oid in to_cancel:
+            self._pending_cancels.add(oid)
+            await self.client.cancel_order(oid)
 
     # ── Fair value ────────────────────────────────────────────────
 
@@ -389,6 +409,10 @@ class StockAStrategy:
         fv = self.client.fair_values.get("A")
         if fv is None:
             return
+
+        # Cancel any resting snipes before sweeping — free up outstanding vol headroom
+        await self._cancel_resting_snipes()
+
         book = self.client.order_books["A"]
         edge = 2
 
@@ -404,6 +428,7 @@ class StockAStrategy:
             oid = await self._place(buy_qty, Side.BUY, px)
             if oid is None:
                 break
+            self._snipe_ids.add(oid)
             log(f"[A] SWEEP BUY  {buy_qty} @ {px} | edge={fv - px:.0f}")
 
         # Sell side: all bids above FV + edge → unconditional down to -pos limit
@@ -418,6 +443,7 @@ class StockAStrategy:
             oid = await self._place(sell_qty, Side.SELL, px)
             if oid is None:
                 break
+            self._snipe_ids.add(oid)
             log(f"[A] SWEEP SELL {sell_qty} @ {px} | edge={px - fv:.0f}")
 
     # ── Opportunistic snipe (outside post-earnings window) ────────
@@ -431,8 +457,10 @@ class StockAStrategy:
             return
         self._last_snipe_time = now
 
+        # Cancel any snipes from the previous window that didn't fill
+        await self._cancel_resting_snipes()
+
         best_bid, best_ask = self.client.get_best_bid_ask("A")
-        # Include flow adjustment (smart money signal)
         flow_adj = self.client.flow.fv_adjustment("A")
         fv_adj   = fv + flow_adj
 
@@ -442,6 +470,7 @@ class StockAStrategy:
             if qty > 0:
                 oid = await self._place(qty, Side.BUY, best_ask)
                 if oid:
+                    self._snipe_ids.add(oid)
                     log(f"[A] SNIPE BUY  {qty} @ {best_ask} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
         elif best_bid is not None and best_bid > fv_adj + self.EDGE_THRESHOLD:
             book_qty = self.client.order_books["A"].bids.get(best_bid, 0)
@@ -449,6 +478,7 @@ class StockAStrategy:
             if qty > 0:
                 oid = await self._place(qty, Side.SELL, best_bid)
                 if oid:
+                    self._snipe_ids.add(oid)
                     log(f"[A] SNIPE SELL {qty} @ {best_bid} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
 
     # ── Passive MM ────────────────────────────────────────────────
@@ -664,7 +694,7 @@ class StockCStrategy:
         dy     = self.beta * erc
         pe     = PE0_C * math.exp(-self.gamma * dy)
         db     = B0_OVER_N * (-D * dy + 0.5 * CONV * dy ** 2)
-        return eps * pe + LAMBDA * db
+        return (eps * pe + LAMBDA * db) * 100  # EPS in dollars, prices in cents
 
     def recalc_fv(self) -> None:
         eps = self.client.eps.get("C") or EPS0_C
@@ -1228,20 +1258,22 @@ class ETFStrategy:
     def __init__(self, client: "MyXchangeClient"):
         self.client = client
 
-        self.pending_create   = False
-        self.pending_redeem   = False
-        self.filled_comps     = {"A": 0, "B": 0, "C": 0}
-        self.filled_etf       = 0
-        self._target_qty      = 0
-        self._pending_since   = None
+        self.pending_create        = False
+        self.pending_redeem        = False
+        self.filled_comps          = {"A": 0, "B": 0, "C": 0}
+        self.filled_etf            = 0
+        self._target_qty           = 0
+        self._pending_since        = None
+        self._last_one_sided_time  = 0.0  # cooldown: one-sided trades max once per 3s
 
     def _reset(self) -> None:
-        self.pending_create = False
-        self.pending_redeem = False
-        self.filled_comps   = {"A": 0, "B": 0, "C": 0}
-        self.filled_etf     = 0
-        self._target_qty    = 0
-        self._pending_since = None
+        self.pending_create       = False
+        self.pending_redeem       = False
+        self.filled_comps         = {"A": 0, "B": 0, "C": 0}
+        self.filled_etf           = 0
+        self._target_qty          = 0
+        self._pending_since       = None
+        self._last_one_sided_time = 0.0
 
     async def _abort(self) -> None:
         log("[ETF] ABORT — timing out partial arb, flattening legs")
@@ -1283,22 +1315,32 @@ class ETFStrategy:
         pos_etf = self.client.positions.get("ETF", 0)
         MAX_POS = 40
 
-        # ── ONE-SIDED TRADES (always attempt if threshold met) ──
-        # ETF overpriced: just sell the ETF
-        if diff > ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD and pos_etf > -MAX_POS:
-            qty = min(self.ONE_SIDED_QTY, MAX_POS + pos_etf)
-            if etf_bid is not None and qty > 0:
-                await self.client.safe_place_order("ETF", qty, Side.SELL, etf_bid)
-                log(f"[ETF] ONE-SIDED SELL {qty} ETF @ {etf_bid} | diff={diff:+.1f}")
+        # ── ONE-SIDED TRADES (cooldown: once per 3s, mutually exclusive with full-swap) ──
+        now_t = time.time()
+        one_sided_fired = False
+        if now_t - self._last_one_sided_time >= 3.0:
+            # ETF overpriced: just sell the ETF
+            if diff > ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD and pos_etf > -MAX_POS:
+                qty = min(self.ONE_SIDED_QTY, MAX_POS + pos_etf)
+                if etf_bid is not None and qty > 0:
+                    self._last_one_sided_time = now_t
+                    one_sided_fired = True
+                    await self.client.safe_place_order("ETF", qty, Side.SELL, etf_bid)
+                    log(f"[ETF] ONE-SIDED SELL {qty} ETF @ {etf_bid} | diff={diff:+.1f}")
 
-        # ETF underpriced: just buy the ETF
-        elif diff < -(ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD) and pos_etf < MAX_POS:
-            qty = min(self.ONE_SIDED_QTY, MAX_POS - pos_etf)
-            if etf_ask is not None and qty > 0:
-                await self.client.safe_place_order("ETF", qty, Side.BUY, etf_ask)
-                log(f"[ETF] ONE-SIDED BUY  {qty} ETF @ {etf_ask} | diff={diff:+.1f}")
+            # ETF underpriced: just buy the ETF
+            elif diff < -(ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD) and pos_etf < MAX_POS:
+                qty = min(self.ONE_SIDED_QTY, MAX_POS - pos_etf)
+                if etf_ask is not None and qty > 0:
+                    self._last_one_sided_time = now_t
+                    one_sided_fired = True
+                    await self.client.safe_place_order("ETF", qty, Side.BUY, etf_ask)
+                    log(f"[ETF] ONE-SIDED BUY  {qty} ETF @ {etf_ask} | diff={diff:+.1f}")
 
-        # ── FULL-SWAP ARBS (only on large edge) ──
+        # ── FULL-SWAP ARBS (only on large edge, never on same tick as one-sided) ──
+        if one_sided_fired:
+            return
+
         if diff > ETF_SWAP_COST + self.FULL_SWAP_THRESHOLD:
             # Create: buy A+B+C, swap to ETF, sell ETF
             pos_a = self.client.positions.get("A", 0)
@@ -1599,7 +1641,7 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL-FAIL] {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int) -> None:
-        self.strat_a.on_cancel_confirmed(order_id)
+        self.strat_a.on_fill(order_id)
         info = self.open_orders.get(order_id)
         if info is None:
             return
