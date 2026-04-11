@@ -10,3 +10,7 @@ build/
 fed.log
 fills.log
 pnl.log
+meta.log
+news.log
+trades.log
+bot.log
