@@ -1013,7 +1013,7 @@ class OptionsStrategy:
     """
 
     BOX_PAIRS  = [(950, 1000), (1000, 1050), (950, 1050)]
-    MIN_EDGE   = 2
+    MIN_EDGE   = 1
     COOLDOWN   = 4.0
 
     def __init__(self, client: "MyXchangeClient"):
@@ -1035,9 +1035,9 @@ class OptionsStrategy:
         """Scale order size with edge: larger edge → more units."""
         if edge < self.MIN_EDGE:
             return 0
-        if edge < 5:
+        if edge < 3:
             return 1
-        if edge < 10:
+        if edge < 7:
             return 3
         return 5
 
