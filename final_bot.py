@@ -139,7 +139,8 @@ class FlowTracker:
         return float(sum(t)) if t else 0.0
 
     def fv_adjustment(self, symbol: str) -> float:
-        return self.ALPHA * self.net_signed_volume(symbol)
+        raw = self.ALPHA * self.net_signed_volume(symbol)
+        return max(-2.0, min(2.0, raw))
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -341,25 +342,39 @@ class StockAStrategy:
         book = self.client.order_books["A"]
         edge = 2
 
+        lo_a, hi_a = self.client.PRICE_BOUNDS.get("A", (1, 999999))
+        MAX_SWEEP = 60
+        swept = 0
         stale_asks = sorted(
-            [(px, qty) for px, qty in book.asks.items() if qty > 0 and px < fv - edge],
+            [(px, qty) for px, qty in book.asks.items()
+             if qty > 0 and px < fv - edge and lo_a <= px <= hi_a],
             key=lambda x: x[0]
         )
         for px, qty in stale_asks:
-            oid = await self._place(min(qty, self.SNIPE_SIZE), Side.BUY, px)
+            if swept >= MAX_SWEEP:
+                break
+            take = min(qty, self.SNIPE_SIZE, MAX_SWEEP - swept)
+            oid = await self._place(take, Side.BUY, px)
             if oid is None:
                 break
-            log(f"[A] SWEEP BUY  {min(qty, self.SNIPE_SIZE)} @ {px} | edge={fv - px:.0f}")
+            swept += take
+            log(f"[A] SWEEP BUY  {take} @ {px} | edge={fv - px:.0f} swept={swept}")
 
+        swept = 0
         stale_bids = sorted(
-            [(px, qty) for px, qty in book.bids.items() if qty > 0 and px > fv + edge],
+            [(px, qty) for px, qty in book.bids.items()
+             if qty > 0 and px > fv + edge and lo_a <= px <= hi_a],
             key=lambda x: -x[0]
         )
         for px, qty in stale_bids:
-            oid = await self._place(min(qty, self.SNIPE_SIZE), Side.SELL, px)
+            if swept >= MAX_SWEEP:
+                break
+            take = min(qty, self.SNIPE_SIZE, MAX_SWEEP - swept)
+            oid = await self._place(take, Side.SELL, px)
             if oid is None:
                 break
-            log(f"[A] SWEEP SELL {min(qty, self.SNIPE_SIZE)} @ {px} | edge={px - fv:.0f}")
+            swept += take
+            log(f"[A] SWEEP SELL {take} @ {px} | edge={px - fv:.0f} swept={swept}")
 
     # ── Opportunistic snipe ───────────────────────────────────────
 
@@ -376,14 +391,18 @@ class StockAStrategy:
         flow_adj = self.client.flow.fv_adjustment("A")
         fv_adj   = fv + flow_adj
 
-        if best_ask is not None and best_ask < fv_adj - self.EDGE_THRESHOLD:
+        book_a = self.client.order_books.get("A")
+        ask_qty = book_a.asks.get(best_ask, 0) if (book_a and best_ask) else 0
+        bid_qty = book_a.bids.get(best_bid, 0) if (book_a and best_bid) else 0
+
+        if best_ask is not None and best_ask < fv_adj - self.EDGE_THRESHOLD and ask_qty >= 5:
             oid = await self._place(self.SNIPE_SIZE, Side.BUY, best_ask)
             if oid:
-                log(f"[A] SNIPE BUY  @ {best_ask} | fv_adj={fv_adj:.0f}")
-        elif best_bid is not None and best_bid > fv_adj + self.EDGE_THRESHOLD:
+                log(f"[A] SNIPE BUY  @ {best_ask} | fv_adj={fv_adj:.0f} depth={ask_qty}")
+        elif best_bid is not None and best_bid > fv_adj + self.EDGE_THRESHOLD and bid_qty >= 5:
             oid = await self._place(self.SNIPE_SIZE, Side.SELL, best_bid)
             if oid:
-                log(f"[A] SNIPE SELL @ {best_bid} | fv_adj={fv_adj:.0f}")
+                log(f"[A] SNIPE SELL @ {best_bid} | fv_adj={fv_adj:.0f} depth={bid_qty}")
 
     # ── Passive MM ────────────────────────────────────────────────
 
@@ -665,7 +684,17 @@ class StockCStrategy:
                 return
 
             current_c_mid = (b + a) / 2
-            delta_c       = current_c_mid - self._pre_cpi_mid
+
+            # Guard: reject mid outliers — a bait spike could corrupt the whole round's C model
+            lo_c, hi_c = self.client.PRICE_BOUNDS.get("C", (1, 999999))
+            if not (lo_c <= current_c_mid <= hi_c):
+                log(f"[C] CPI: mid={current_c_mid:.0f} outside valid range — skipping calibration")
+                return
+            if self._pre_cpi_mid is not None and abs(current_c_mid - self._pre_cpi_mid) > 100:
+                log(f"[C] CPI: mid jump {self._pre_cpi_mid:.0f}→{current_c_mid:.0f} too large — skipping calibration")
+                return
+
+            delta_c = current_c_mid - self._pre_cpi_mid
 
             # Guard: if market hasn't moved at all, the measurement is noisy
             if abs(delta_c) < 1.0 and abs(delta_erc) > 3.0:
@@ -828,17 +857,25 @@ class StockCStrategy:
         book = self.client.order_books["C"]
         edge = 2
 
+        lo_c, hi_c = self.client.PRICE_BOUNDS.get("C", (1, 999999))
+        MAX_SWEEP = 60
+        swept = 0
         for px, qty in sorted(book.asks.items()):
-            if qty <= 0 or px >= fv - edge:
-                break
-            await self.client.safe_place_order("C", min(qty, 15), Side.BUY, px)
-            log(f"[C] SWEEP BUY  {min(qty, 15)} @ {px} | fv={fv:.1f}")
+            if swept >= MAX_SWEEP or qty <= 0 or px >= fv - edge or not (lo_c <= px <= hi_c):
+                continue
+            take = min(qty, 15, MAX_SWEEP - swept)
+            await self.client.safe_place_order("C", take, Side.BUY, px)
+            swept += take
+            log(f"[C] SWEEP BUY  {take} @ {px} | fv={fv:.1f} swept={swept}")
 
+        swept = 0
         for px, qty in sorted(book.bids.items(), reverse=True):
-            if qty <= 0 or px <= fv + edge:
-                break
-            await self.client.safe_place_order("C", min(qty, 15), Side.SELL, px)
-            log(f"[C] SWEEP SELL {min(qty, 15)} @ {px} | fv={fv:.1f}")
+            if swept >= MAX_SWEEP or qty <= 0 or px <= fv + edge or not (lo_c <= px <= hi_c):
+                continue
+            take = min(qty, 15, MAX_SWEEP - swept)
+            await self.client.safe_place_order("C", take, Side.SELL, px)
+            swept += take
+            log(f"[C] SWEEP SELL {take} @ {px} | fv={fv:.1f} swept={swept}")
 
     # ── Round reset ───────────────────────────────────────────────
 
@@ -1645,12 +1682,30 @@ class MyXchangeClient(XChangeClient):
 
     # ── Book helpers ──────────────────────────────────────────────
 
+    # Valid price ranges per symbol — bids/asks outside these are treated as bait orders
+    PRICE_BOUNDS: dict = {
+        "A":       (500,  2000),
+        "B":       (500,  2000),
+        "C":       (500,  2000),
+        "ETF":     (1500, 6000),
+        "R_HIKE":  (10,   990),
+        "R_HOLD":  (10,   990),
+        "R_CUT":   (10,   990),
+        "B_C_950": (2,    998),
+        "B_P_950": (2,    998),
+        "B_C_1000":(2,    998),
+        "B_P_1000":(2,    998),
+        "B_C_1050":(2,    998),
+        "B_P_1050":(2,    998),
+    }
+
     def get_best_bid_ask(self, symbol: str):
         book = self.order_books.get(symbol)
         if book is None:
             return None, None
-        bids = [k for k, v in book.bids.items() if v > 0]
-        asks = [k for k, v in book.asks.items() if v > 0]
+        lo, hi = self.PRICE_BOUNDS.get(symbol, (1, 999999))
+        bids = [k for k, v in book.bids.items() if v > 0 and lo <= k <= hi]
+        asks = [k for k, v in book.asks.items() if v > 0 and lo <= k <= hi]
         return (max(bids) if bids else None), (min(asks) if asks else None)
 
     def get_bba_mid(self, symbol: str):
