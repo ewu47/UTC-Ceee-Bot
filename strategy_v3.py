@@ -641,11 +641,12 @@ class StockAStrategy:
 
     # ── Earnings handler ─────────────────────────────────────────
 
+    FV_CLAMP_PCT = 0.12   # max allowed |fv - mid| / mid before clamping
+
     async def on_earnings(self, eps: float, tick: int) -> None:
         old_fv = self.client.fair_values.get("A")
         new_fv = self.calc_fv(eps)
-        self.client.eps["A"]         = eps
-        self.client.fair_values["A"] = new_fv
+        self.client.eps["A"] = eps
 
         # ── CALIBRATION INFO ─────────────────────────────────────────────
         # If new_fv is far from market mid, EPS_SCALE_A is wrong.
@@ -656,11 +657,30 @@ class StockAStrategy:
         implied_scale = (mid / (eps * PE_A)) if mid else None
         # ─────────────────────────────────────────────────────────────────
 
+        # ── Sanity clamp: if EPS_SCALE_A is miscalibrated, don't let FV
+        # deviate more than FV_CLAMP_PCT from the current market mid.
+        # This prevents sweeping to the position limit on a bad FV.
+        clamped = False
+        if mid is not None:
+            clamp_hi = mid * (1 + self.FV_CLAMP_PCT)
+            clamp_lo = mid * (1 - self.FV_CLAMP_PCT)
+            if new_fv > clamp_hi:
+                log(f"[A] FV CLAMPED {new_fv:.0f}→{clamp_hi:.0f} (mid={mid:.0f}, +{self.FV_CLAMP_PCT*100:.0f}%)")
+                new_fv  = clamp_hi
+                clamped = True
+            elif new_fv < clamp_lo:
+                log(f"[A] FV CLAMPED {new_fv:.0f}→{clamp_lo:.0f} (mid={mid:.0f}, -{self.FV_CLAMP_PCT*100:.0f}%)")
+                new_fv  = clamp_lo
+                clamped = True
+
+        self.client.fair_values["A"] = new_fv
+
         delta = new_fv - old_fv if old_fv is not None else 0
         log(f"[A] *** EARNINGS *** raw_eps={eps} PE_A={PE_A} scale={EPS_SCALE_A} "
             f"FV={old_fv}→{new_fv:.0f} Δ={delta:+.1f} "
             f"market_mid={'N/A' if mid is None else f'{mid:.0f}'} "
             f"implied_scale={'N/A' if implied_scale is None else f'{implied_scale:.2f}'} "
+            f"clamped={clamped} "
             f"pos={self.client.positions['A']}")
 
         # Arm timer for next expected earnings
@@ -1196,6 +1216,9 @@ class FedStrategy:
     CPI_SIGMOID_K = 3000    # sigmoid steepness for tiny surprise magnitudes
     SPEAK_SHIFT= 0.03   # shift per fedspeak headline
 
+    SETTLE_PROB_MIN = 0.80  # minimum probability to fire settlement trade
+    SETTLE_MAX_POS  = 40    # larger cap for end-of-round concentrated bet
+
     def __init__(self, client: "MyXchangeClient"):
         self.client      = client
         self._book_reads = 0
@@ -1205,6 +1228,7 @@ class FedStrategy:
         self._fed_fills: dict[str, list] = {c: [] for c in self.CONTRACTS}  # symbol → [(qty, price, side)]
         self._fed_realized_pnl: float = 0.0
         self._fed_trade_count: int = 0
+        self._settle_done: bool = False
 
     def _read_book_probs(self) -> None:
         updated = 0
@@ -1373,6 +1397,52 @@ class FedStrategy:
                     log(f"[FED] SELL {c} {sz}u | our={our_p:.3f} mkt={mkt_p:.3f} div={div:+.3f}", "fed.log")
                     await self.client.safe_place_order(c, sz, Side.SELL, b)
 
+    async def settlement_trade(self) -> None:
+        """
+        End-of-round concentrated bet on the most likely Fed outcome.
+        Only fires once per round, only when our probability estimate is
+        above SETTLE_PROB_MIN (80%).  Uses a larger position cap than the
+        normal Kelly trades because settlement is imminent.
+        """
+        if self._settle_done:
+            return
+        self._settle_done = True
+
+        self._read_book_probs()
+        best_contract = max(self.CONTRACTS, key=lambda c: self.client.fair_values.get(c, 0))
+        our_p = self.client.fair_values.get(best_contract, 0)
+
+        if our_p < self.SETTLE_PROB_MIN:
+            log(f"[FED] SETTLE: skipped — best={best_contract} our_p={our_p:.3f} < {self.SETTLE_PROB_MIN}", "fed.log")
+            return
+
+        mkt_p = self._mkt_probs.get(best_contract)
+        if mkt_p is None:
+            log(f"[FED] SETTLE: skipped — no market price for {best_contract}", "fed.log")
+            return
+
+        _, a = self.client.get_best_bid_ask(best_contract)
+        if a is None:
+            log(f"[FED] SETTLE: skipped — no ask for {best_contract}", "fed.log")
+            return
+
+        pos = self.client.positions.get(best_contract, 0)
+        room = self.SETTLE_MAX_POS - pos
+        if room <= 0:
+            log(f"[FED] SETTLE: already at cap pos={pos}", "fed.log")
+            return
+
+        # EV check: only trade if positive expected value at current ask price
+        buy_p = a / 1000.0
+        ev = our_p * (1.0 - buy_p) - (1.0 - our_p) * buy_p
+        if ev <= 0:
+            log(f"[FED] SETTLE: skipped — negative EV={ev:.3f} at ask={a}", "fed.log")
+            return
+
+        qty = min(room, 10)
+        log(f"[FED] SETTLE: BUY {qty}x {best_contract} @ {a} | our_p={our_p:.3f} ev={ev:.3f}", "fed.log")
+        await self.client.safe_place_order(best_contract, qty, Side.BUY, a)
+
     def record_fill(self, symbol: str, qty: int, price: int, is_buy: bool) -> None:
         """Called from the main fill handler when a fed contract fills."""
         if symbol not in self.CONTRACTS:
@@ -1421,6 +1491,7 @@ class FedStrategy:
         # Keep probability estimates across rounds — they carry over
         self._book_reads = 0
         self._seen_headlines = set()
+        self._settle_done = False
         # Log final PnL before resetting
         if self._fed_trade_count > 0:
             log(f"[FED-PNL] ── ROUND END ── realized={self._fed_realized_pnl:+.0f}", "fed_pnl.log")
@@ -1675,6 +1746,9 @@ class MyXchangeClient(XChangeClient):
         # C has a noise term in its formula; holding 200 units amplifies every fluctuation.
         # We capture the same edge with a smaller, more consistent position.
         self.max_abs_position["C"] = 80
+        # A's sweep can build positions very quickly; cap at 100 at the client level
+        # so safe_place_order enforces it everywhere (quotes, snipes, sweeps).
+        self.max_abs_position["A"] = 100
 
         # Stale order cleanup: track when each order was placed
         # Orders resting unfilled for > STALE_ORDER_SECS get cancelled
@@ -2244,6 +2318,13 @@ class MyXchangeClient(XChangeClient):
             if self._flatten_triggered:
                 await asyncio.sleep(0.5)
                 continue
+
+            # ── Settlement timing trade (T-90s window, fires once) ──
+            elapsed = now - self._round_start_wall
+            if (self._round_start_wall > 0
+                    and elapsed >= ROUND_DURATION_SECS - 90
+                    and elapsed < ROUND_DURATION_SECS - FLATTEN_LEAD_SECS):
+                await self.strat_fed.settlement_trade()
 
             # ── Pre-earnings pre-cancel ──
             await self.strat_a.check_pre_cancel()

@@ -1,32 +1,64 @@
-[22:19:12] [NEWS] unstructured type='News': A multi-year contract to supply critical technological infrastructure is won by A.
-[22:19:12] [NEWS] *** UNKNOWN 'News': A multi-year contract to supply critical technological infrastructure is won by A.
-[22:19:16] [NEWS] unstructured type='FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:19:16] [NEWS] *** UNKNOWN 'FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:19:58] [NEWS] unstructured type='FedSpeak': Policymakers note that real rates are well above neutral estimates.
-[22:19:58] [NEWS] *** UNKNOWN 'FedSpeak': Policymakers note that real rates are well above neutral estimates.
-[22:20:21] [NEWS] unstructured type='FedSpeak': Global economic crosscurrents leave the Fed weighing competing risks.
-[22:20:21] [NEWS] *** UNKNOWN 'FedSpeak': Global economic crosscurrents leave the Fed weighing competing risks.
-[22:20:46] [NEWS] unstructured type='FedSpeak': Inflation ticking lower but not fast enough to settle the debate.
-[22:20:46] [NEWS] *** UNKNOWN 'FedSpeak': Inflation ticking lower but not fast enough to settle the debate.
-[22:21:28] [NEWS] unstructured type='FedSpeak': Fed reaffirms commitment to returning inflation to target, even at cost to growth.
-[22:21:28] [NEWS] *** UNKNOWN 'FedSpeak': Fed reaffirms commitment to returning inflation to target, even at cost to growth.
-[22:21:28] [NEWS] unstructured type='News': Swift execution of a strategic pivot draws glowing praise for A.
-[22:21:28] [NEWS] *** UNKNOWN 'News': Swift execution of a strategic pivot draws glowing praise for A.
-[22:21:51] [NEWS] unstructured type='FedSpeak': Markets await upcoming data; Fed communication remains cautious.
-[22:21:51] [NEWS] *** UNKNOWN 'FedSpeak': Markets await upcoming data; Fed communication remains cautious.
-[22:22:16] [NEWS] unstructured type='FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:22:16] [NEWS] *** UNKNOWN 'FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:22:58] [NEWS] unstructured type='FedSpeak': Strong payrolls data reinforces expectation that policy will stay firm.
-[22:22:58] [NEWS] *** UNKNOWN 'FedSpeak': Strong payrolls data reinforces expectation that policy will stay firm.
-[22:23:21] [NEWS] unstructured type='FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
-[22:23:21] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
-[22:23:46] [NEWS] unstructured type='FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
-[22:23:46] [NEWS] *** UNKNOWN 'FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
-[22:24:28] [NEWS] unstructured type='FedSpeak': Officials note that both upside and downside scenarios remain plausible.
-[22:24:28] [NEWS] *** UNKNOWN 'FedSpeak': Officials note that both upside and downside scenarios remain plausible.
-[22:24:51] [NEWS] unstructured type='FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:24:51] [NEWS] *** UNKNOWN 'FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
-[22:25:16] [NEWS] unstructured type='FedSpeak': Press conference raises more questions than answers on the rate trajectory.
-[22:25:16] [NEWS] *** UNKNOWN 'FedSpeak': Press conference raises more questions than answers on the rate trajectory.
-[22:25:58] [NEWS] unstructured type='FedSpeak': Manufacturing contraction deepens, adding to evidence of economic softening.
-[22:25:58] [NEWS] *** UNKNOWN 'FedSpeak': Manufacturing contraction deepens, adding to evidence of economic softening.
+[22:35:13] [NEWS] unstructured type='FedSpeak': Policymakers note that real rates are well above neutral estimates.
+[22:35:13] [NEWS] *** UNKNOWN 'FedSpeak': Policymakers note that real rates are well above neutral estimates.
+[22:35:17] [NEWS] unstructured type='News': A sudden downturn strikes A's key international market.
+[22:35:17] [NEWS] *** UNKNOWN 'News': A sudden downturn strikes A's key international market.
+[22:35:36] [NEWS] unstructured type='FedSpeak': Global economic crosscurrents leave the Fed weighing competing risks.
+[22:35:36] [NEWS] *** UNKNOWN 'FedSpeak': Global economic crosscurrents leave the Fed weighing competing risks.
+[22:36:01] [NEWS] unstructured type='FedSpeak': Inflation ticking lower but not fast enough to settle the debate.
+[22:36:01] [NEWS] *** UNKNOWN 'FedSpeak': Inflation ticking lower but not fast enough to settle the debate.
+[22:36:16] [NEWS] unstructured type='News': Significant expansion is reported by A in its subscription-based revenue streams.
+[22:36:16] [NEWS] *** UNKNOWN 'News': Significant expansion is reported by A in its subscription-based revenue streams.
+[22:36:43] [NEWS] unstructured type='FedSpeak': Fed reaffirms commitment to returning inflation to target, even at cost to growth.
+[22:36:43] [NEWS] *** UNKNOWN 'FedSpeak': Fed reaffirms commitment to returning inflation to target, even at cost to growth.
+[22:37:06] [NEWS] unstructured type='FedSpeak': Markets await upcoming data; Fed communication remains cautious.
+[22:37:06] [NEWS] *** UNKNOWN 'FedSpeak': Markets await upcoming data; Fed communication remains cautious.
+[22:37:29] [NEWS] unstructured type='News': A warned by regulators for repeated compliance violations.
+[22:37:29] [NEWS] *** UNKNOWN 'News': A warned by regulators for repeated compliance violations.
+[22:37:31] [NEWS] unstructured type='FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
+[22:37:31] [NEWS] *** UNKNOWN 'FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
+[22:38:13] [NEWS] unstructured type='FedSpeak': Bond markets drift as traders find no actionable signal from the Fed.
+[22:38:13] [NEWS] *** UNKNOWN 'FedSpeak': Bond markets drift as traders find no actionable signal from the Fed.
+[22:38:36] [NEWS] unstructured type='FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:38:36] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:39:01] [NEWS] unstructured type='FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
+[22:39:01] [NEWS] *** UNKNOWN 'FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
+[22:39:43] [NEWS] unstructured type='FedSpeak': Officials note that both upside and downside scenarios remain plausible.
+[22:39:43] [NEWS] *** UNKNOWN 'FedSpeak': Officials note that both upside and downside scenarios remain plausible.
+[22:40:06] [NEWS] unstructured type='FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
+[22:40:06] [NEWS] *** UNKNOWN 'FedSpeak': Fed acknowledges progress on inflation but flags lingering uncertainties.
+[22:40:31] [NEWS] unstructured type='FedSpeak': Press conference raises more questions than answers on the rate trajectory.
+[22:40:31] [NEWS] *** UNKNOWN 'FedSpeak': Press conference raises more questions than answers on the rate trajectory.
+[22:40:35] [NEWS] unstructured type='News': News of accounting irregularities causes A's stock to plummet.
+[22:40:35] [NEWS] *** UNKNOWN 'News': News of accounting irregularities causes A's stock to plummet.
+[22:41:13] [NEWS] unstructured type='FedSpeak': Manufacturing contraction deepens, adding to evidence of economic softening.
+[22:41:13] [NEWS] *** UNKNOWN 'FedSpeak': Manufacturing contraction deepens, adding to evidence of economic softening.
+[22:41:36] [NEWS] unstructured type='FedSpeak': Fed chair reiterates data dependence; no clear signal on next move.
+[22:41:36] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair reiterates data dependence; no clear signal on next move.
+[22:42:01] [NEWS] unstructured type='FedSpeak': Fed chair says progress on inflation has stalled in recent months.
+[22:42:01] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair says progress on inflation has stalled in recent months.
+[22:42:21] [NEWS] unstructured type='News': A CEO provides upbeat outlook at investor conference.
+[22:42:21] [NEWS] *** UNKNOWN 'News': A CEO provides upbeat outlook at investor conference.
+[22:42:43] [NEWS] unstructured type='FedSpeak': Fed keeps options open as inflation and growth signals conflict.
+[22:42:43] [NEWS] *** UNKNOWN 'FedSpeak': Fed keeps options open as inflation and growth signals conflict.
+[22:43:06] [NEWS] unstructured type='FedSpeak': Officials hint that the next move is more likely a cut than a hike.
+[22:43:06] [NEWS] *** UNKNOWN 'FedSpeak': Officials hint that the next move is more likely a cut than a hike.
+[22:43:31] [NEWS] unstructured type='FedSpeak': Bond markets drift as traders find no actionable signal from the Fed.
+[22:43:31] [NEWS] *** UNKNOWN 'FedSpeak': Bond markets drift as traders find no actionable signal from the Fed.
+[22:44:13] [NEWS] unstructured type='FedSpeak': Officials emphasize balanced risks amid mixed economic indicators.
+[22:44:13] [NEWS] *** UNKNOWN 'FedSpeak': Officials emphasize balanced risks amid mixed economic indicators.
+[22:44:18] [NEWS] unstructured type='News': A loses key distribution partnership unexpectedly.
+[22:44:18] [NEWS] *** UNKNOWN 'News': A loses key distribution partnership unexpectedly.
+[22:44:36] [NEWS] unstructured type='FedSpeak': Press conference raises more questions than answers on the rate trajectory.
+[22:44:36] [NEWS] *** UNKNOWN 'FedSpeak': Press conference raises more questions than answers on the rate trajectory.
+[22:45:01] [NEWS] unstructured type='FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
+[22:45:01] [NEWS] *** UNKNOWN 'FedSpeak': Fed opts to hold steady, citing the need to assess cumulative tightening effects.
+[22:45:43] [NEWS] unstructured type='FedSpeak': Officials note downside growth risks; markets lean toward cuts.
+[22:45:43] [NEWS] *** UNKNOWN 'FedSpeak': Officials note downside growth risks; markets lean toward cuts.
+[22:46:02] [NEWS] unstructured type='News': Diversity in leadership earns A widespread praise.
+[22:46:02] [NEWS] *** UNKNOWN 'News': Diversity in leadership earns A widespread praise.
+[22:46:06] [NEWS] unstructured type='FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:46:06] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:46:31] [NEWS] unstructured type='FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:46:31] [NEWS] *** UNKNOWN 'FedSpeak': Fed chair says the committee is not in a hurry to adjust rates in either direction.
+[22:47:13] [NEWS] unstructured type='FedSpeak': Fed minutes show growing consensus that restrictive stance may no longer be needed.
+[22:47:13] [NEWS] *** UNKNOWN 'FedSpeak': Fed minutes show growing consensus that restrictive stance may no longer be needed.
