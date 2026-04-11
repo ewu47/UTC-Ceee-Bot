@@ -63,8 +63,8 @@ def log(msg: str, file: Optional[str] = None) -> None:
 
 # Stock A
 PE_A         = 10       # constant P/E for A
-EPS_SCALE_A  = 100      # EPS arrives in dollars (e.g. 0.9), exchange prices in cents (e.g. 900)
-                        # Verified: eps≈0.9 → FV=0.9*10*100=900, matches market mid ✓
+EPS_SCALE_A  = 1        # 1 if EPS is in same unit as price; 100 if EPS in dollars, price in cents
+                        # VERIFY on practice round: print eps * PE_A vs book mid at earnings
 
 # Stock C
 PE0_C        = 14.0
@@ -285,47 +285,28 @@ class StockAStrategy:
     MAX_ORDER_SIZE      = 40
     MAX_OUTSTANDING_VOL = 120
     MAX_OPEN_ORDERS     = 50
-    MAX_ABS_POS         = 60    # reduced from 100: limits inventory risk from large sweeps
+    MAX_ABS_POS         = 200
 
     BASE_SPREAD         = 4
     SKEW_PER_UNIT       = 0.15
     QUOTE_SIZE          = 10
-    SOFT_POS_LIMIT      = 60    # reduced from 100: start widening spread sooner
+    SOFT_POS_LIMIT      = 100    # beyond this, reduce quote size and widen spread
 
     EDGE_THRESHOLD      = 2      # min edge to snipe outside post-earnings
     SNIPE_SIZE          = 30     # per-order snipe size post-earnings
     POST_EARNINGS_SECS  = 2.0    # aggressive mode duration after earnings (wall clock)
-    SNIPE_MAX_PENDING   = 2      # max resting snipe orders at any time — prevents vol quota drain
 
     def __init__(self, client: "MyXchangeClient"):
         self.client          = client
         self.timer           = EarningsTimer()
 
         self._pending_cancels: set[str]   = set()
-        self._snipe_ids: set[str]         = set()  # resting snipe order IDs to cancel before next snipe
         self._last_snipe_time: float      = 0.0
         self._last_quote_time: float      = 0.0
         self._earnings_end_time: float    = 0.0   # wall clock: when aggressive mode ends
         self._last_bid: Optional[tuple]   = None
         self._last_ask: Optional[tuple]   = None
         self._pre_cancel_done: bool       = False  # True if we already fired pre-cancel this cycle
-
-        # PnL tracking for a_pnl.log
-        self._a_trade_count: int   = 0
-        self._a_realized_pnl: float = 0.0
-        self._a_open_qty: int      = 0    # signed open qty (mirrors position)
-        self._a_open_cost: float   = 0.0  # total cost of open position (|qty| * avg_entry)
-
-        # Auto-calibration: accumulate implied EPS_SCALE_A across earnings events.
-        # Persists across rounds — PE_A is competition-wide, not round-specific.
-        self._scale_obs: list[float] = []
-        self.SCALE_MIN_OBS = 3        # minimum observations before auto-updating
-
-        # Silence flag: do NOT quote or snipe A before the first earnings fires.
-        # In the first 22 seconds the bot has no FV signal and sophisticated bots
-        # will systematically pick off any stale quotes we post, creating adverse
-        # selection losses. We sit out entirely until we have a real EPS.
-        self._has_first_eps: bool = False
 
     # ── Limit helpers ──────────────────────────────────────────────
 
@@ -372,91 +353,9 @@ class StockAStrategy:
 
     def on_cancel_confirmed(self, oid: str) -> None:
         self._pending_cancels.discard(oid)
-        self._snipe_ids.discard(oid)
 
     def on_order_rejected(self, oid: str) -> None:
         self._pending_cancels.discard(oid)
-        self._snipe_ids.discard(oid)
-
-    def on_fill(self, oid: str, qty: int = 0, price: int = 0, is_buy: bool = True) -> None:
-        self._pending_cancels.discard(oid)
-        self._snipe_ids.discard(oid)
-        if qty == 0:
-            return
-
-        # Update local realized PnL tracking
-        sign = 1 if is_buy else -1
-        if self._a_open_qty == 0:
-            self._a_open_qty  = sign * qty
-            self._a_open_cost = qty * price
-        elif (self._a_open_qty > 0 and is_buy) or (self._a_open_qty < 0 and not is_buy):
-            # Extending position in same direction
-            self._a_open_qty  += sign * qty
-            self._a_open_cost += qty * price
-        else:
-            # Reducing, closing, or reversing
-            avg = self._a_open_cost / abs(self._a_open_qty)
-            close_qty = min(qty, abs(self._a_open_qty))
-            if is_buy:
-                self._a_realized_pnl += close_qty * (avg - price)
-            else:
-                self._a_realized_pnl += close_qty * (price - avg)
-            self._a_open_qty += sign * qty
-            if self._a_open_qty == 0:
-                self._a_open_cost = 0.0
-            elif sign * self._a_open_qty > 0:
-                # Reversed direction
-                self._a_open_cost = (qty - close_qty) * price
-            else:
-                # Partially reduced
-                self._a_open_cost = abs(self._a_open_qty) * avg
-
-        self._a_trade_count += 1
-        pos  = self.client.positions.get("A", 0)
-        fv   = self.client.fair_values.get("A")
-        fv_s = f"{fv:.0f}" if fv else "N/A"
-        edge = (fv - price) if (is_buy and fv) else ((price - fv) if fv else 0)
-        log(
-            f"[A-PNL] FILL {'BUY ' if is_buy else 'SELL'} {qty}x A @ {price}  "
-            f"pos={pos:+d}  fv={fv_s}  edge={edge:+.0f}",
-            "a_pnl.log"
-        )
-        self._log_a_status()
-
-    def _log_a_status(self) -> None:
-        pos  = self.client.positions.get("A", 0)
-        fv   = self.client.fair_values.get("A")
-        b, a = self.client.get_best_bid_ask("A")
-        mid  = (b + a) / 2 if b is not None and a is not None else None
-
-        avg   = self._a_open_cost / abs(self._a_open_qty) if self._a_open_qty != 0 else 0
-        cost  = pos * avg if avg != 0 else 0
-        value = pos * mid if mid is not None else (pos * (fv or 0) if fv else 0)
-        upnl  = value - cost if avg != 0 else 0
-
-        fv_s  = f"{fv:.0f}"  if fv  is not None else "N/A"
-        mid_s = f"{mid:.0f}" if mid is not None else "N/A"
-        lines = [
-            f"[A-PNL] ── Status ({self._a_trade_count} trades) ──",
-            f"  A: pos={pos:+d}  cost={cost:+.0f}  val={value:+.0f}  uPnL={upnl:+.0f}"
-            f"  fv={fv_s}  mid={mid_s}",
-            f"  TOTAL: uPnL={upnl:+.0f}  realized={self._a_realized_pnl:+.0f}"
-            f"  net={upnl + self._a_realized_pnl:+.0f}",
-        ]
-        log("\n".join(lines), "a_pnl.log")
-
-    async def _cancel_resting_snipes(self) -> None:
-        """Cancel any snipe orders still resting in the book.
-        Snipes are meant to fill immediately — if they're resting, they're stale
-        and eating outstanding vol quota that blocks future orders."""
-        to_cancel = [
-            oid for oid in self._snipe_ids
-            if oid in self.client.open_orders and oid not in self._pending_cancels
-        ]
-        self._snipe_ids -= set(to_cancel)
-        for oid in to_cancel:
-            self._pending_cancels.add(oid)
-            await self.client.cancel_order(oid)
 
     # ── Fair value ────────────────────────────────────────────────
 
@@ -490,10 +389,6 @@ class StockAStrategy:
         fv = self.client.fair_values.get("A")
         if fv is None:
             return
-
-        # Cancel any resting snipes before sweeping — free up outstanding vol headroom
-        await self._cancel_resting_snipes()
-
         book = self.client.order_books["A"]
         edge = 2
 
@@ -509,7 +404,6 @@ class StockAStrategy:
             oid = await self._place(buy_qty, Side.BUY, px)
             if oid is None:
                 break
-            self._snipe_ids.add(oid)
             log(f"[A] SWEEP BUY  {buy_qty} @ {px} | edge={fv - px:.0f}")
 
         # Sell side: all bids above FV + edge → unconditional down to -pos limit
@@ -524,7 +418,6 @@ class StockAStrategy:
             oid = await self._place(sell_qty, Side.SELL, px)
             if oid is None:
                 break
-            self._snipe_ids.add(oid)
             log(f"[A] SWEEP SELL {sell_qty} @ {px} | edge={px - fv:.0f}")
 
     # ── Opportunistic snipe (outside post-earnings window) ────────
@@ -536,18 +429,10 @@ class StockAStrategy:
         now = asyncio.get_running_loop().time()
         if now - self._last_snipe_time < 0.3:
             return
-
-        # Budget: if we already have SNIPE_MAX_PENDING resting snipe orders, skip.
-        # This prevents reentrancy and vol quota drain regardless of timing.
-        if len(self._snipe_ids) >= self.SNIPE_MAX_PENDING:
-            return
-
         self._last_snipe_time = now
 
-        # Cancel any snipes from the previous window that didn't fill
-        await self._cancel_resting_snipes()
-
         best_bid, best_ask = self.client.get_best_bid_ask("A")
+        # Include flow adjustment (smart money signal)
         flow_adj = self.client.flow.fv_adjustment("A")
         fv_adj   = fv + flow_adj
 
@@ -557,7 +442,6 @@ class StockAStrategy:
             if qty > 0:
                 oid = await self._place(qty, Side.BUY, best_ask)
                 if oid:
-                    self._snipe_ids.add(oid)
                     log(f"[A] SNIPE BUY  {qty} @ {best_ask} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
         elif best_bid is not None and best_bid > fv_adj + self.EDGE_THRESHOLD:
             book_qty = self.client.order_books["A"].bids.get(best_bid, 0)
@@ -565,18 +449,11 @@ class StockAStrategy:
             if qty > 0:
                 oid = await self._place(qty, Side.SELL, best_bid)
                 if oid:
-                    self._snipe_ids.add(oid)
                     log(f"[A] SNIPE SELL {qty} @ {best_bid} | fv={fv:.0f} flow={flow_adj:+.0f} fv_adj={fv_adj:.0f}")
 
     # ── Passive MM ────────────────────────────────────────────────
 
     async def update_quotes(self) -> None:
-        # Silence until we have at least one real EPS from earnings.
-        # Seeding FV from market mid and quoting blindly exposes us to adverse
-        # selection: faster bots with calibrated models pick off our stale quotes.
-        if not self._has_first_eps:
-            return
-
         fv = self.client.fair_values.get("A")
         if fv is None:
             best_bid, best_ask = self.client.get_best_bid_ask("A")
@@ -658,54 +535,26 @@ class StockAStrategy:
 
     # ── Earnings handler ─────────────────────────────────────────
 
-    FV_CLAMP_PCT = 0.12   # max allowed |fv - mid| / mid before clamping
-
     async def on_earnings(self, eps: float, tick: int) -> None:
-        global EPS_SCALE_A
         old_fv = self.client.fair_values.get("A")
-        self.client.eps["A"] = eps
-        self._has_first_eps = True   # unlock quoting and sniping from this point on
-
-        b, a = self.client.get_best_bid_ask("A")
-        mid = (b + a) / 2 if (b and a) else None
-
-        # ── Auto-calibrate EPS_SCALE_A from observed (mid / (eps * PE_A)) ──
-        # Do this BEFORE computing new_fv so the sweep uses the best scale.
-        implied_scale = (mid / (eps * PE_A)) if mid else None
-        scale_updated = False
-        if implied_scale is not None and 20 < implied_scale < 500:
-            self._scale_obs.append(implied_scale)
-            if len(self._scale_obs) >= self.SCALE_MIN_OBS:
-                median_scale = sorted(self._scale_obs)[len(self._scale_obs) // 2]
-                if abs(median_scale - EPS_SCALE_A) > 1.0:
-                    log(f"[A] AUTO-SCALE {EPS_SCALE_A:.1f}→{median_scale:.1f} "
-                        f"(n={len(self._scale_obs)} obs, implied={implied_scale:.1f})")
-                    EPS_SCALE_A   = median_scale
-                    scale_updated = True
-
-        # ── Compute FV with (possibly updated) scale, then sanity clamp ──
-        new_fv  = self.calc_fv(eps)
-        clamped = False
-        if mid is not None:
-            clamp_hi = mid * (1 + self.FV_CLAMP_PCT)
-            clamp_lo = mid * (1 - self.FV_CLAMP_PCT)
-            if new_fv > clamp_hi:
-                log(f"[A] FV CLAMPED {new_fv:.0f}→{clamp_hi:.0f} (mid={mid:.0f}, +{self.FV_CLAMP_PCT*100:.0f}%)")
-                new_fv  = clamp_hi
-                clamped = True
-            elif new_fv < clamp_lo:
-                log(f"[A] FV CLAMPED {new_fv:.0f}→{clamp_lo:.0f} (mid={mid:.0f}, -{self.FV_CLAMP_PCT*100:.0f}%)")
-                new_fv  = clamp_lo
-                clamped = True
-
+        new_fv = self.calc_fv(eps)
+        self.client.eps["A"]         = eps
         self.client.fair_values["A"] = new_fv
 
+        # ── CALIBRATION INFO ─────────────────────────────────────────────
+        # If new_fv is far from market mid, EPS_SCALE_A is wrong.
+        # Check market mid vs new_fv, then type: scale <correct_scale>
+        # where correct_scale = market_mid / (eps * PE_A)
+        b, a = self.client.get_best_bid_ask("A")
+        mid = (b + a) / 2 if (b and a) else None
+        implied_scale = (mid / (eps * PE_A)) if mid else None
+        # ─────────────────────────────────────────────────────────────────
+
         delta = new_fv - old_fv if old_fv is not None else 0
-        log(f"[A] *** EARNINGS *** raw_eps={eps} PE_A={PE_A} scale={EPS_SCALE_A:.1f} "
+        log(f"[A] *** EARNINGS *** raw_eps={eps} PE_A={PE_A} scale={EPS_SCALE_A} "
             f"FV={old_fv}→{new_fv:.0f} Δ={delta:+.1f} "
             f"market_mid={'N/A' if mid is None else f'{mid:.0f}'} "
             f"implied_scale={'N/A' if implied_scale is None else f'{implied_scale:.2f}'} "
-            f"scale_updated={scale_updated} clamped={clamped} "
             f"pos={self.client.positions['A']}")
 
         # Arm timer for next expected earnings
@@ -737,8 +586,6 @@ class StockAStrategy:
     # ── Book update ───────────────────────────────────────────────
 
     async def on_book_update(self) -> None:
-        if not self._has_first_eps:
-            return   # silent until first earnings
         now = asyncio.get_running_loop().time()
         if time.time() < self._earnings_end_time:
             # Rate-limit to 5/sec during earnings — book updates can fire 30-50x/sec
@@ -754,16 +601,6 @@ class StockAStrategy:
     # ── Round reset ───────────────────────────────────────────────
 
     def reset(self) -> None:
-        if self._a_trade_count > 0:
-            log(
-                f"[A-PNL] ── ROUND END ── realized={self._a_realized_pnl:+.0f}  "
-                f"trades={self._a_trade_count}",
-                "a_pnl.log"
-            )
-        self._a_trade_count  = 0
-        self._a_realized_pnl = 0.0
-        self._a_open_qty     = 0
-        self._a_open_cost    = 0.0
         self._pending_cancels.clear()
         self._last_snipe_time  = 0.0
         self._last_quote_time  = 0.0
@@ -771,9 +608,8 @@ class StockAStrategy:
         self._last_bid = None
         self._last_ask = None
         self._pre_cancel_done  = False
-        self._has_first_eps    = False   # silence again until first earnings of new round
         # Don't reset timer — if we carry over mid-round it helps
-        # Don't reset FV — but _has_first_eps = False means we won't act on stale FV
+        # Don't reset FV — initial MM will use market mid until first earnings
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -821,12 +657,6 @@ class StockCStrategy:
         self._last_bid: Optional[tuple] = None
         self._last_ask: Optional[tuple] = None
 
-        # PnL tracking for c_pnl.log
-        self._c_trade_count: int    = 0
-        self._c_realized_pnl: float = 0.0
-        self._c_open_qty: int       = 0
-        self._c_open_cost: float    = 0.0
-
     def calc_fv(self, eps: float) -> float:
         p_hike = self.client.fair_values["R_HIKE"]
         p_cut  = self.client.fair_values["R_CUT"]
@@ -834,7 +664,7 @@ class StockCStrategy:
         dy     = self.beta * erc
         pe     = PE0_C * math.exp(-self.gamma * dy)
         db     = B0_OVER_N * (-D * dy + 0.5 * CONV * dy ** 2)
-        return (eps * pe + LAMBDA * db) * 100  # EPS in dollars, prices in cents
+        return eps * pe + LAMBDA * db
 
     def recalc_fv(self) -> None:
         eps = self.client.eps.get("C") or EPS0_C
@@ -890,17 +720,15 @@ class StockCStrategy:
 
         log(f"[C] fit: β={beta:.5f} γ={gamma:.2f}")
 
-        # Sanity-check: predicted FV should be within 8% of market mid.
-        # The old 25% threshold was too permissive — a 25% wrong FV on a 900-price
-        # stock is 225 ticks off, which causes large directional sweeps into the wrong side.
+        # Sanity-check: predicted FV should be within 25% of market mid
         eps   = self.client.eps.get("C") or EPS0_C
         erc   = 25.0 * self.client.fair_values["R_HIKE"] - 25.0 * self.client.fair_values["R_CUT"]
         pred  = self._predict(beta, gamma, erc, eps)
         c_bid, c_ask = self.client.get_best_bid_ask("C")
         if c_bid and c_ask:
             mid = (c_bid + c_ask) / 2
-            if mid > 0 and abs(pred - mid) / mid > 0.08:
-                log(f"[C] fit REJECTED (pred={pred:.1f} vs mid={mid:.1f} — {abs(pred-mid)/mid:.0%} off, need <8%)")
+            if mid > 0 and abs(pred - mid) / mid > 0.25:
+                log(f"[C] fit REJECTED (pred={pred:.1f} vs mid={mid:.1f} — {abs(pred-mid)/mid:.0%} off)")
                 self._recent_fits.clear()
                 return
 
@@ -958,11 +786,7 @@ class StockCStrategy:
         pos   = self.client.positions.get("C", 0)
         b, a  = self.client.get_best_bid_ask("C")
         max_p = 100
-        # Widen spread until the model is committed (BETA/GAMMA stable across 3 fits).
-        # Before commitment the FV error can be 10-20 ticks; a tight spread here
-        # means we passively accumulate a large directional position on a wrong model.
-        base_spread = 5 if self._committed else 10
-        spread = base_spread + int(abs(pos) / max_p * 4)   # wider than A since C has noise term
+        spread = 5 + int(abs(pos) / max_p * 4)   # wider than A since C has noise term
         skew   = 0.15 * pos
 
         bid = round(fv - spread / 2 - skew)
@@ -1037,77 +861,8 @@ class StockCStrategy:
             await self.client.safe_place_order("C", min(qty, 15), Side.SELL, px)
             log(f"[C] SWEEP SELL {min(qty,15)} @ {px} | fv={fv:.1f}")
 
-    def on_fill(self, qty: int, price: int, is_buy: bool) -> None:
-        if qty == 0:
-            return
-        sign = 1 if is_buy else -1
-        if self._c_open_qty == 0:
-            self._c_open_qty  = sign * qty
-            self._c_open_cost = qty * price
-        elif (self._c_open_qty > 0 and is_buy) or (self._c_open_qty < 0 and not is_buy):
-            self._c_open_qty  += sign * qty
-            self._c_open_cost += qty * price
-        else:
-            avg = self._c_open_cost / abs(self._c_open_qty)
-            close_qty = min(qty, abs(self._c_open_qty))
-            if is_buy:
-                self._c_realized_pnl += close_qty * (avg - price)
-            else:
-                self._c_realized_pnl += close_qty * (price - avg)
-            self._c_open_qty += sign * qty
-            if self._c_open_qty == 0:
-                self._c_open_cost = 0.0
-            elif sign * self._c_open_qty > 0:
-                self._c_open_cost = (qty - close_qty) * price
-            else:
-                self._c_open_cost = abs(self._c_open_qty) * avg
-
-        self._c_trade_count += 1
-        pos  = self.client.positions.get("C", 0)
-        fv   = self.client.fair_values.get("C")
-        fv_s = f"{fv:.1f}" if fv else "N/A"
-        edge = (fv - price) if (is_buy and fv) else ((price - fv) if fv else 0)
-        log(
-            f"[C-PNL] FILL {'BUY ' if is_buy else 'SELL'} {qty}x C @ {price}  "
-            f"pos={pos:+d}  fv={fv_s}  edge={edge:+.1f}",
-            "c_pnl.log"
-        )
-        self._log_c_status()
-
-    def _log_c_status(self) -> None:
-        pos  = self.client.positions.get("C", 0)
-        fv   = self.client.fair_values.get("C")
-        b, a = self.client.get_best_bid_ask("C")
-        mid  = (b + a) / 2 if b is not None and a is not None else None
-
-        avg   = self._c_open_cost / abs(self._c_open_qty) if self._c_open_qty != 0 else 0
-        cost  = pos * avg if avg != 0 else 0
-        value = pos * mid if mid is not None else (pos * (fv or 0) if fv else 0)
-        upnl  = value - cost if avg != 0 else 0
-
-        fv_s  = f"{fv:.1f}" if fv  is not None else "N/A"
-        mid_s = f"{mid:.0f}" if mid is not None else "N/A"
-        lines = [
-            f"[C-PNL] ── Status ({self._c_trade_count} trades) ──",
-            f"  C: pos={pos:+d}  cost={cost:+.0f}  val={value:+.0f}  uPnL={upnl:+.0f}"
-            f"  fv={fv_s}  mid={mid_s}",
-            f"  TOTAL: uPnL={upnl:+.0f}  realized={self._c_realized_pnl:+.0f}"
-            f"  net={upnl + self._c_realized_pnl:+.0f}",
-        ]
-        log("\n".join(lines), "c_pnl.log")
-
     def reset(self) -> None:
         """Call at round start.  Preserve model params — they carry over."""
-        if self._c_trade_count > 0:
-            log(
-                f"[C-PNL] ── ROUND END ── realized={self._c_realized_pnl:+.0f}  "
-                f"trades={self._c_trade_count}",
-                "c_pnl.log"
-            )
-        self._c_trade_count  = 0
-        self._c_realized_pnl = 0.0
-        self._c_open_qty     = 0
-        self._c_open_cost    = 0.0
         self._last_quote_time = 0.0
         self._last_snipe_time = 0.0
         # Do NOT reset beta, gamma, committed, recent_fits — model knowledge persists
@@ -1142,7 +897,7 @@ class OptionsStrategy:
     """
 
     BOX_PAIRS  = [(950, 1000), (1000, 1050), (950, 1050)]
-    MIN_EDGE   = 1
+    MIN_EDGE   = 2
     COOLDOWN   = 4.0
 
     def __init__(self, client: "MyXchangeClient"):
@@ -1164,9 +919,9 @@ class OptionsStrategy:
         """Scale order size with edge: larger edge → more units."""
         if edge < self.MIN_EDGE:
             return 0
-        if edge < 3:
+        if edge < 5:
             return 1
-        if edge < 7:
+        if edge < 10:
             return 3
         return 5
 
@@ -1325,10 +1080,6 @@ class FedStrategy:
     CPI_SIGMOID_K = 3000    # sigmoid steepness for tiny surprise magnitudes
     SPEAK_SHIFT= 0.03   # shift per fedspeak headline
 
-    SETTLE_PROB_MIN = 0.80  # minimum probability to fire settlement trade
-    SETTLE_MAX_POS  = 30    # larger cap for end-of-round concentrated bet
-    FED_TRADE_INTERVAL = 10.0  # seconds between routine Fed trade checks
-
     def __init__(self, client: "MyXchangeClient"):
         self.client      = client
         self._book_reads = 0
@@ -1338,10 +1089,6 @@ class FedStrategy:
         self._fed_fills: dict[str, list] = {c: [] for c in self.CONTRACTS}  # symbol → [(qty, price, side)]
         self._fed_realized_pnl: float = 0.0
         self._fed_trade_count: int = 0
-        self._settle_done: bool = False
-        # Rate limiting: prevents cancel/replace every 100ms when there is no new signal.
-        # Forced to 0 when CPI or fedspeak fires so that trade() executes immediately.
-        self._last_trade_time: float = 0.0
 
     def _read_book_probs(self) -> None:
         updated = 0
@@ -1389,7 +1136,6 @@ class FedStrategy:
                 self.client.fair_values["R_HIKE"] -= mv
                 self.client.fair_values["R_CUT"]  += mv
         self._normalize()
-        self._last_trade_time = 0.0   # force immediate trade on next loop tick
         log(f"[FED] post-CPI: H={self.client.fair_values['R_HIKE']:.3f} "
             f"N={self.client.fair_values['R_HOLD']:.3f} "
             f"C={self.client.fair_values['R_CUT']:.3f}", "fed.log")
@@ -1463,46 +1209,28 @@ class FedStrategy:
         else:
             log(f"[FED] UNCLASSIFIED: {content[:80]}", "fed.log")
         self._normalize()
-        self._last_trade_time = 0.0   # force immediate trade on next loop tick
 
     def _kelly_size(self, our_p: float, mkt_p: float, pos: int, direction: str) -> int:
-        """Half-Kelly position size for buying (direction='buy') or selling (direction='sell').
-
-        Returns 0 when already at the position limit — the old max(1,...) forced at least
-        1 unit even when pos >= MAX_POS, which combined with the 200-unit safe_place_order
-        limit caused runaway accumulation to 200 on persistent divergence.
-        """
+        """Half-Kelly position size for buying (direction='buy') or selling (direction='sell')."""
         if direction == "buy":
             if our_p <= mkt_p or mkt_p >= 1.0:
                 return 0
             kf = (our_p - mkt_p) / (1.0 - mkt_p)
-            room = self.MAX_POS - pos
         else:
             if our_p >= mkt_p or mkt_p <= 0.0:
                 return 0
             kf = (mkt_p - our_p) / mkt_p
-            room = self.MAX_POS + pos
-
-        if room <= 0:
-            return 0
-
-        half_k = 0.5 * kf
-        target = int(half_k * self.MAX_POS)
-        # Ensure at least 1 when there IS room and there IS edge, but never past limit
-        return min(max(1, target), room)
+        half_k  = 0.5 * kf
+        target  = int(half_k * self.MAX_POS)
+        if direction == "buy":
+            return max(1, min(target, self.MAX_POS - pos))
+        else:
+            return max(1, min(target, self.MAX_POS + pos))
 
     async def trade(self) -> None:
         self._read_book_probs()
         if self._book_reads < 3:
             return
-
-        # Rate-limit to prevent cancel/replace every 100ms.
-        # _last_trade_time is reset to 0 by on_cpi() and on_fedspeak() so that new
-        # signals always trigger an immediate trade on the next loop tick.
-        now = time.time()
-        if now - self._last_trade_time < self.FED_TRADE_INTERVAL:
-            return
-        self._last_trade_time = now
 
         for c in self.CONTRACTS:
             await self.client.cancel_quotes_for(c)
@@ -1528,52 +1256,6 @@ class FedStrategy:
                 if sz > 0:
                     log(f"[FED] SELL {c} {sz}u | our={our_p:.3f} mkt={mkt_p:.3f} div={div:+.3f}", "fed.log")
                     await self.client.safe_place_order(c, sz, Side.SELL, b)
-
-    async def settlement_trade(self) -> None:
-        """
-        End-of-round concentrated bet on the most likely Fed outcome.
-        Only fires once per round, only when our probability estimate is
-        above SETTLE_PROB_MIN (80%).  Uses a larger position cap than the
-        normal Kelly trades because settlement is imminent.
-        """
-        if self._settle_done:
-            return
-        self._settle_done = True
-
-        self._read_book_probs()
-        best_contract = max(self.CONTRACTS, key=lambda c: self.client.fair_values.get(c, 0))
-        our_p = self.client.fair_values.get(best_contract, 0)
-
-        if our_p < self.SETTLE_PROB_MIN:
-            log(f"[FED] SETTLE: skipped — best={best_contract} our_p={our_p:.3f} < {self.SETTLE_PROB_MIN}", "fed.log")
-            return
-
-        mkt_p = self._mkt_probs.get(best_contract)
-        if mkt_p is None:
-            log(f"[FED] SETTLE: skipped — no market price for {best_contract}", "fed.log")
-            return
-
-        _, a = self.client.get_best_bid_ask(best_contract)
-        if a is None:
-            log(f"[FED] SETTLE: skipped — no ask for {best_contract}", "fed.log")
-            return
-
-        pos = self.client.positions.get(best_contract, 0)
-        room = self.SETTLE_MAX_POS - pos
-        if room <= 0:
-            log(f"[FED] SETTLE: already at cap pos={pos}", "fed.log")
-            return
-
-        # EV check: only trade if positive expected value at current ask price
-        buy_p = a / 1000.0
-        ev = our_p * (1.0 - buy_p) - (1.0 - our_p) * buy_p
-        if ev <= 0:
-            log(f"[FED] SETTLE: skipped — negative EV={ev:.3f} at ask={a}", "fed.log")
-            return
-
-        qty = min(room, 10)
-        log(f"[FED] SETTLE: BUY {qty}x {best_contract} @ {a} | our_p={our_p:.3f} ev={ev:.3f}", "fed.log")
-        await self.client.safe_place_order(best_contract, qty, Side.BUY, a)
 
     def record_fill(self, symbol: str, qty: int, price: int, is_buy: bool) -> None:
         """Called from the main fill handler when a fed contract fills."""
@@ -1623,8 +1305,6 @@ class FedStrategy:
         # Keep probability estimates across rounds — they carry over
         self._book_reads = 0
         self._seen_headlines = set()
-        self._settle_done = False
-        self._last_trade_time = 0.0
         # Log final PnL before resetting
         if self._fed_trade_count > 0:
             log(f"[FED-PNL] ── ROUND END ── realized={self._fed_realized_pnl:+.0f}", "fed_pnl.log")
@@ -1665,22 +1345,20 @@ class ETFStrategy:
     def __init__(self, client: "MyXchangeClient"):
         self.client = client
 
-        self.pending_create        = False
-        self.pending_redeem        = False
-        self.filled_comps          = {"A": 0, "B": 0, "C": 0}
-        self.filled_etf            = 0
-        self._target_qty           = 0
-        self._pending_since        = None
-        self._last_one_sided_time  = 0.0  # cooldown: one-sided trades max once per 3s
+        self.pending_create   = False
+        self.pending_redeem   = False
+        self.filled_comps     = {"A": 0, "B": 0, "C": 0}
+        self.filled_etf       = 0
+        self._target_qty      = 0
+        self._pending_since   = None
 
     def _reset(self) -> None:
-        self.pending_create       = False
-        self.pending_redeem       = False
-        self.filled_comps         = {"A": 0, "B": 0, "C": 0}
-        self.filled_etf           = 0
-        self._target_qty          = 0
-        self._pending_since       = None
-        self._last_one_sided_time = 0.0
+        self.pending_create = False
+        self.pending_redeem = False
+        self.filled_comps   = {"A": 0, "B": 0, "C": 0}
+        self.filled_etf     = 0
+        self._target_qty    = 0
+        self._pending_since = None
 
     async def _abort(self) -> None:
         log("[ETF] ABORT — timing out partial arb, flattening legs")
@@ -1722,32 +1400,22 @@ class ETFStrategy:
         pos_etf = self.client.positions.get("ETF", 0)
         MAX_POS = 40
 
-        # ── ONE-SIDED TRADES (cooldown: once per 3s, mutually exclusive with full-swap) ──
-        now_t = time.time()
-        one_sided_fired = False
-        if now_t - self._last_one_sided_time >= 3.0:
-            # ETF overpriced: just sell the ETF
-            if diff > ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD and pos_etf > -MAX_POS:
-                qty = min(self.ONE_SIDED_QTY, MAX_POS + pos_etf)
-                if etf_bid is not None and qty > 0:
-                    self._last_one_sided_time = now_t
-                    one_sided_fired = True
-                    await self.client.safe_place_order("ETF", qty, Side.SELL, etf_bid)
-                    log(f"[ETF] ONE-SIDED SELL {qty} ETF @ {etf_bid} | diff={diff:+.1f}")
+        # ── ONE-SIDED TRADES (always attempt if threshold met) ──
+        # ETF overpriced: just sell the ETF
+        if diff > ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD and pos_etf > -MAX_POS:
+            qty = min(self.ONE_SIDED_QTY, MAX_POS + pos_etf)
+            if etf_bid is not None and qty > 0:
+                await self.client.safe_place_order("ETF", qty, Side.SELL, etf_bid)
+                log(f"[ETF] ONE-SIDED SELL {qty} ETF @ {etf_bid} | diff={diff:+.1f}")
 
-            # ETF underpriced: just buy the ETF
-            elif diff < -(ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD) and pos_etf < MAX_POS:
-                qty = min(self.ONE_SIDED_QTY, MAX_POS - pos_etf)
-                if etf_ask is not None and qty > 0:
-                    self._last_one_sided_time = now_t
-                    one_sided_fired = True
-                    await self.client.safe_place_order("ETF", qty, Side.BUY, etf_ask)
-                    log(f"[ETF] ONE-SIDED BUY  {qty} ETF @ {etf_ask} | diff={diff:+.1f}")
+        # ETF underpriced: just buy the ETF
+        elif diff < -(ETF_SWAP_COST + self.ONE_SIDED_THRESHOLD) and pos_etf < MAX_POS:
+            qty = min(self.ONE_SIDED_QTY, MAX_POS - pos_etf)
+            if etf_ask is not None and qty > 0:
+                await self.client.safe_place_order("ETF", qty, Side.BUY, etf_ask)
+                log(f"[ETF] ONE-SIDED BUY  {qty} ETF @ {etf_ask} | diff={diff:+.1f}")
 
-        # ── FULL-SWAP ARBS (only on large edge, never on same tick as one-sided) ──
-        if one_sided_fired:
-            return
-
+        # ── FULL-SWAP ARBS (only on large edge) ──
         if diff > ETF_SWAP_COST + self.FULL_SWAP_THRESHOLD:
             # Create: buy A+B+C, swap to ETF, sell ETF
             pos_a = self.client.positions.get("A", 0)
@@ -1878,15 +1546,7 @@ class MyXchangeClient(XChangeClient):
         # Tighter position cap on C — reduces PnL swings from large directional exposure.
         # C has a noise term in its formula; holding 200 units amplifies every fluctuation.
         # We capture the same edge with a smaller, more consistent position.
-        self.max_abs_position["C"] = 60
-        # A's sweep can build positions very quickly; cap at 60 at the client level
-        # so safe_place_order enforces it everywhere (quotes, snipes, sweeps).
-        self.max_abs_position["A"] = 60
-        # Fed prediction contracts: hold-to-settlement, no need for large positions.
-        # The _kelly_size already targets MAX_POS=25, but this hard cap at safe_place_order
-        # level prevents any bug (e.g. max(1,...) past limit) from building to 200.
-        for _fed_c in ("R_HIKE", "R_HOLD", "R_CUT"):
-            self.max_abs_position[_fed_c] = 30
+        self.max_abs_position["C"] = 80
 
         # Stale order cleanup: track when each order was placed
         # Orders resting unfilled for > STALE_ORDER_SECS get cancelled
@@ -1913,10 +1573,6 @@ class MyXchangeClient(XChangeClient):
         self._round_start_wall:  float = 0.0
         self._flatten_triggered: bool  = False
         self._pending_round_reset: bool = False
-
-        # B-move stale option detection
-        self._last_b_mid: Optional[float] = None
-        self._B_MOVE_THRESHOLD = 5  # ticks: detect B jumps above this size
 
     # ── Limit-aware order placement ───────────────────────────────
 
@@ -2060,6 +1716,7 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL-FAIL] {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int) -> None:
+        self.strat_a.on_cancel_confirmed(order_id)
         info = self.open_orders.get(order_id)
         if info is None:
             return
@@ -2072,13 +1729,6 @@ class MyXchangeClient(XChangeClient):
 
         log(f"[FILL] {sym} {'BUY' if is_buy else 'SELL'} {qty} @ {price} "
             f"pos={self.positions.get(sym, 0)}", "fills.log")
-
-        # Stock A PnL log — pass fill details so on_fill can log edge/uPnL
-        self.strat_a.on_fill(order_id, qty=qty if sym == "A" else 0, price=price, is_buy=is_buy)
-
-        # Stock C PnL log
-        if sym == "C":
-            self.strat_c.on_fill(qty, price, is_buy)
 
         # Fed prediction market PnL tracking
         self.strat_fed.record_fill(sym, qty, price, is_buy)
@@ -2115,57 +1765,11 @@ class MyXchangeClient(XChangeClient):
         self.my_quote_ids.discard(order_id)
         print(f"[REJECTED] {order_id}: {reason}")
 
-    async def _snipe_stale_options(self, new_b_mid: float) -> None:
-        """
-        Triggered when B's mid price jumps by >= _B_MOVE_THRESHOLD ticks.
-
-        When B moves fast, the option market-maker bots lag in repricing.  For an
-        ITM option the intrinsic value is max(0, S-K) for calls and max(0, K-S) for
-        puts.  If the current ask is BELOW intrinsic we have pure locked-in alpha:
-        buy the option and the worst case is immediate intrinsic value at settlement.
-
-        We only snipe when intrinsic > 15 (need meaningful edge after spread) and
-        ask < intrinsic (paying less than locked-in floor value).  Conservative to
-        avoid getting stuck with OTM options that haven't repriced yet.
-        """
-        for k in (950, 1000, 1050):
-            call_sym = f"B_C_{k}"
-            put_sym  = f"B_P_{k}"
-            call_intrinsic = max(0.0, new_b_mid - k)
-            put_intrinsic  = max(0.0, k - new_b_mid)
-
-            # Stale call: ask is below the locked-in intrinsic floor
-            if call_intrinsic > 15:
-                _, c_ask = self.get_best_bid_ask(call_sym)
-                if c_ask is not None and c_ask < call_intrinsic:
-                    await self.safe_place_order(call_sym, 2, Side.BUY, c_ask)
-                    log(f"[OPT] STALE CALL  BUY {call_sym} @ {c_ask} "
-                        f"intrinsic={call_intrinsic:.0f} B={new_b_mid:.0f}", "trades.log")
-
-            # Stale put: ask is below the locked-in intrinsic floor
-            if put_intrinsic > 15:
-                _, p_ask = self.get_best_bid_ask(put_sym)
-                if p_ask is not None and p_ask < put_intrinsic:
-                    await self.safe_place_order(put_sym, 2, Side.BUY, p_ask)
-                    log(f"[OPT] STALE PUT   BUY {put_sym}  @ {p_ask} "
-                        f"intrinsic={put_intrinsic:.0f} B={new_b_mid:.0f}", "trades.log")
-
     async def bot_handle_trade_msg(self, symbol: str, price: int, qty: int) -> None:
-        """Observe trade prints for smart money flow tracking and B-move option detection."""
+        """Observe trade prints for smart money flow tracking."""
         b, a = self.get_best_bid_ask(symbol)
         self.flow.observe(symbol, price, qty, b, a)
         log(f"[TRADE] {symbol} {qty} @ {price}", "trades.log")
-
-        # B-move stale option detection: when B jumps, option bots lag in repricing.
-        # Any option ask that is below its intrinsic value is pure locked-in alpha.
-        if symbol == "B" and b is not None and a is not None:
-            new_b_mid = (b + a) / 2
-            if (self._last_b_mid is not None
-                    and abs(new_b_mid - self._last_b_mid) >= self._B_MOVE_THRESHOLD):
-                log(f"[OPT] B moved {self._last_b_mid:.0f}→{new_b_mid:.0f} "
-                    f"({new_b_mid - self._last_b_mid:+.0f}) — scanning stale options")
-                await self._snipe_stale_options(new_b_mid)
-            self._last_b_mid = new_b_mid
 
     async def bot_handle_book_update(self, symbol: str) -> None:
         if symbol == "A":
@@ -2480,7 +2084,7 @@ class MyXchangeClient(XChangeClient):
             except Exception:
                 pass
         _log_handles = {}
-        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "a_pnl.log", "c_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
+        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
             open(f, "w").close()
 
         await asyncio.sleep(5)
@@ -2510,13 +2114,6 @@ class MyXchangeClient(XChangeClient):
             if self._flatten_triggered:
                 await asyncio.sleep(0.5)
                 continue
-
-            # ── Settlement timing trade (T-90s window, fires once) ──
-            elapsed = now - self._round_start_wall
-            if (self._round_start_wall > 0
-                    and elapsed >= ROUND_DURATION_SECS - 90
-                    and elapsed < ROUND_DURATION_SECS - FLATTEN_LEAD_SECS):
-                await self.strat_fed.settlement_trade()
 
             # ── Pre-earnings pre-cancel ──
             await self.strat_a.check_pre_cancel()
