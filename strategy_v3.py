@@ -285,7 +285,7 @@ class StockAStrategy:
     MAX_ORDER_SIZE      = 40
     MAX_OUTSTANDING_VOL = 120
     MAX_OPEN_ORDERS     = 50
-    MAX_ABS_POS         = 200
+    MAX_ABS_POS         = 100
 
     BASE_SPREAD         = 4
     SKEW_PER_UNIT       = 0.15
@@ -295,6 +295,7 @@ class StockAStrategy:
     EDGE_THRESHOLD      = 2      # min edge to snipe outside post-earnings
     SNIPE_SIZE          = 30     # per-order snipe size post-earnings
     POST_EARNINGS_SECS  = 2.0    # aggressive mode duration after earnings (wall clock)
+    SNIPE_MAX_PENDING   = 2      # max resting snipe orders at any time — prevents vol quota drain
 
     def __init__(self, client: "MyXchangeClient"):
         self.client          = client
@@ -308,6 +309,12 @@ class StockAStrategy:
         self._last_bid: Optional[tuple]   = None
         self._last_ask: Optional[tuple]   = None
         self._pre_cancel_done: bool       = False  # True if we already fired pre-cancel this cycle
+
+        # PnL tracking for a_pnl.log
+        self._a_trade_count: int   = 0
+        self._a_realized_pnl: float = 0.0
+        self._a_open_qty: int      = 0    # signed open qty (mirrors position)
+        self._a_open_cost: float   = 0.0  # total cost of open position (|qty| * avg_entry)
 
     # ── Limit helpers ──────────────────────────────────────────────
 
@@ -360,9 +367,72 @@ class StockAStrategy:
         self._pending_cancels.discard(oid)
         self._snipe_ids.discard(oid)
 
-    def on_fill(self, oid: str) -> None:
+    def on_fill(self, oid: str, qty: int = 0, price: int = 0, is_buy: bool = True) -> None:
         self._pending_cancels.discard(oid)
         self._snipe_ids.discard(oid)
+        if qty == 0:
+            return
+
+        # Update local realized PnL tracking
+        sign = 1 if is_buy else -1
+        if self._a_open_qty == 0:
+            self._a_open_qty  = sign * qty
+            self._a_open_cost = qty * price
+        elif (self._a_open_qty > 0 and is_buy) or (self._a_open_qty < 0 and not is_buy):
+            # Extending position in same direction
+            self._a_open_qty  += sign * qty
+            self._a_open_cost += qty * price
+        else:
+            # Reducing, closing, or reversing
+            avg = self._a_open_cost / abs(self._a_open_qty)
+            close_qty = min(qty, abs(self._a_open_qty))
+            if is_buy:
+                self._a_realized_pnl += close_qty * (avg - price)
+            else:
+                self._a_realized_pnl += close_qty * (price - avg)
+            self._a_open_qty += sign * qty
+            if self._a_open_qty == 0:
+                self._a_open_cost = 0.0
+            elif sign * self._a_open_qty > 0:
+                # Reversed direction
+                self._a_open_cost = (qty - close_qty) * price
+            else:
+                # Partially reduced
+                self._a_open_cost = abs(self._a_open_qty) * avg
+
+        self._a_trade_count += 1
+        pos  = self.client.positions.get("A", 0)
+        fv   = self.client.fair_values.get("A")
+        fv_s = f"{fv:.0f}" if fv else "N/A"
+        edge = (fv - price) if (is_buy and fv) else ((price - fv) if fv else 0)
+        log(
+            f"[A-PNL] FILL {'BUY ' if is_buy else 'SELL'} {qty}x A @ {price}  "
+            f"pos={pos:+d}  fv={fv_s}  edge={edge:+.0f}",
+            "a_pnl.log"
+        )
+        self._log_a_status()
+
+    def _log_a_status(self) -> None:
+        pos  = self.client.positions.get("A", 0)
+        fv   = self.client.fair_values.get("A")
+        b, a = self.client.get_best_bid_ask("A")
+        mid  = (b + a) / 2 if b is not None and a is not None else None
+
+        avg   = self._a_open_cost / abs(self._a_open_qty) if self._a_open_qty != 0 else 0
+        cost  = pos * avg if avg != 0 else 0
+        value = pos * mid if mid is not None else (pos * (fv or 0) if fv else 0)
+        upnl  = value - cost if avg != 0 else 0
+
+        fv_s  = f"{fv:.0f}"  if fv  is not None else "N/A"
+        mid_s = f"{mid:.0f}" if mid is not None else "N/A"
+        lines = [
+            f"[A-PNL] ── Status ({self._a_trade_count} trades) ──",
+            f"  A: pos={pos:+d}  cost={cost:+.0f}  val={value:+.0f}  uPnL={upnl:+.0f}"
+            f"  fv={fv_s}  mid={mid_s}",
+            f"  TOTAL: uPnL={upnl:+.0f}  realized={self._a_realized_pnl:+.0f}"
+            f"  net={upnl + self._a_realized_pnl:+.0f}",
+        ]
+        log("\n".join(lines), "a_pnl.log")
 
     async def _cancel_resting_snipes(self) -> None:
         """Cancel any snipe orders still resting in the book.
@@ -455,6 +525,12 @@ class StockAStrategy:
         now = asyncio.get_running_loop().time()
         if now - self._last_snipe_time < 0.3:
             return
+
+        # Budget: if we already have SNIPE_MAX_PENDING resting snipe orders, skip.
+        # This prevents reentrancy and vol quota drain regardless of timing.
+        if len(self._snipe_ids) >= self.SNIPE_MAX_PENDING:
+            return
+
         self._last_snipe_time = now
 
         # Cancel any snipes from the previous window that didn't fill
@@ -631,6 +707,16 @@ class StockAStrategy:
     # ── Round reset ───────────────────────────────────────────────
 
     def reset(self) -> None:
+        if self._a_trade_count > 0:
+            log(
+                f"[A-PNL] ── ROUND END ── realized={self._a_realized_pnl:+.0f}  "
+                f"trades={self._a_trade_count}",
+                "a_pnl.log"
+            )
+        self._a_trade_count  = 0
+        self._a_realized_pnl = 0.0
+        self._a_open_qty     = 0
+        self._a_open_cost    = 0.0
         self._pending_cancels.clear()
         self._last_snipe_time  = 0.0
         self._last_quote_time  = 0.0
@@ -1758,7 +1844,6 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL-FAIL] {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int) -> None:
-        self.strat_a.on_fill(order_id)
         info = self.open_orders.get(order_id)
         if info is None:
             return
@@ -1771,6 +1856,9 @@ class MyXchangeClient(XChangeClient):
 
         log(f"[FILL] {sym} {'BUY' if is_buy else 'SELL'} {qty} @ {price} "
             f"pos={self.positions.get(sym, 0)}", "fills.log")
+
+        # Stock A PnL log — pass fill details so on_fill can log edge/uPnL
+        self.strat_a.on_fill(order_id, qty=qty if sym == "A" else 0, price=price, is_buy=is_buy)
 
         # Fed prediction market PnL tracking
         self.strat_fed.record_fill(sym, qty, price, is_buy)
@@ -2126,7 +2214,7 @@ class MyXchangeClient(XChangeClient):
             except Exception:
                 pass
         _log_handles = {}
-        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
+        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "a_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
             open(f, "w").close()
 
         await asyncio.sleep(5)

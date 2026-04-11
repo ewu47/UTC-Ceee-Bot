@@ -1,0 +1,1496 @@
+[22:19:18] [A-PNL] FILL SELL 5x A @ 825  pos=+0  fv=826  edge=-2
+[22:19:18] [A-PNL] ── Status (1 trades) ──
+  A: pos=+0  cost=+0  val=+0  uPnL=+0  fv=826  mid=825
+  TOTAL: uPnL=+0  realized=+0  net=+0
+[22:19:19] [A-PNL] FILL BUY  5x A @ 824  pos=+5  fv=826  edge=+2
+[22:19:19] [A-PNL] ── Status (2 trades) ──
+  A: pos=+5  cost=+0  val=+4120  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+5  net=+5
+[22:19:19] [A-PNL] FILL SELL 5x A @ 824  pos=+5  fv=826  edge=-2
+[22:19:19] [A-PNL] ── Status (3 trades) ──
+  A: pos=+5  cost=+4120  val=+4120  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+5  net=+5
+[22:19:20] [A-PNL] FILL BUY  5x A @ 824  pos=+10  fv=826  edge=+2
+[22:19:20] [A-PNL] ── Status (4 trades) ──
+  A: pos=+10  cost=+0  val=+8240  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+5  net=+5
+[22:19:20] [A-PNL] FILL SELL 5x A @ 824  pos=+10  fv=826  edge=-2
+[22:19:20] [A-PNL] ── Status (5 trades) ──
+  A: pos=+10  cost=+8240  val=+8240  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+5  net=+5
+[22:19:21] [A-PNL] FILL BUY  5x A @ 823  pos=+15  fv=826  edge=+4
+[22:19:21] [A-PNL] ── Status (6 trades) ──
+  A: pos=+15  cost=+0  val=+12345  uPnL=+0  fv=826  mid=823
+  TOTAL: uPnL=+0  realized=+10  net=+10
+[22:19:21] [A-PNL] FILL SELL 5x A @ 823  pos=+15  fv=826  edge=-4
+[22:19:21] [A-PNL] ── Status (7 trades) ──
+  A: pos=+15  cost=+12345  val=+12345  uPnL=+0  fv=826  mid=823
+  TOTAL: uPnL=+0  realized=+10  net=+10
+[22:19:22] [A-PNL] FILL BUY  5x A @ 822  pos=+20  fv=826  edge=+4
+[22:19:22] [A-PNL] ── Status (8 trades) ──
+  A: pos=+20  cost=+0  val=+16440  uPnL=+0  fv=826  mid=822
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:22] [A-PNL] FILL SELL 5x A @ 822  pos=+20  fv=826  edge=-4
+[22:19:22] [A-PNL] ── Status (9 trades) ──
+  A: pos=+20  cost=+16440  val=+16440  uPnL=+0  fv=826  mid=822
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:23] [A-PNL] FILL BUY  5x A @ 822  pos=+25  fv=826  edge=+4
+[22:19:23] [A-PNL] ── Status (10 trades) ──
+  A: pos=+25  cost=+0  val=+20550  uPnL=+0  fv=826  mid=822
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:24] [A-PNL] FILL BUY  30x A @ 824  pos=+55  fv=826  edge=+2
+[22:19:24] [A-PNL] ── Status (11 trades) ──
+  A: pos=+55  cost=+45320  val=+45320  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:24] [A-PNL] FILL BUY  22x A @ 824  pos=+77  fv=826  edge=+2
+[22:19:24] [A-PNL] ── Status (12 trades) ──
+  A: pos=+77  cost=+63448  val=+63448  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:25] [A-PNL] FILL BUY  30x A @ 824  pos=+107  fv=826  edge=+2
+[22:19:25] [A-PNL] ── Status (13 trades) ──
+  A: pos=+107  cost=+88168  val=+88168  uPnL=+0  fv=826  mid=824
+  TOTAL: uPnL=+0  realized=+15  net=+15
+[22:19:26] [A-PNL] FILL SELL 5x A @ 816  pos=+107  fv=826  edge=-10
+[22:19:26] [A-PNL] ── Status (14 trades) ──
+  A: pos=+107  cost=+88168  val=+87312  uPnL=-856  fv=826  mid=816
+  TOTAL: uPnL=-856  realized=-25  net=-881
+[22:19:27] [A-PNL] FILL SELL 5x A @ 818  pos=+107  fv=826  edge=-8
+[22:19:27] [A-PNL] ── Status (15 trades) ──
+  A: pos=+107  cost=+88168  val=+87526  uPnL=-642  fv=826  mid=818
+  TOTAL: uPnL=-642  realized=-55  net=-697
+[22:19:27] [A-PNL] FILL BUY  5x A @ 820  pos=+112  fv=826  edge=+6
+[22:19:27] [A-PNL] ── Status (16 trades) ──
+  A: pos=+112  cost=+92259  val=+91840  uPnL=-419  fv=826  mid=820
+  TOTAL: uPnL=-419  realized=-55  net=-474
+[22:19:27] [A-PNL] FILL SELL 5x A @ 820  pos=+112  fv=826  edge=-6
+[22:19:27] [A-PNL] ── Status (17 trades) ──
+  A: pos=+112  cost=+92259  val=+91840  uPnL=-419  fv=826  mid=820
+  TOTAL: uPnL=-419  realized=-74  net=-493
+[22:19:28] [A-PNL] FILL SELL 5x A @ 819  pos=+112  fv=826  edge=-8
+[22:19:28] [A-PNL] ── Status (18 trades) ──
+  A: pos=+112  cost=+92259  val=+91728  uPnL=-531  fv=826  mid=819
+  TOTAL: uPnL=-531  realized=-97  net=-628
+[22:19:28] [A-PNL] FILL BUY  30x A @ 829  pos=+142  fv=850  edge=+21
+[22:19:28] [A-PNL] ── Status (19 trades) ──
+  A: pos=+142  cost=+117202  val=+117718  uPnL=+516  fv=850  mid=829
+  TOTAL: uPnL=+516  realized=-97  net=+418
+[22:19:28] [A-PNL] FILL BUY  22x A @ 829  pos=+164  fv=850  edge=+21
+[22:19:28] [A-PNL] ── Status (20 trades) ──
+  A: pos=+164  cost=+135470  val=+136038  uPnL=+568  fv=850  mid=830
+  TOTAL: uPnL=+568  realized=-97  net=+470
+[22:19:28] [A-PNL] FILL BUY  8x A @ 830  pos=+172  fv=850  edge=+20
+[22:19:28] [A-PNL] ── Status (21 trades) ──
+  A: pos=+172  cost=+142122  val=+142674  uPnL=+552  fv=850  mid=830
+  TOTAL: uPnL=+552  realized=-97  net=+455
+[22:19:28] [A-PNL] FILL BUY  28x A @ 830  pos=+200  fv=850  edge=+20
+[22:19:28] [A-PNL] ── Status (22 trades) ──
+  A: pos=+200  cost=+165392  val=+166000  uPnL=+608  fv=850  mid=830
+  TOTAL: uPnL=+608  realized=-97  net=+511
+[22:19:31] [A-PNL] FILL SELL 10x A @ 826  pos=+190  fv=850  edge=-24
+[22:19:31] [A-PNL] ── Status (23 trades) ──
+  A: pos=+190  cost=+157122  val=+157035  uPnL=-87  fv=850  mid=826
+  TOTAL: uPnL=-87  realized=-107  net=-194
+[22:19:39] [A-PNL] FILL BUY  10x A @ 831  pos=+200  fv=850  edge=+19
+[22:19:39] [A-PNL] ── Status (24 trades) ──
+  A: pos=+200  cost=+165444  val=+166200  uPnL=+756  fv=850  mid=831
+  TOTAL: uPnL=+756  realized=-107  net=+649
+[22:19:39] [A-PNL] FILL SELL 5x A @ 817  pos=+195  fv=850  edge=-33
+[22:19:39] [A-PNL] ── Status (25 trades) ──
+  A: pos=+195  cost=+161308  val=+159315  uPnL=-1993  fv=850  mid=817
+  TOTAL: uPnL=-1993  realized=-158  net=-2151
+[22:19:39] [A-PNL] FILL BUY  5x A @ 827  pos=+200  fv=850  edge=+23
+[22:19:39] [A-PNL] ── Status (26 trades) ──
+  A: pos=+200  cost=+165442  val=+165400  uPnL=-42  fv=850  mid=827
+  TOTAL: uPnL=-42  realized=-158  net=-201
+[22:19:39] [A-PNL] FILL SELL 5x A @ 817  pos=+195  fv=850  edge=-33
+[22:19:39] [A-PNL] ── Status (27 trades) ──
+  A: pos=+195  cost=+161306  val=+159315  uPnL=-1991  fv=850  mid=817
+  TOTAL: uPnL=-1991  realized=-209  net=-2201
+[22:19:39] [A-PNL] FILL BUY  5x A @ 829  pos=+200  fv=850  edge=+21
+[22:19:39] [A-PNL] ── Status (28 trades) ──
+  A: pos=+200  cost=+165454  val=+165800  uPnL=+346  fv=850  mid=829
+  TOTAL: uPnL=+346  realized=-209  net=+137
+[22:19:40] [A-PNL] FILL SELL 5x A @ 818  pos=+195  fv=850  edge=-32
+[22:19:40] [A-PNL] ── Status (29 trades) ──
+  A: pos=+195  cost=+161318  val=+159510  uPnL=-1808  fv=850  mid=818
+  TOTAL: uPnL=-1808  realized=-255  net=-2063
+[22:19:40] [A-PNL] FILL BUY  5x A @ 830  pos=+200  fv=850  edge=+20
+[22:19:40] [A-PNL] ── Status (30 trades) ──
+  A: pos=+200  cost=+165472  val=+166000  uPnL=+528  fv=850  mid=830
+  TOTAL: uPnL=+528  realized=-255  net=+273
+[22:19:41] [A-PNL] FILL SELL 5x A @ 823  pos=+195  fv=850  edge=-27
+[22:19:41] [A-PNL] ── Status (31 trades) ──
+  A: pos=+195  cost=+161335  val=+160485  uPnL=-850  fv=850  mid=823
+  TOTAL: uPnL=-850  realized=-277  net=-1127
+[22:19:42] [A-PNL] FILL SELL 5x A @ 829  pos=+195  fv=850  edge=-21
+[22:19:42] [A-PNL] ── Status (32 trades) ──
+  A: pos=+195  cost=+161335  val=+161655  uPnL=+320  fv=850  mid=829
+  TOTAL: uPnL=+320  realized=-269  net=+51
+[22:19:42] [A-PNL] FILL BUY  5x A @ 841  pos=+200  fv=850  edge=+9
+[22:19:42] [A-PNL] ── Status (33 trades) ──
+  A: pos=+200  cost=+165563  val=+168200  uPnL=+2637  fv=850  mid=841
+  TOTAL: uPnL=+2637  realized=-269  net=+2368
+[22:19:43] [A-PNL] FILL SELL 5x A @ 828  pos=+195  fv=850  edge=-22
+[22:19:43] [A-PNL] ── Status (34 trades) ──
+  A: pos=+195  cost=+161423  val=+161460  uPnL=+37  fv=850  mid=828
+  TOTAL: uPnL=+37  realized=-268  net=-232
+[22:19:43] [A-PNL] FILL BUY  5x A @ 838  pos=+200  fv=850  edge=+12
+[22:19:43] [A-PNL] ── Status (35 trades) ──
+  A: pos=+200  cost=+165630  val=+167600  uPnL=+1970  fv=850  mid=838
+  TOTAL: uPnL=+1970  realized=-268  net=+1701
+[22:19:47] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:19:47] [A-PNL] ── Status (36 trades) ──
+  A: pos=+195  cost=+161490  val=+159900  uPnL=-1590  fv=850  mid=820
+  TOTAL: uPnL=-1590  realized=-309  net=-1899
+[22:19:47] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:19:47] [A-PNL] ── Status (37 trades) ──
+  A: pos=+195  cost=+161490  val=+159900  uPnL=-1590  fv=850  mid=820
+  TOTAL: uPnL=-1590  realized=-350  net=-1939
+[22:19:47] [A-PNL] FILL BUY  5x A @ 829  pos=+200  fv=850  edge=+21
+[22:19:47] [A-PNL] ── Status (38 trades) ──
+  A: pos=+200  cost=+165636  val=+165800  uPnL=+164  fv=850  mid=829
+  TOTAL: uPnL=+164  realized=-350  net=-186
+[22:19:48] [A-PNL] FILL SELL 5x A @ 819  pos=+195  fv=850  edge=-31
+[22:19:48] [A-PNL] ── Status (39 trades) ──
+  A: pos=+195  cost=+161495  val=+159705  uPnL=-1790  fv=850  mid=819
+  TOTAL: uPnL=-1790  realized=-396  net=-2186
+[22:19:48] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:19:48] [A-PNL] ── Status (40 trades) ──
+  A: pos=+195  cost=+161495  val=+160388  uPnL=-1108  fv=850  mid=822
+  TOTAL: uPnL=-1108  realized=-426  net=-1534
+[22:19:49] [A-PNL] FILL SELL 5x A @ 826  pos=+195  fv=850  edge=-24
+[22:19:49] [A-PNL] ── Status (41 trades) ──
+  A: pos=+195  cost=+161495  val=+161070  uPnL=-425  fv=850  mid=826
+  TOTAL: uPnL=-425  realized=-437  net=-863
+[22:19:51] [A-PNL] FILL SELL 10x A @ 827  pos=+185  fv=850  edge=-23
+[22:19:51] [A-PNL] ── Status (42 trades) ──
+  A: pos=+185  cost=+153214  val=+153088  uPnL=-126  fv=850  mid=828
+  TOTAL: uPnL=-126  realized=-449  net=-575
+[22:19:52] [A-PNL] FILL SELL 10x A @ 828  pos=+175  fv=850  edge=-22
+[22:19:52] [A-PNL] ── Status (43 trades) ──
+  A: pos=+175  cost=+144932  val=+144900  uPnL=-32  fv=850  mid=828
+  TOTAL: uPnL=-32  realized=-451  net=-483
+[22:19:53] [A-PNL] FILL BUY  10x A @ 830  pos=+175  fv=850  edge=+20
+[22:19:53] [A-PNL] ── Status (44 trades) ──
+  A: pos=+175  cost=+144958  val=+145250  uPnL=+292  fv=850  mid=830
+  TOTAL: uPnL=+292  realized=-451  net=-159
+[22:19:53] [A-PNL] FILL SELL 10x A @ 830  pos=+175  fv=850  edge=-20
+[22:19:53] [A-PNL] ── Status (45 trades) ──
+  A: pos=+175  cost=+144958  val=+145250  uPnL=+292  fv=850  mid=830
+  TOTAL: uPnL=+292  realized=-434  net=-143
+[22:19:55] [A-PNL] FILL SELL 5x A @ 823  pos=+175  fv=850  edge=-27
+[22:19:55] [A-PNL] ── Status (46 trades) ──
+  A: pos=+175  cost=+144958  val=+143938  uPnL=-1021  fv=850  mid=822
+  TOTAL: uPnL=-1021  realized=-461  net=-1482
+[22:19:56] [A-PNL] FILL SELL 5x A @ 820  pos=+175  fv=850  edge=-30
+[22:19:56] [A-PNL] ── Status (47 trades) ──
+  A: pos=+175  cost=+144958  val=+143762  uPnL=-1196  fv=850  mid=822
+  TOTAL: uPnL=-1196  realized=-503  net=-1698
+[22:19:56] [A-PNL] FILL BUY  10x A @ 829  pos=+180  fv=850  edge=+21
+[22:19:56] [A-PNL] ── Status (48 trades) ──
+  A: pos=+180  cost=+149111  val=+149220  uPnL=+109  fv=850  mid=829
+  TOTAL: uPnL=+109  realized=-503  net=-394
+[22:19:56] [A-PNL] FILL SELL 10x A @ 829  pos=+180  fv=850  edge=-21
+[22:19:56] [A-PNL] ── Status (49 trades) ──
+  A: pos=+180  cost=+149111  val=+149220  uPnL=+109  fv=850  mid=829
+  TOTAL: uPnL=+109  realized=-497  net=-388
+[22:19:56] [A-PNL] FILL BUY  3x A @ 818  pos=+185  fv=850  edge=+32
+[22:19:56] [A-PNL] ── Status (50 trades) ──
+  A: pos=+185  cost=+153197  val=+151330  uPnL=-1867  fv=850  mid=818
+  TOTAL: uPnL=-1867  realized=-497  net=-2363
+[22:19:56] [A-PNL] FILL SELL 3x A @ 818  pos=+185  fv=850  edge=-32
+[22:19:56] [A-PNL] ── Status (51 trades) ──
+  A: pos=+185  cost=+153197  val=+151330  uPnL=-1867  fv=850  mid=818
+  TOTAL: uPnL=-1867  realized=-527  net=-2394
+[22:19:56] [A-PNL] FILL BUY  2x A @ 818  pos=+185  fv=850  edge=+32
+[22:19:56] [A-PNL] ── Status (52 trades) ──
+  A: pos=+185  cost=+153160  val=+151330  uPnL=-1830  fv=850  mid=818
+  TOTAL: uPnL=-1830  realized=-527  net=-2357
+[22:19:56] [A-PNL] FILL SELL 2x A @ 818  pos=+185  fv=850  edge=-32
+[22:19:56] [A-PNL] ── Status (53 trades) ──
+  A: pos=+185  cost=+153160  val=+151330  uPnL=-1830  fv=850  mid=818
+  TOTAL: uPnL=-1830  realized=-547  net=-2377
+[22:19:57] [A-PNL] FILL BUY  15x A @ 828  pos=+200  fv=850  edge=+22
+[22:19:57] [A-PNL] ── Status (54 trades) ──
+  A: pos=+200  cost=+165581  val=+165600  uPnL=+19  fv=850  mid=828
+  TOTAL: uPnL=+19  realized=-547  net=-528
+[22:19:57] [A-PNL] FILL SELL 5x A @ 816  pos=+195  fv=850  edge=-34
+[22:19:57] [A-PNL] ── Status (55 trades) ──
+  A: pos=+195  cost=+161442  val=+159120  uPnL=-2322  fv=850  mid=816
+  TOTAL: uPnL=-2322  realized=-606  net=-2928
+[22:19:58] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:19:58] [A-PNL] ── Status (56 trades) ──
+  A: pos=+195  cost=+161442  val=+159900  uPnL=-1542  fv=850  mid=820
+  TOTAL: uPnL=-1542  realized=-646  net=-2188
+[22:19:59] [A-PNL] FILL BUY  5x A @ 826  pos=+200  fv=850  edge=+24
+[22:19:59] [A-PNL] ── Status (57 trades) ──
+  A: pos=+200  cost=+165564  val=+165200  uPnL=-364  fv=850  mid=826
+  TOTAL: uPnL=-364  realized=-646  net=-1010
+[22:19:59] [A-PNL] FILL SELL 5x A @ 817  pos=+195  fv=850  edge=-33
+[22:19:59] [A-PNL] ── Status (58 trades) ──
+  A: pos=+195  cost=+161425  val=+159315  uPnL=-2110  fv=850  mid=817
+  TOTAL: uPnL=-2110  realized=-700  net=-2810
+[22:20:00] [A-PNL] FILL SELL 5x A @ 808  pos=+195  fv=850  edge=-42
+[22:20:00] [A-PNL] ── Status (59 trades) ──
+  A: pos=+195  cost=+161425  val=+157560  uPnL=-3865  fv=850  mid=808
+  TOTAL: uPnL=-3865  realized=-799  net=-4664
+[22:20:02] [A-PNL] FILL SELL 5x A @ 815  pos=+195  fv=850  edge=-35
+[22:20:02] [A-PNL] ── Status (60 trades) ──
+  A: pos=+195  cost=+161425  val=+158632  uPnL=-2792  fv=850  mid=814
+  TOTAL: uPnL=-2792  realized=-863  net=-3656
+[22:20:02] [A-PNL] FILL BUY  5x A @ 825  pos=+200  fv=850  edge=+25
+[22:20:02] [A-PNL] ── Status (61 trades) ──
+  A: pos=+200  cost=+165536  val=+165100  uPnL=-436  fv=850  mid=826
+  TOTAL: uPnL=-436  realized=-863  net=-1299
+[22:20:02] [A-PNL] FILL SELL 5x A @ 811  pos=+195  fv=850  edge=-39
+[22:20:02] [A-PNL] ── Status (62 trades) ──
+  A: pos=+195  cost=+161397  val=+158145  uPnL=-3252  fv=850  mid=811
+  TOTAL: uPnL=-3252  realized=-946  net=-4199
+[22:20:03] [A-PNL] FILL SELL 5x A @ 824  pos=+195  fv=850  edge=-26
+[22:20:03] [A-PNL] ── Status (63 trades) ──
+  A: pos=+195  cost=+161397  val=+160680  uPnL=-717  fv=850  mid=824
+  TOTAL: uPnL=-717  realized=-965  net=-1682
+[22:20:04] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:20:04] [A-PNL] ── Status (64 trades) ──
+  A: pos=+195  cost=+161397  val=+159900  uPnL=-1497  fv=850  mid=820
+  TOTAL: uPnL=-1497  realized=-1003  net=-2501
+[22:20:05] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:20:05] [A-PNL] ── Status (65 trades) ──
+  A: pos=+195  cost=+161397  val=+159900  uPnL=-1497  fv=850  mid=820
+  TOTAL: uPnL=-1497  realized=-1042  net=-2539
+[22:20:05] [A-PNL] FILL SELL 5x A @ 817  pos=+195  fv=850  edge=-33
+[22:20:05] [A-PNL] ── Status (66 trades) ──
+  A: pos=+195  cost=+161397  val=+159315  uPnL=-2082  fv=850  mid=817
+  TOTAL: uPnL=-2082  realized=-1095  net=-3178
+[22:20:06] [A-PNL] FILL SELL 5x A @ 821  pos=+195  fv=850  edge=-29
+[22:20:06] [A-PNL] ── Status (67 trades) ──
+  A: pos=+195  cost=+161397  val=+160095  uPnL=-1302  fv=850  mid=821
+  TOTAL: uPnL=-1302  realized=-1128  net=-2431
+[22:20:06] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:20:06] [A-PNL] ── Status (68 trades) ──
+  A: pos=+195  cost=+161397  val=+160290  uPnL=-1107  fv=850  mid=822
+  TOTAL: uPnL=-1107  realized=-1157  net=-2264
+[22:20:07] [A-PNL] FILL SELL 5x A @ 824  pos=+195  fv=850  edge=-26
+[22:20:07] [A-PNL] ── Status (69 trades) ──
+  A: pos=+195  cost=+161397  val=+160582  uPnL=-815  fv=850  mid=824
+  TOTAL: uPnL=-815  realized=-1175  net=-1990
+[22:20:07] [A-PNL] FILL BUY  5x A @ 835  pos=+200  fv=850  edge=+15
+[22:20:07] [A-PNL] ── Status (70 trades) ──
+  A: pos=+200  cost=+165649  val=+167100  uPnL=+1451  fv=850  mid=836
+  TOTAL: uPnL=+1451  realized=-1175  net=+276
+[22:20:07] [A-PNL] FILL SELL 5x A @ 823  pos=+195  fv=850  edge=-27
+[22:20:07] [A-PNL] ── Status (71 trades) ──
+  A: pos=+195  cost=+161507  val=+160485  uPnL=-1022  fv=850  mid=823
+  TOTAL: uPnL=-1022  realized=-1201  net=-2224
+[22:20:08] [A-PNL] FILL SELL 5x A @ 824  pos=+195  fv=850  edge=-26
+[22:20:08] [A-PNL] ── Status (72 trades) ──
+  A: pos=+195  cost=+161507  val=+160680  uPnL=-827  fv=850  mid=824
+  TOTAL: uPnL=-827  realized=-1223  net=-2050
+[22:20:08] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:20:08] [A-PNL] ── Status (73 trades) ──
+  A: pos=+195  cost=+161507  val=+159900  uPnL=-1607  fv=850  mid=820
+  TOTAL: uPnL=-1607  realized=-1264  net=-2871
+[22:20:09] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:20:09] [A-PNL] ── Status (74 trades) ──
+  A: pos=+195  cost=+161507  val=+160192  uPnL=-1315  fv=850  mid=822
+  TOTAL: uPnL=-1315  realized=-1295  net=-2610
+[22:20:11] [A-PNL] FILL SELL 10x A @ 827  pos=+185  fv=850  edge=-23
+[22:20:11] [A-PNL] ── Status (75 trades) ──
+  A: pos=+185  cost=+153225  val=+152995  uPnL=-230  fv=850  mid=827
+  TOTAL: uPnL=-230  realized=-1308  net=-1537
+[22:20:11] [A-PNL] FILL BUY  5x A @ 827  pos=+190  fv=850  edge=+23
+[22:20:11] [A-PNL] ── Status (76 trades) ──
+  A: pos=+190  cost=+157337  val=+157130  uPnL=-207  fv=850  mid=827
+  TOTAL: uPnL=-207  realized=-1308  net=-1514
+[22:20:11] [A-PNL] FILL SELL 5x A @ 827  pos=+190  fv=850  edge=-23
+[22:20:11] [A-PNL] ── Status (77 trades) ──
+  A: pos=+190  cost=+157337  val=+157130  uPnL=-207  fv=850  mid=827
+  TOTAL: uPnL=-207  realized=-1313  net=-1520
+[22:20:12] [A-PNL] FILL SELL 5x A @ 825  pos=+195  fv=850  edge=-25
+[22:20:12] [A-PNL] ── Status (78 trades) ──
+  A: pos=+195  cost=+161477  val=+160875  uPnL=-602  fv=850  mid=825
+  TOTAL: uPnL=-602  realized=-1328  net=-1930
+[22:20:12] [A-PNL] FILL SELL 5x A @ 826  pos=+190  fv=850  edge=-24
+[22:20:12] [A-PNL] ── Status (79 trades) ──
+  A: pos=+190  cost=+157337  val=+157035  uPnL=-302  fv=850  mid=826
+  TOTAL: uPnL=-302  realized=-1339  net=-1640
+[22:20:12] [A-PNL] FILL SELL 5x A @ 827  pos=+190  fv=850  edge=-23
+[22:20:12] [A-PNL] ── Status (80 trades) ──
+  A: pos=+190  cost=+157337  val=+157130  uPnL=-207  fv=850  mid=827
+  TOTAL: uPnL=-207  realized=-1344  net=-1551
+[22:20:13] [A-PNL] FILL SELL 5x A @ 828  pos=+190  fv=850  edge=-22
+[22:20:13] [A-PNL] ── Status (81 trades) ──
+  A: pos=+190  cost=+157337  val=+157320  uPnL=-17  fv=850  mid=828
+  TOTAL: uPnL=-17  realized=-1345  net=-1361
+[22:20:13] [A-PNL] FILL SELL 5x A @ 828  pos=+190  fv=850  edge=-22
+[22:20:13] [A-PNL] ── Status (82 trades) ──
+  A: pos=+190  cost=+157337  val=+157320  uPnL=-17  fv=850  mid=828
+  TOTAL: uPnL=-17  realized=-1345  net=-1362
+[22:20:14] [A-PNL] FILL SELL 5x A @ 825  pos=+190  fv=850  edge=-25
+[22:20:14] [A-PNL] ── Status (83 trades) ──
+  A: pos=+190  cost=+157337  val=+156750  uPnL=-587  fv=850  mid=825
+  TOTAL: uPnL=-587  realized=-1361  net=-1947
+[22:20:14] [A-PNL] FILL SELL 5x A @ 824  pos=+190  fv=850  edge=-26
+[22:20:14] [A-PNL] ── Status (84 trades) ──
+  A: pos=+190  cost=+0  val=+156560  uPnL=+0  fv=850  mid=824
+  TOTAL: uPnL=+0  realized=-1381  net=-1381
+[22:20:15] [A-PNL] FILL SELL 5x A @ 826  pos=+190  fv=850  edge=-24
+[22:20:15] [A-PNL] ── Status (85 trades) ──
+  A: pos=+190  cost=+156940  val=+156940  uPnL=+0  fv=850  mid=826
+  TOTAL: uPnL=+0  realized=-1381  net=-1381
+[22:20:15] [A-PNL] FILL SELL 10x A @ 827  pos=+180  fv=850  edge=-23
+[22:20:15] [A-PNL] ── Status (86 trades) ──
+  A: pos=+180  cost=+148800  val=+148860  uPnL=+60  fv=850  mid=827
+  TOTAL: uPnL=+60  realized=-1381  net=-1321
+[22:20:15] [A-PNL] FILL SELL 5x A @ 825  pos=+180  fv=850  edge=-25
+[22:20:15] [A-PNL] ── Status (87 trades) ──
+  A: pos=+180  cost=+148725  val=+148500  uPnL=-225  fv=850  mid=825
+  TOTAL: uPnL=-225  realized=-1381  net=-1606
+[22:20:16] [A-PNL] FILL SELL 5x A @ 820  pos=+180  fv=850  edge=-30
+[22:20:16] [A-PNL] ── Status (88 trades) ──
+  A: pos=+180  cost=+148500  val=+147600  uPnL=-900  fv=850  mid=820
+  TOTAL: uPnL=-900  realized=-1381  net=-2281
+[22:20:16] [A-PNL] FILL BUY  10x A @ 829  pos=+180  fv=850  edge=+21
+[22:20:16] [A-PNL] ── Status (89 trades) ──
+  A: pos=+180  cost=+148500  val=+149220  uPnL=+720  fv=850  mid=829
+  TOTAL: uPnL=+720  realized=-1421  net=-701
+[22:20:16] [A-PNL] FILL SELL 10x A @ 829  pos=+180  fv=850  edge=-21
+[22:20:16] [A-PNL] ── Status (90 trades) ──
+  A: pos=+180  cost=+148788  val=+149220  uPnL=+432  fv=850  mid=829
+  TOTAL: uPnL=+432  realized=-1421  net=-989
+[22:20:17] [A-PNL] FILL BUY  5x A @ 825  pos=+190  fv=850  edge=+25
+[22:20:17] [A-PNL] ── Status (91 trades) ──
+  A: pos=+190  cost=+157054  val=+156750  uPnL=-304  fv=850  mid=825
+  TOTAL: uPnL=-304  realized=-1413  net=-1717
+[22:20:17] [A-PNL] FILL SELL 5x A @ 825  pos=+190  fv=850  edge=-25
+[22:20:17] [A-PNL] ── Status (92 trades) ──
+  A: pos=+190  cost=+156993  val=+156750  uPnL=-243  fv=850  mid=825
+  TOTAL: uPnL=-243  realized=-1413  net=-1656
+[22:20:17] [A-PNL] FILL SELL 5x A @ 822  pos=+190  fv=850  edge=-28
+[22:20:17] [A-PNL] ── Status (93 trades) ──
+  A: pos=+190  cost=+156858  val=+156180  uPnL=-678  fv=850  mid=822
+  TOTAL: uPnL=-678  realized=-1413  net=-2091
+[22:20:18] [A-PNL] FILL SELL 5x A @ 820  pos=+190  fv=850  edge=-30
+[22:20:18] [A-PNL] ── Status (94 trades) ──
+  A: pos=+190  cost=+156707  val=+155800  uPnL=-907  fv=850  mid=820
+  TOTAL: uPnL=-907  realized=-1413  net=-2320
+[22:20:23] [A-PNL] FILL SELL 10x A @ 827  pos=+180  fv=850  edge=-23
+[22:20:23] [A-PNL] ── Status (95 trades) ──
+  A: pos=+180  cost=+148548  val=+149040  uPnL=+492  fv=850  mid=828
+  TOTAL: uPnL=+492  realized=-1413  net=-921
+[22:20:29] [A-PNL] FILL BUY  20x A @ 847  pos=+200  fv=850  edge=+3
+[22:20:29] [A-PNL] ── Status (96 trades) ──
+  A: pos=+200  cost=+165053  val=+169400  uPnL=+4347  fv=850  mid=847
+  TOTAL: uPnL=+4347  realized=-1848  net=+2499
+[22:20:29] [A-PNL] FILL SELL 5x A @ 837  pos=+195  fv=850  edge=-13
+[22:20:29] [A-PNL] ── Status (97 trades) ──
+  A: pos=+195  cost=+161308  val=+163215  uPnL=+1907  fv=850  mid=837
+  TOTAL: uPnL=+1907  realized=-1848  net=+59
+[22:20:29] [A-PNL] FILL BUY  5x A @ 848  pos=+200  fv=850  edge=+2
+[22:20:29] [A-PNL] ── Status (98 trades) ──
+  A: pos=+200  cost=+165444  val=+169600  uPnL=+4156  fv=850  mid=848
+  TOTAL: uPnL=+4156  realized=-1952  net=+2204
+[22:20:29] [A-PNL] FILL SELL 5x A @ 835  pos=+195  fv=850  edge=-15
+[22:20:29] [A-PNL] ── Status (99 trades) ──
+  A: pos=+195  cost=+161561  val=+162728  uPnL=+1166  fv=850  mid=834
+  TOTAL: uPnL=+1166  realized=-1952  net=-785
+[22:20:30] [A-PNL] FILL SELL 5x A @ 832  pos=+195  fv=850  edge=-18
+[22:20:30] [A-PNL] ── Status (100 trades) ──
+  A: pos=+195  cost=+161658  val=+162240  uPnL=+582  fv=850  mid=832
+  TOTAL: uPnL=+582  realized=-1952  net=-1370
+[22:20:31] [A-PNL] FILL SELL 5x A @ 838  pos=+195  fv=850  edge=-12
+[22:20:31] [A-PNL] ── Status (101 trades) ──
+  A: pos=+195  cost=+161877  val=+163410  uPnL=+1533  fv=850  mid=838
+  TOTAL: uPnL=+1533  realized=-1952  net=-419
+[22:20:31] [A-PNL] FILL SELL 5x A @ 836  pos=+195  fv=850  edge=-14
+[22:20:31] [A-PNL] ── Status (102 trades) ──
+  A: pos=+195  cost=+162004  val=+163020  uPnL=+1016  fv=850  mid=836
+  TOTAL: uPnL=+1016  realized=-1952  net=-936
+[22:20:34] [A-PNL] FILL SELL 5x A @ 838  pos=+195  fv=850  edge=-12
+[22:20:34] [A-PNL] ── Status (103 trades) ──
+  A: pos=+195  cost=+162145  val=+163410  uPnL=+1265  fv=850  mid=838
+  TOTAL: uPnL=+1265  realized=-1952  net=-686
+[22:20:34] [A-PNL] FILL SELL 5x A @ 838  pos=+195  fv=850  edge=-12
+[22:20:34] [A-PNL] ── Status (104 trades) ──
+  A: pos=+195  cost=+162260  val=+163410  uPnL=+1150  fv=850  mid=838
+  TOTAL: uPnL=+1150  realized=-1952  net=-801
+[22:20:34] [A-PNL] FILL SELL 5x A @ 838  pos=+195  fv=850  edge=-12
+[22:20:34] [A-PNL] ── Status (105 trades) ──
+  A: pos=+195  cost=+162356  val=+163410  uPnL=+1054  fv=850  mid=838
+  TOTAL: uPnL=+1054  realized=-1952  net=-897
+[22:20:35] [A-PNL] FILL SELL 5x A @ 836  pos=+195  fv=850  edge=-14
+[22:20:35] [A-PNL] ── Status (106 trades) ──
+  A: pos=+195  cost=+162407  val=+162728  uPnL=+321  fv=850  mid=834
+  TOTAL: uPnL=+321  realized=-1952  net=-1631
+[22:20:35] [A-PNL] FILL BUY  5x A @ 847  pos=+200  fv=850  edge=+3
+[22:20:35] [A-PNL] ── Status (107 trades) ──
+  A: pos=+200  cost=+166571  val=+169400  uPnL=+2829  fv=850  mid=847
+  TOTAL: uPnL=+2829  realized=-2022  net=+807
+[22:20:47] [A-PNL] FILL SELL 5x A @ 832  pos=+195  fv=850  edge=-18
+[22:20:47] [A-PNL] ── Status (108 trades) ──
+  A: pos=+195  cost=+162394  val=+162142  uPnL=-251  fv=850  mid=832
+  TOTAL: uPnL=-251  realized=-2022  net=-2274
+[22:20:47] [A-PNL] FILL BUY  5x A @ 844  pos=+200  fv=850  edge=+6
+[22:20:47] [A-PNL] ── Status (109 trades) ──
+  A: pos=+200  cost=+166558  val=+168800  uPnL=+2242  fv=850  mid=844
+  TOTAL: uPnL=+2242  realized=-2078  net=+164
+[22:20:48] [A-PNL] FILL SELL 5x A @ 828  pos=+195  fv=850  edge=-22
+[22:20:48] [A-PNL] ── Status (110 trades) ──
+  A: pos=+195  cost=+162322  val=+161460  uPnL=-862  fv=850  mid=828
+  TOTAL: uPnL=-862  realized=-2078  net=-2940
+[22:20:48] [A-PNL] FILL BUY  5x A @ 839  pos=+200  fv=850  edge=+11
+[22:20:48] [A-PNL] ── Status (111 trades) ──
+  A: pos=+200  cost=+166484  val=+167800  uPnL=+1316  fv=850  mid=839
+  TOTAL: uPnL=+1316  realized=-2111  net=-795
+[22:20:49] [A-PNL] FILL SELL 5x A @ 830  pos=+195  fv=850  edge=-20
+[22:20:49] [A-PNL] ── Status (112 trades) ──
+  A: pos=+195  cost=+162286  val=+161655  uPnL=-631  fv=850  mid=829
+  TOTAL: uPnL=-631  realized=-2111  net=-2742
+[22:20:49] [A-PNL] FILL SELL 5x A @ 830  pos=+195  fv=850  edge=-20
+[22:20:49] [A-PNL] ── Status (113 trades) ──
+  A: pos=+195  cost=+162255  val=+161850  uPnL=-405  fv=850  mid=830
+  TOTAL: uPnL=-405  realized=-2111  net=-2516
+[22:20:50] [A-PNL] FILL SELL 5x A @ 820  pos=+195  fv=850  edge=-30
+[22:20:50] [A-PNL] ── Status (114 trades) ──
+  A: pos=+195  cost=+162098  val=+159900  uPnL=-2198  fv=850  mid=820
+  TOTAL: uPnL=-2198  realized=-2111  net=-4309
+[22:20:50] [A-PNL] FILL SELL 5x A @ 818  pos=+195  fv=850  edge=-32
+[22:20:50] [A-PNL] ── Status (115 trades) ──
+  A: pos=+195  cost=+161936  val=+159510  uPnL=-2426  fv=850  mid=818
+  TOTAL: uPnL=-2426  realized=-2111  net=-4537
+[22:20:51] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:20:51] [A-PNL] ── Status (116 trades) ──
+  A: pos=+195  cost=+161839  val=+160290  uPnL=-1549  fv=850  mid=822
+  TOTAL: uPnL=-1549  realized=-2111  net=-3660
+[22:20:52] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:20:52] [A-PNL] ── Status (117 trades) ──
+  A: pos=+195  cost=+161753  val=+160290  uPnL=-1463  fv=850  mid=822
+  TOTAL: uPnL=-1463  realized=-2111  net=-3574
+[22:20:52] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:20:52] [A-PNL] ── Status (118 trades) ──
+  A: pos=+195  cost=+161676  val=+160290  uPnL=-1386  fv=850  mid=822
+  TOTAL: uPnL=-1386  realized=-2111  net=-3497
+[22:20:52] [A-PNL] FILL SELL 5x A @ 821  pos=+195  fv=850  edge=-29
+[22:20:52] [A-PNL] ── Status (119 trades) ──
+  A: pos=+195  cost=+161597  val=+160095  uPnL=-1502  fv=850  mid=821
+  TOTAL: uPnL=-1502  realized=-2111  net=-3613
+[22:20:53] [A-PNL] FILL SELL 5x A @ 826  pos=+195  fv=850  edge=-24
+[22:20:53] [A-PNL] ── Status (120 trades) ──
+  A: pos=+195  cost=+161572  val=+161070  uPnL=-502  fv=850  mid=826
+  TOTAL: uPnL=-502  realized=-2111  net=-2613
+[22:20:56] [A-PNL] FILL SELL 10x A @ 827  pos=+185  fv=850  edge=-23
+[22:20:56] [A-PNL] ── Status (121 trades) ──
+  A: pos=+185  cost=+153261  val=+153088  uPnL=-173  fv=850  mid=828
+  TOTAL: uPnL=-173  realized=-2111  net=-2285
+[22:20:57] [A-PNL] FILL BUY  10x A @ 828  pos=+185  fv=850  edge=+22
+[22:20:57] [A-PNL] ── Status (122 trades) ──
+  A: pos=+185  cost=+153261  val=+153180  uPnL=-81  fv=850  mid=828
+  TOTAL: uPnL=-81  realized=-2107  net=-2188
+[22:20:57] [A-PNL] FILL SELL 10x A @ 828  pos=+185  fv=850  edge=-22
+[22:20:57] [A-PNL] ── Status (123 trades) ──
+  A: pos=+185  cost=+153254  val=+153180  uPnL=-74  fv=850  mid=828
+  TOTAL: uPnL=-74  realized=-2107  net=-2181
+[22:21:01] [A-PNL] FILL BUY  10x A @ 828  pos=+185  fv=850  edge=+22
+[22:21:01] [A-PNL] ── Status (124 trades) ──
+  A: pos=+185  cost=+153254  val=+153180  uPnL=-74  fv=850  mid=828
+  TOTAL: uPnL=-74  realized=-2103  net=-2177
+[22:21:01] [A-PNL] FILL SELL 10x A @ 828  pos=+185  fv=850  edge=-22
+[22:21:01] [A-PNL] ── Status (125 trades) ──
+  A: pos=+185  cost=+153247  val=+153180  uPnL=-67  fv=850  mid=828
+  TOTAL: uPnL=-67  realized=-2103  net=-2170
+[22:21:01] [A-PNL] FILL BUY  5x A @ 820  pos=+190  fv=850  edge=+30
+[22:21:01] [A-PNL] ── Status (126 trades) ──
+  A: pos=+190  cost=+157389  val=+155800  uPnL=-1589  fv=850  mid=820
+  TOTAL: uPnL=-1589  realized=-2061  net=-3650
+[22:21:01] [A-PNL] FILL SELL 5x A @ 820  pos=+190  fv=850  edge=-30
+[22:21:01] [A-PNL] ── Status (127 trades) ──
+  A: pos=+190  cost=+157320  val=+155800  uPnL=-1520  fv=850  mid=820
+  TOTAL: uPnL=-1520  realized=-2061  net=-3581
+[22:21:01] [A-PNL] FILL SELL 5x A @ 819  pos=+195  fv=850  edge=-31
+[22:21:01] [A-PNL] ── Status (128 trades) ──
+  A: pos=+195  cost=+161387  val=+159705  uPnL=-1682  fv=850  mid=819
+  TOTAL: uPnL=-1682  realized=-2061  net=-3743
+[22:21:02] [A-PNL] FILL SELL 5x A @ 818  pos=+195  fv=850  edge=-32
+[22:21:02] [A-PNL] ── Status (129 trades) ──
+  A: pos=+195  cost=+161312  val=+159510  uPnL=-1802  fv=850  mid=818
+  TOTAL: uPnL=-1802  realized=-2061  net=-3863
+[22:21:03] [A-PNL] FILL SELL 5x A @ 818  pos=+195  fv=850  edge=-32
+[22:21:03] [A-PNL] ── Status (130 trades) ──
+  A: pos=+195  cost=+161243  val=+159510  uPnL=-1733  fv=850  mid=818
+  TOTAL: uPnL=-1733  realized=-2061  net=-3794
+[22:21:03] [A-PNL] FILL SELL 5x A @ 818  pos=+195  fv=850  edge=-32
+[22:21:03] [A-PNL] ── Status (131 trades) ──
+  A: pos=+195  cost=+161178  val=+159510  uPnL=-1668  fv=850  mid=818
+  TOTAL: uPnL=-1668  realized=-2061  net=-3729
+[22:21:03] [A-PNL] FILL SELL 5x A @ 822  pos=+195  fv=850  edge=-28
+[22:21:03] [A-PNL] ── Status (132 trades) ──
+  A: pos=+195  cost=+161147  val=+160192  uPnL=-954  fv=850  mid=822
+  TOTAL: uPnL=-954  realized=-2061  net=-3015
+[22:21:05] [A-PNL] FILL SELL 14x A @ 825  pos=+181  fv=686  edge=+139
+[22:21:05] [A-PNL] ── Status (133 trades) ──
+  A: pos=+181  cost=+149554  val=+149325  uPnL=-229  fv=686  mid=825
+  TOTAL: uPnL=-229  realized=-2061  net=-2290
+[22:21:05] [A-PNL] FILL SELL 30x A @ 824  pos=+151  fv=686  edge=+138
+[22:21:05] [A-PNL] ── Status (134 trades) ──
+  A: pos=+151  cost=+124710  val=+124348  uPnL=-362  fv=686  mid=824
+  TOTAL: uPnL=-362  realized=-2061  net=-2423
+[22:21:05] [A-PNL] FILL SELL 30x A @ 824  pos=+121  fv=686  edge=+138
+[22:21:05] [A-PNL] ── Status (135 trades) ──
+  A: pos=+121  cost=+99901  val=+99583  uPnL=-318  fv=686  mid=823
+  TOTAL: uPnL=-318  realized=-2061  net=-2379
+[22:21:05] [A-PNL] FILL SELL 12x A @ 824  pos=+109  fv=686  edge=+138
+[22:21:05] [A-PNL] ── Status (136 trades) ──
+  A: pos=+109  cost=+89984  val=+89652  uPnL=-332  fv=686  mid=822
+  TOTAL: uPnL=-332  realized=-2061  net=-2393
+[22:21:05] [A-PNL] FILL SELL 30x A @ 823  pos=+79  fv=686  edge=+137
+[22:21:05] [A-PNL] ── Status (137 trades) ──
+  A: pos=+79  cost=+65194  val=+65017  uPnL=-177  fv=686  mid=823
+  TOTAL: uPnL=-177  realized=-2061  net=-2239
+[22:21:05] [A-PNL] FILL SELL 18x A @ 823  pos=+61  fv=686  edge=+137
+[22:21:05] [A-PNL] ── Status (138 trades) ──
+  A: pos=+61  cost=+50331  val=+49959  uPnL=-372  fv=686  mid=819
+  TOTAL: uPnL=-372  realized=-2061  net=-2433
+[22:21:05] [A-PNL] FILL SELL 12x A @ 815  pos=+49  fv=686  edge=+129
+[22:21:05] [A-PNL] ── Status (139 trades) ──
+  A: pos=+49  cost=+40409  val=+40131  uPnL=-278  fv=686  mid=819
+  TOTAL: uPnL=-278  realized=-2061  net=-2339
+[22:21:05] [A-PNL] FILL SELL 30x A @ 815  pos=+19  fv=686  edge=+129
+[22:21:05] [A-PNL] ── Status (140 trades) ──
+  A: pos=+19  cost=+15651  val=+15476  uPnL=-176  fv=686  mid=814
+  TOTAL: uPnL=-176  realized=-2061  net=-2237
+[22:21:05] [A-PNL] FILL SELL 10x A @ 815  pos=+9  fv=686  edge=+129
+[22:21:05] [A-PNL] ── Status (141 trades) ──
+  A: pos=+9  cost=+7411  val=+7326  uPnL=-85  fv=686  mid=814
+  TOTAL: uPnL=-85  realized=-2061  net=-2146
+[22:21:05] [A-PNL] FILL SELL 4x A @ 814  pos=+5  fv=686  edge=+128
+[22:21:05] [A-PNL] ── Status (142 trades) ──
+  A: pos=+5  cost=+4117  val=+4070  uPnL=-47  fv=686  mid=814
+  TOTAL: uPnL=-47  realized=-2061  net=-2108
+[22:21:05] [A-PNL] FILL SELL 30x A @ 813  pos=-25  fv=686  edge=+127
+[22:21:05] [A-PNL] ── Status (143 trades) ──
+  A: pos=-25  cost=-20563  val=-20325  uPnL=+238  fv=686  mid=813
+  TOTAL: uPnL=+238  realized=-2061  net=-1823
+[22:21:05] [A-PNL] FILL SELL 30x A @ 813  pos=-55  fv=686  edge=+127
+[22:21:05] [A-PNL] ── Status (144 trades) ──
+  A: pos=-55  cost=-45198  val=-44660  uPnL=+538  fv=686  mid=812
+  TOTAL: uPnL=+538  realized=-2061  net=-1523
+[22:21:05] [A-PNL] FILL SELL 12x A @ 813  pos=-67  fv=686  edge=+127
+[22:21:05] [A-PNL] ── Status (145 trades) ──
+  A: pos=-67  cost=-55042  val=-54370  uPnL=+671  fv=686  mid=812
+  TOTAL: uPnL=+671  realized=-2061  net=-1390
+[22:21:05] [A-PNL] FILL SELL 18x A @ 811  pos=-85  fv=686  edge=+125
+[22:21:05] [A-PNL] ── Status (146 trades) ──
+  A: pos=-85  cost=-69790  val=-68978  uPnL=+813  fv=686  mid=812
+  TOTAL: uPnL=+813  realized=-2061  net=-1248
+[22:21:05] [A-PNL] FILL SELL 14x A @ 811  pos=-99  fv=686  edge=+125
+[22:21:05] [A-PNL] ── Status (147 trades) ──
+  A: pos=-99  cost=-81253  val=-80190  uPnL=+1063  fv=686  mid=810
+  TOTAL: uPnL=+1063  realized=-2061  net=-998
+[22:21:05] [A-PNL] FILL SELL 30x A @ 809  pos=-129  fv=686  edge=+123
+[22:21:05] [A-PNL] ── Status (148 trades) ──
+  A: pos=-129  cost=-105778  val=-104361  uPnL=+1417  fv=686  mid=809
+  TOTAL: uPnL=+1417  realized=-2061  net=-645
+[22:21:05] [A-PNL] FILL SELL 30x A @ 809  pos=-159  fv=686  edge=+123
+[22:21:05] [A-PNL] ── Status (149 trades) ──
+  A: pos=-159  cost=-130271  val=-127995  uPnL=+2276  fv=686  mid=805
+  TOTAL: uPnL=+2276  realized=-2061  net=+215
+[22:21:05] [A-PNL] FILL SELL 14x A @ 801  pos=-173  fv=686  edge=+115
+[22:21:05] [A-PNL] ── Status (150 trades) ──
+  A: pos=-173  cost=-141654  val=-138400  uPnL=+3254  fv=686  mid=800
+  TOTAL: uPnL=+3254  realized=-2061  net=+1193
+[22:21:06] [A-PNL] FILL SELL 9x A @ 784  pos=-177  fv=686  edge=+98
+[22:21:06] [A-PNL] ── Status (151 trades) ──
+  A: pos=-177  cost=-144822  val=-137883  uPnL=+6939  fv=686  mid=779
+  TOTAL: uPnL=+6939  realized=-2061  net=+4878
+[22:21:06] [A-PNL] FILL SELL 5x A @ 784  pos=-177  fv=686  edge=+98
+[22:21:06] [A-PNL] ── Status (152 trades) ──
+  A: pos=-177  cost=-144764  val=-138768  uPnL=+5996  fv=686  mid=784
+  TOTAL: uPnL=+5996  realized=-2061  net=+3935
+[22:21:07] [A-PNL] FILL SELL 5x A @ 755  pos=-177  fv=686  edge=+69
+[22:21:07] [A-PNL] ── Status (153 trades) ──
+  A: pos=-177  cost=-144658  val=-133635  uPnL=+11023  fv=686  mid=755
+  TOTAL: uPnL=+11023  realized=-2061  net=+8962
+[22:21:07] [A-PNL] FILL SELL 5x A @ 746  pos=-177  fv=686  edge=+60
+[22:21:07] [A-PNL] ── Status (154 trades) ──
+  A: pos=-177  cost=-144540  val=-132042  uPnL=+12498  fv=686  mid=746
+  TOTAL: uPnL=+12498  realized=-2061  net=+10437
+[22:21:07] [A-PNL] FILL SELL 23x A @ 740  pos=-200  fv=686  edge=+54
+[22:21:07] [A-PNL] ── Status (155 trades) ──
+  A: pos=-200  cost=-162687  val=-148000  uPnL=+14687  fv=686  mid=740
+  TOTAL: uPnL=+14687  realized=-2061  net=+12626
+[22:21:08] [A-PNL] FILL BUY  5x A @ 710  pos=-190  fv=686  edge=-24
+[22:21:08] [A-PNL] ── Status (156 trades) ──
+  A: pos=-190  cost=-154553  val=-134900  uPnL=+19653  fv=686  mid=710
+  TOTAL: uPnL=+19653  realized=-1544  net=+18109
+[22:21:08] [A-PNL] FILL SELL 5x A @ 710  pos=-190  fv=686  edge=+24
+[22:21:08] [A-PNL] ── Status (157 trades) ──
+  A: pos=-190  cost=-154375  val=-134900  uPnL=+19475  fv=686  mid=710
+  TOTAL: uPnL=+19475  realized=-1544  net=+17932
+[22:21:08] [A-PNL] FILL BUY  5x A @ 710  pos=-185  fv=686  edge=-24
+[22:21:08] [A-PNL] ── Status (158 trades) ──
+  A: pos=-185  cost=-150313  val=-131350  uPnL=+18963  fv=686  mid=710
+  TOTAL: uPnL=+18963  realized=-1031  net=+17932
+[22:21:09] [A-PNL] FILL SELL 5x A @ 690  pos=-185  fv=686  edge=+4
+[22:21:09] [A-PNL] ── Status (159 trades) ──
+  A: pos=-185  cost=-150109  val=-127650  uPnL=+22459  fv=686  mid=690
+  TOTAL: uPnL=+22459  realized=-1031  net=+21427
+[22:21:09] [A-PNL] FILL BUY  5x A @ 671  pos=-180  fv=686  edge=+15
+[22:21:09] [A-PNL] ── Status (160 trades) ──
+  A: pos=-180  cost=-146052  val=-120780  uPnL=+25272  fv=686  mid=671
+  TOTAL: uPnL=+25272  realized=-329  net=+24942
+[22:21:09] [A-PNL] FILL SELL 5x A @ 671  pos=-180  fv=686  edge=-15
+[22:21:09] [A-PNL] ── Status (161 trades) ──
+  A: pos=-180  cost=-145824  val=-120780  uPnL=+25044  fv=686  mid=671
+  TOTAL: uPnL=+25044  realized=-329  net=+24715
+[22:21:10] [A-PNL] FILL BUY  30x A @ 678  pos=-150  fv=686  edge=+8
+[22:21:10] [A-PNL] ── Status (162 trades) ──
+  A: pos=-150  cost=-121520  val=-101700  uPnL=+19820  fv=686  mid=678
+  TOTAL: uPnL=+19820  realized=+3635  net=+23455
+[22:21:10] [A-PNL] FILL SELL 5x A @ 666  pos=-150  fv=686  edge=-20
+[22:21:10] [A-PNL] ── Status (163 trades) ──
+  A: pos=-150  cost=-121316  val=-99900  uPnL=+21416  fv=686  mid=666
+  TOTAL: uPnL=+21416  realized=+3635  net=+25051
+[22:21:10] [A-PNL] FILL BUY  30x A @ 675  pos=-120  fv=686  edge=+11
+[22:21:10] [A-PNL] ── Status (164 trades) ──
+  A: pos=-120  cost=-97053  val=-81120  uPnL=+15933  fv=686  mid=676
+  TOTAL: uPnL=+15933  realized=+7648  net=+23581
+[22:21:10] [A-PNL] FILL SELL 5x A @ 665  pos=-120  fv=686  edge=-21
+[22:21:10] [A-PNL] ── Status (165 trades) ──
+  A: pos=-120  cost=-96882  val=-79800  uPnL=+17082  fv=686  mid=665
+  TOTAL: uPnL=+17082  realized=+7648  net=+24730
+[22:21:10] [A-PNL] FILL BUY  30x A @ 677  pos=-90  fv=686  edge=+9
+[22:21:10] [A-PNL] ── Status (166 trades) ──
+  A: pos=-90  cost=-72662  val=-60930  uPnL=+11732  fv=686  mid=677
+  TOTAL: uPnL=+11732  realized=+11558  net=+23290
+[22:21:11] [A-PNL] FILL BUY  30x A @ 676  pos=-60  fv=686  edge=+10
+[22:21:11] [A-PNL] ── Status (167 trades) ──
+  A: pos=-60  cost=-48441  val=-40560  uPnL=+7881  fv=686  mid=676
+  TOTAL: uPnL=+7881  realized=+15499  net=+23380
+[22:21:11] [A-PNL] FILL SELL 5x A @ 664  pos=-60  fv=686  edge=-22
+[22:21:11] [A-PNL] ── Status (168 trades) ──
+  A: pos=-60  cost=-48345  val=-39840  uPnL=+8505  fv=686  mid=664
+  TOTAL: uPnL=+8505  realized=+15499  net=+24004
+[22:21:11] [A-PNL] FILL BUY  30x A @ 678  pos=-30  fv=686  edge=+8
+[22:21:11] [A-PNL] ── Status (169 trades) ──
+  A: pos=-30  cost=-24173  val=-20310  uPnL=+3863  fv=686  mid=677
+  TOTAL: uPnL=+3863  realized=+19332  net=+23194
+[22:21:11] [A-PNL] FILL BUY  22x A @ 676  pos=-8  fv=686  edge=+10
+[22:21:11] [A-PNL] ── Status (170 trades) ──
+  A: pos=-8  cost=-6446  val=-5424  uPnL=+1022  fv=686  mid=678
+  TOTAL: uPnL=+1022  realized=+22186  net=+23208
+[22:21:11] [A-PNL] FILL BUY  8x A @ 677  pos=+0  fv=686  edge=+9
+[22:21:11] [A-PNL] ── Status (171 trades) ──
+  A: pos=+0  cost=+0  val=+0  uPnL=+0  fv=686  mid=678
+  TOTAL: uPnL=+0  realized=+23216  net=+23216
+[22:21:12] [A-PNL] FILL BUY  5x A @ 666  pos=+5  fv=686  edge=+20
+[22:21:12] [A-PNL] ── Status (172 trades) ──
+  A: pos=+5  cost=+4029  val=+3355  uPnL=-674  fv=686  mid=671
+  TOTAL: uPnL=-674  realized=+23915  net=+23241
+[22:21:12] [A-PNL] FILL SELL 5x A @ 666  pos=+5  fv=686  edge=-20
+[22:21:12] [A-PNL] ── Status (173 trades) ──
+  A: pos=+5  cost=+4020  val=+3355  uPnL=-665  fv=686  mid=671
+  TOTAL: uPnL=-665  realized=+23915  net=+23250
+[22:21:12] [A-PNL] FILL BUY  25x A @ 676  pos=+30  fv=686  edge=+10
+[22:21:12] [A-PNL] ── Status (174 trades) ──
+  A: pos=+30  cost=+24119  val=+20130  uPnL=-3989  fv=686  mid=671
+  TOTAL: uPnL=-3989  realized=+27114  net=+23125
+[22:21:12] [A-PNL] FILL SELL 5x A @ 664  pos=+30  fv=686  edge=-22
+[22:21:12] [A-PNL] ── Status (175 trades) ──
+  A: pos=+30  cost=+24062  val=+19920  uPnL=-4142  fv=686  mid=664
+  TOTAL: uPnL=-4142  realized=+27114  net=+22972
+[22:21:12] [A-PNL] FILL BUY  30x A @ 673  pos=+60  fv=686  edge=+13
+[22:21:12] [A-PNL] ── Status (176 trades) ──
+  A: pos=+60  cost=+48124  val=+40380  uPnL=-7744  fv=686  mid=673
+  TOTAL: uPnL=-7744  realized=+30987  net=+23242
+[22:21:12] [A-PNL] FILL BUY  30x A @ 672  pos=+90  fv=686  edge=+14
+[22:21:12] [A-PNL] ── Status (177 trades) ──
+  A: pos=+90  cost=+72187  val=+60480  uPnL=-11707  fv=686  mid=672
+  TOTAL: uPnL=-11707  realized=+34889  net=+23182
+[22:21:12] [A-PNL] FILL BUY  5x A @ 660  pos=+95  fv=686  edge=+26
+[22:21:12] [A-PNL] ── Status (178 trades) ──
+  A: pos=+95  cost=+76197  val=+63175  uPnL=-13022  fv=686  mid=665
+  TOTAL: uPnL=-13022  realized=+35599  net=+22577
+[22:21:12] [A-PNL] FILL SELL 5x A @ 660  pos=+95  fv=686  edge=-26
+[22:21:12] [A-PNL] ── Status (179 trades) ──
+  A: pos=+95  cost=+75979  val=+63175  uPnL=-12804  fv=686  mid=665
+  TOTAL: uPnL=-12804  realized=+35599  net=+22795
+[22:21:12] [A-PNL] FILL BUY  25x A @ 670  pos=+120  fv=686  edge=+16
+[22:21:12] [A-PNL] ── Status (180 trades) ──
+  A: pos=+120  cost=+95974  val=+79800  uPnL=-16174  fv=686  mid=665
+  TOTAL: uPnL=-16174  realized=+38844  net=+22670
+[22:21:13] [A-PNL] FILL SELL 5x A @ 658  pos=+120  fv=686  edge=-28
+[22:21:13] [A-PNL] ── Status (181 trades) ──
+  A: pos=+120  cost=+95681  val=+78960  uPnL=-16721  fv=686  mid=658
+  TOTAL: uPnL=-16721  realized=+38844  net=+22123
+[22:21:13] [A-PNL] FILL BUY  30x A @ 669  pos=+150  fv=686  edge=+17
+[22:21:13] [A-PNL] ── Status (182 trades) ──
+  A: pos=+150  cost=+119601  val=+100350  uPnL=-19251  fv=686  mid=669
+  TOTAL: uPnL=-19251  realized=+42694  net=+23443
+[22:21:13] [A-PNL] FILL BUY  3x A @ 664  pos=+155  fv=686  edge=+22
+[22:21:13] [A-PNL] ── Status (183 trades) ──
+  A: pos=+155  cost=+123587  val=+102920  uPnL=-20667  fv=686  mid=664
+  TOTAL: uPnL=-20667  realized=+43094  net=+22426
+[22:21:13] [A-PNL] FILL SELL 3x A @ 664  pos=+155  fv=686  edge=-22
+[22:21:13] [A-PNL] ── Status (184 trades) ──
+  A: pos=+155  cost=+123349  val=+102920  uPnL=-20429  fv=686  mid=664
+  TOTAL: uPnL=-20429  realized=+43094  net=+22665
+[22:21:13] [A-PNL] FILL BUY  2x A @ 664  pos=+155  fv=686  edge=+22
+[22:21:13] [A-PNL] ── Status (185 trades) ──
+  A: pos=+155  cost=+123349  val=+102920  uPnL=-20429  fv=686  mid=664
+  TOTAL: uPnL=-20429  realized=+43358  net=+22929
+[22:21:13] [A-PNL] FILL SELL 2x A @ 664  pos=+155  fv=686  edge=-22
+[22:21:13] [A-PNL] ── Status (186 trades) ──
+  A: pos=+155  cost=+123192  val=+102920  uPnL=-20272  fv=686  mid=664
+  TOTAL: uPnL=-20272  realized=+43358  net=+23086
+[22:21:14] [A-PNL] FILL SELL 5x A @ 659  pos=+155  fv=686  edge=-27
+[22:21:14] [A-PNL] ── Status (187 trades) ──
+  A: pos=+155  cost=+122795  val=+102145  uPnL=-20650  fv=686  mid=659
+  TOTAL: uPnL=-20650  realized=+43358  net=+22708
+[22:21:14] [A-PNL] FILL BUY  27x A @ 671  pos=+182  fv=686  edge=+15
+[22:21:14] [A-PNL] ── Status (188 trades) ──
+  A: pos=+182  cost=+144185  val=+122122  uPnL=-22063  fv=686  mid=671
+  TOTAL: uPnL=-22063  realized=+46631  net=+24568
+[22:21:14] [A-PNL] FILL BUY  3x A @ 671  pos=+185  fv=686  edge=+15
+[22:21:14] [A-PNL] ── Status (189 trades) ──
+  A: pos=+185  cost=+146561  val=+124135  uPnL=-22426  fv=686  mid=671
+  TOTAL: uPnL=-22426  realized=+46994  net=+24568
+[22:21:14] [A-PNL] FILL BUY  10x A @ 664  pos=+185  fv=686  edge=+22
+[22:21:14] [A-PNL] ── Status (190 trades) ──
+  A: pos=+185  cost=+146561  val=+122840  uPnL=-23721  fv=686  mid=664
+  TOTAL: uPnL=-23721  realized=+48277  net=+24555
+[22:21:14] [A-PNL] FILL SELL 10x A @ 664  pos=+185  fv=686  edge=-22
+[22:21:14] [A-PNL] ── Status (191 trades) ──
+  A: pos=+185  cost=+145552  val=+122840  uPnL=-22712  fv=686  mid=664
+  TOTAL: uPnL=-22712  realized=+48277  net=+25564
+[22:21:14] [A-PNL] FILL SELL 5x A @ 657  pos=+185  fv=686  edge=-29
+[22:21:14] [A-PNL] ── Status (192 trades) ──
+  A: pos=+185  cost=+145052  val=+121545  uPnL=-23507  fv=686  mid=657
+  TOTAL: uPnL=-23507  realized=+48277  net=+24770
+[22:21:15] [A-PNL] FILL BUY  3x A @ 653  pos=+190  fv=686  edge=+33
+[22:21:15] [A-PNL] ── Status (193 trades) ──
+  A: pos=+190  cost=+148972  val=+124070  uPnL=-24902  fv=686  mid=653
+  TOTAL: uPnL=-24902  realized=+48670  net=+23767
+[22:21:15] [A-PNL] FILL SELL 3x A @ 653  pos=+190  fv=686  edge=-33
+[22:21:15] [A-PNL] ── Status (194 trades) ──
+  A: pos=+190  cost=+148661  val=+124070  uPnL=-24591  fv=686  mid=653
+  TOTAL: uPnL=-24591  realized=+48670  net=+24079
+[22:21:15] [A-PNL] FILL SELL 2x A @ 653  pos=+188  fv=686  edge=-33
+[22:21:15] [A-PNL] ── Status (195 trades) ──
+  A: pos=+188  cost=+146895  val=+123610  uPnL=-23285  fv=686  mid=658
+  TOTAL: uPnL=-23285  realized=+48670  net=+25385
+[22:21:15] [A-PNL] FILL BUY  2x A @ 653  pos=+193  fv=686  edge=+33
+[22:21:15] [A-PNL] ── Status (196 trades) ──
+  A: pos=+193  cost=+150802  val=+125643  uPnL=-25159  fv=686  mid=651
+  TOTAL: uPnL=-25159  realized=+48926  net=+23768
+[22:21:15] [A-PNL] FILL SELL 2x A @ 653  pos=+193  fv=686  edge=-33
+[22:21:15] [A-PNL] ── Status (197 trades) ──
+  A: pos=+193  cost=+150597  val=+125643  uPnL=-24954  fv=686  mid=651
+  TOTAL: uPnL=-24954  realized=+48926  net=+23972
+[22:21:15] [A-PNL] FILL SELL 3x A @ 649  pos=+190  fv=686  edge=-37
+[22:21:15] [A-PNL] ── Status (198 trades) ──
+  A: pos=+190  cost=+147951  val=+123690  uPnL=-24261  fv=686  mid=651
+  TOTAL: uPnL=-24261  realized=+48926  net=+24666
+[22:21:16] [A-PNL] FILL BUY  10x A @ 662  pos=+200  fv=686  edge=+24
+[22:21:16] [A-PNL] ── Status (199 trades) ──
+  A: pos=+200  cost=+155738  val=+132400  uPnL=-23338  fv=686  mid=662
+  TOTAL: uPnL=-23338  realized=+50093  net=+26756
+[22:21:16] [A-PNL] FILL SELL 5x A @ 652  pos=+195  fv=686  edge=-34
+[22:21:16] [A-PNL] ── Status (200 trades) ──
+  A: pos=+195  cost=+151329  val=+127140  uPnL=-24189  fv=686  mid=652
+  TOTAL: uPnL=-24189  realized=+50093  net=+25904
+[22:21:16] [A-PNL] FILL BUY  5x A @ 666  pos=+200  fv=686  edge=+20
+[22:21:16] [A-PNL] ── Status (201 trades) ──
+  A: pos=+200  cost=+155210  val=+133200  uPnL=-22010  fv=686  mid=666
+  TOTAL: uPnL=-22010  realized=+50644  net=+28634
+[22:21:16] [A-PNL] FILL SELL 5x A @ 657  pos=+195  fv=686  edge=-29
+[22:21:16] [A-PNL] ── Status (202 trades) ──
+  A: pos=+195  cost=+150846  val=+127920  uPnL=-22926  fv=686  mid=656
+  TOTAL: uPnL=-22926  realized=+50644  net=+27718
+[22:21:17] [A-PNL] FILL BUY  5x A @ 669  pos=+200  fv=686  edge=+17
+[22:21:17] [A-PNL] ── Status (203 trades) ──
+  A: pos=+200  cost=+154714  val=+133700  uPnL=-21014  fv=686  mid=668
+  TOTAL: uPnL=-21014  realized=+51166  net=+30153
+[22:21:17] [A-PNL] FILL SELL 5x A @ 657  pos=+195  fv=686  edge=-29
+[22:21:17] [A-PNL] ── Status (204 trades) ──
+  A: pos=+195  cost=+150372  val=+128115  uPnL=-22257  fv=686  mid=657
+  TOTAL: uPnL=-22257  realized=+51166  net=+28909
+[22:21:17] [A-PNL] FILL SELL 10x A @ 662  pos=+185  fv=686  edge=-24
+[22:21:17] [A-PNL] ── Status (205 trades) ──
+  A: pos=+185  cost=+141853  val=+123302  uPnL=-18551  fv=686  mid=666
+  TOTAL: uPnL=-18551  realized=+51166  net=+32616
+[22:21:17] [A-PNL] FILL SELL 5x A @ 658  pos=+185  fv=686  edge=-28
+[22:21:17] [A-PNL] ── Status (206 trades) ──
+  A: pos=+185  cost=+141459  val=+121730  uPnL=-19729  fv=686  mid=658
+  TOTAL: uPnL=-19729  realized=+51166  net=+31438
+[22:21:18] [A-PNL] FILL SELL 5x A @ 656  pos=+185  fv=686  edge=-30
+[22:21:18] [A-PNL] ── Status (207 trades) ──
+  A: pos=+185  cost=+141072  val=+121360  uPnL=-19712  fv=686  mid=656
+  TOTAL: uPnL=-19712  realized=+51166  net=+31454
+[22:21:18] [A-PNL] FILL SELL 5x A @ 656  pos=+185  fv=686  edge=-30
+[22:21:18] [A-PNL] ── Status (208 trades) ──
+  A: pos=+185  cost=+140700  val=+121082  uPnL=-19618  fv=686  mid=654
+  TOTAL: uPnL=-19618  realized=+51166  net=+31549
+[22:21:18] [A-PNL] FILL BUY  10x A @ 664  pos=+185  fv=686  edge=+22
+[22:21:18] [A-PNL] ── Status (209 trades) ──
+  A: pos=+185  cost=+140700  val=+122840  uPnL=-17860  fv=686  mid=664
+  TOTAL: uPnL=-17860  realized=+52132  net=+34272
+[22:21:18] [A-PNL] FILL SELL 10x A @ 664  pos=+185  fv=686  edge=-22
+[22:21:18] [A-PNL] ── Status (210 trades) ──
+  A: pos=+185  cost=+140026  val=+122840  uPnL=-17186  fv=686  mid=664
+  TOTAL: uPnL=-17186  realized=+52132  net=+34946
+[22:21:19] [A-PNL] FILL SELL 5x A @ 654  pos=+185  fv=686  edge=-32
+[22:21:19] [A-PNL] ── Status (211 trades) ──
+  A: pos=+185  cost=+139674  val=+120990  uPnL=-18684  fv=686  mid=654
+  TOTAL: uPnL=-18684  realized=+52132  net=+33448
+[22:21:20] [A-PNL] FILL SELL 5x A @ 654  pos=+185  fv=686  edge=-32
+[22:21:20] [A-PNL] ── Status (212 trades) ──
+  A: pos=+185  cost=+139334  val=+120990  uPnL=-18344  fv=686  mid=654
+  TOTAL: uPnL=-18344  realized=+52132  net=+33788
+[22:21:20] [A-PNL] FILL SELL 5x A @ 654  pos=+185  fv=686  edge=-32
+[22:21:20] [A-PNL] ── Status (213 trades) ──
+  A: pos=+185  cost=+139006  val=+120990  uPnL=-18016  fv=686  mid=654
+  TOTAL: uPnL=-18016  realized=+52132  net=+34115
+[22:21:20] [A-PNL] FILL SELL 5x A @ 653  pos=+185  fv=686  edge=-33
+[22:21:20] [A-PNL] ── Status (214 trades) ──
+  A: pos=+185  cost=+138687  val=+120805  uPnL=-17882  fv=686  mid=653
+  TOTAL: uPnL=-17882  realized=+52132  net=+34250
+[22:21:21] [A-PNL] FILL SELL 5x A @ 654  pos=+185  fv=686  edge=-32
+[22:21:21] [A-PNL] ── Status (215 trades) ──
+  A: pos=+185  cost=+138382  val=+120990  uPnL=-17392  fv=686  mid=654
+  TOTAL: uPnL=-17392  realized=+52132  net=+34740
+[22:21:21] [A-PNL] FILL SELL 5x A @ 656  pos=+185  fv=686  edge=-30
+[22:21:21] [A-PNL] ── Status (216 trades) ──
+  A: pos=+185  cost=+138094  val=+121360  uPnL=-16734  fv=686  mid=656
+  TOTAL: uPnL=-16734  realized=+52132  net=+35398
+[22:21:23] [A-PNL] FILL SELL 5x A @ 655  pos=+185  fv=686  edge=-31
+[22:21:23] [A-PNL] ── Status (217 trades) ──
+  A: pos=+185  cost=+137812  val=+121175  uPnL=-16637  fv=686  mid=655
+  TOTAL: uPnL=-16637  realized=+52132  net=+35495
+[22:21:23] [A-PNL] FILL SELL 5x A @ 653  pos=+185  fv=686  edge=-33
+[22:21:23] [A-PNL] ── Status (218 trades) ──
+  A: pos=+185  cost=+137533  val=+120805  uPnL=-16728  fv=686  mid=653
+  TOTAL: uPnL=-16728  realized=+52132  net=+35404
+[22:21:23] [A-PNL] FILL SELL 5x A @ 653  pos=+185  fv=686  edge=-33
+[22:21:23] [A-PNL] ── Status (219 trades) ──
+  A: pos=+185  cost=+137263  val=+120805  uPnL=-16458  fv=686  mid=653
+  TOTAL: uPnL=-16458  realized=+52132  net=+35674
+[22:21:24] [A-PNL] FILL BUY  3x A @ 653  pos=+190  fv=686  edge=+33
+[22:21:24] [A-PNL] ── Status (220 trades) ──
+  A: pos=+190  cost=+140973  val=+124070  uPnL=-16903  fv=686  mid=653
+  TOTAL: uPnL=-16903  realized=+52399  net=+35496
+[22:21:24] [A-PNL] FILL SELL 3x A @ 653  pos=+190  fv=686  edge=-33
+[22:21:24] [A-PNL] ── Status (221 trades) ──
+  A: pos=+190  cost=+140809  val=+124070  uPnL=-16739  fv=686  mid=653
+  TOTAL: uPnL=-16739  realized=+52399  net=+35660
+[22:21:24] [A-PNL] FILL BUY  2x A @ 653  pos=+190  fv=686  edge=+33
+[22:21:24] [A-PNL] ── Status (222 trades) ──
+  A: pos=+190  cost=+140809  val=+124070  uPnL=-16739  fv=686  mid=653
+  TOTAL: uPnL=-16739  realized=+52575  net=+35836
+[22:21:24] [A-PNL] FILL SELL 2x A @ 653  pos=+190  fv=686  edge=-33
+[22:21:24] [A-PNL] ── Status (223 trades) ──
+  A: pos=+190  cost=+140701  val=+124070  uPnL=-16631  fv=686  mid=653
+  TOTAL: uPnL=-16631  realized=+52575  net=+35944
+[22:21:25] [A-PNL] FILL BUY  3x A @ 652  pos=+195  fv=686  edge=+34
+[22:21:25] [A-PNL] ── Status (224 trades) ──
+  A: pos=+195  cost=+144404  val=+127140  uPnL=-17264  fv=686  mid=652
+  TOTAL: uPnL=-17264  realized=+52841  net=+35577
+[22:21:25] [A-PNL] FILL SELL 3x A @ 652  pos=+195  fv=686  edge=-34
+[22:21:25] [A-PNL] ── Status (225 trades) ──
+  A: pos=+195  cost=+144237  val=+127140  uPnL=-17097  fv=686  mid=652
+  TOTAL: uPnL=-17097  realized=+52841  net=+35744
+[22:21:25] [A-PNL] FILL BUY  2x A @ 652  pos=+195  fv=686  edge=+34
+[22:21:25] [A-PNL] ── Status (226 trades) ──
+  A: pos=+195  cost=+144237  val=+127140  uPnL=-17097  fv=686  mid=652
+  TOTAL: uPnL=-17097  realized=+53016  net=+35919
+[22:21:25] [A-PNL] FILL SELL 2x A @ 652  pos=+195  fv=686  edge=-34
+[22:21:25] [A-PNL] ── Status (227 trades) ──
+  A: pos=+195  cost=+144126  val=+127140  uPnL=-16986  fv=686  mid=652
+  TOTAL: uPnL=-16986  realized=+53016  net=+36029
+[22:21:25] [A-PNL] FILL SELL 5x A @ 644  pos=+195  fv=686  edge=-42
+[22:21:25] [A-PNL] ── Status (228 trades) ──
+  A: pos=+195  cost=+143832  val=+125580  uPnL=-18252  fv=686  mid=644
+  TOTAL: uPnL=-18252  realized=+53016  net=+34764
+[22:21:26] [A-PNL] FILL SELL 5x A @ 653  pos=+195  fv=686  edge=-33
+[22:21:26] [A-PNL] ── Status (229 trades) ──
+  A: pos=+195  cost=+143574  val=+127140  uPnL=-16434  fv=686  mid=652
+  TOTAL: uPnL=-16434  realized=+53016  net=+36582
+[22:21:29] [A-PNL] FILL SELL 10x A @ 662  pos=+185  fv=686  edge=-24
+[22:21:29] [A-PNL] ── Status (230 trades) ──
+  A: pos=+185  cost=+135795  val=+122378  uPnL=-13418  fv=686  mid=662
+  TOTAL: uPnL=-13418  realized=+53016  net=+39598
+[22:21:32] [A-PNL] FILL SELL 30x A @ 699  pos=+155  fv=686  edge=+13
+[22:21:32] [A-PNL] ── Status (231 trades) ──
+  A: pos=+155  cost=+113322  val=+108888  uPnL=-4434  fv=686  mid=702
+  TOTAL: uPnL=-4434  realized=+53016  net=+48582
+[22:21:32] [A-PNL] FILL SELL 22x A @ 706  pos=+133  fv=686  edge=+20
+[22:21:32] [A-PNL] ── Status (232 trades) ──
+  A: pos=+133  cost=+97045  val=+93898  uPnL=-3147  fv=686  mid=706
+  TOTAL: uPnL=-3147  realized=+53016  net=+49869
+[22:21:32] [A-PNL] FILL SELL 30x A @ 709  pos=+103  fv=686  edge=+23
+[22:21:32] [A-PNL] ── Status (233 trades) ──
+  A: pos=+103  cost=+75000  val=+73027  uPnL=-1973  fv=686  mid=709
+  TOTAL: uPnL=-1973  realized=+53016  net=+51043
+[22:21:33] [A-PNL] FILL SELL 30x A @ 707  pos=+73  fv=686  edge=+21
+[22:21:33] [A-PNL] ── Status (234 trades) ──
+  A: pos=+73  cost=+53051  val=+51611  uPnL=-1440  fv=686  mid=707
+  TOTAL: uPnL=-1440  realized=+53016  net=+51576
+[22:21:33] [A-PNL] FILL SELL 30x A @ 701  pos=+43  fv=686  edge=+15
+[22:21:33] [A-PNL] ── Status (235 trades) ──
+  A: pos=+43  cost=+31179  val=+30143  uPnL=-1036  fv=686  mid=701
+  TOTAL: uPnL=-1036  realized=+53016  net=+51980
+[22:21:33] [A-PNL] FILL SELL 30x A @ 703  pos=+13  fv=686  edge=+17
+[22:21:33] [A-PNL] ── Status (236 trades) ──
+  A: pos=+13  cost=+9409  val=+9139  uPnL=-270  fv=686  mid=703
+  TOTAL: uPnL=-270  realized=+53016  net=+52746
+[22:21:34] [A-PNL] FILL SELL 30x A @ 700  pos=-17  fv=686  edge=+14
+[22:21:34] [A-PNL] ── Status (237 trades) ──
+  A: pos=-17  cost=-12281  val=-11900  uPnL=+381  fv=686  mid=700
+  TOTAL: uPnL=+381  realized=+53016  net=+53397
+[22:21:34] [A-PNL] FILL SELL 30x A @ 703  pos=-47  fv=686  edge=+17
+[22:21:34] [A-PNL] ── Status (238 trades) ──
+  A: pos=-47  cost=-33905  val=-32970  uPnL=+935  fv=686  mid=702
+  TOTAL: uPnL=+935  realized=+53016  net=+53951
+[22:21:34] [A-PNL] FILL SELL 30x A @ 705  pos=-77  fv=686  edge=+19
+[22:21:34] [A-PNL] ── Status (239 trades) ──
+  A: pos=-77  cost=-55483  val=-54285  uPnL=+1198  fv=686  mid=705
+  TOTAL: uPnL=+1198  realized=+53016  net=+54214
+[22:21:34] [A-PNL] FILL SELL 30x A @ 707  pos=-107  fv=686  edge=+21
+[22:21:34] [A-PNL] ── Status (240 trades) ──
+  A: pos=-107  cost=-77030  val=-75649  uPnL=+1381  fv=686  mid=707
+  TOTAL: uPnL=+1381  realized=+53016  net=+54397
+[22:21:35] [A-PNL] FILL SELL 30x A @ 705  pos=-137  fv=686  edge=+19
+[22:21:35] [A-PNL] ── Status (241 trades) ──
+  A: pos=-137  cost=-98533  val=-96585  uPnL=+1948  fv=686  mid=705
+  TOTAL: uPnL=+1948  realized=+53016  net=+54964
+[22:21:35] [A-PNL] FILL SELL 30x A @ 704  pos=-167  fv=686  edge=+18
+[22:21:35] [A-PNL] ── Status (242 trades) ──
+  A: pos=-167  cost=-119998  val=-117568  uPnL=+2430  fv=686  mid=704
+  TOTAL: uPnL=+2430  realized=+53016  net=+55446
+[22:21:36] [A-PNL] FILL BUY  10x A @ 706  pos=-167  fv=686  edge=-20
+[22:21:36] [A-PNL] ── Status (243 trades) ──
+  A: pos=-167  cost=-119998  val=-117818  uPnL=+2179  fv=686  mid=706
+  TOTAL: uPnL=+2179  realized=+53141  net=+55321
+[22:21:36] [A-PNL] FILL SELL 10x A @ 706  pos=-167  fv=686  edge=+20
+[22:21:36] [A-PNL] ── Status (244 trades) ──
+  A: pos=-167  cost=-119967  val=-117818  uPnL=+2149  fv=686  mid=706
+  TOTAL: uPnL=+2149  realized=+53141  net=+55290
+[22:21:37] [A-PNL] FILL SELL 30x A @ 697  pos=-197  fv=686  edge=+11
+[22:21:37] [A-PNL] ── Status (245 trades) ──
+  A: pos=-197  cost=-141341  val=-137309  uPnL=+4032  fv=686  mid=697
+  TOTAL: uPnL=+4032  realized=+53141  net=+57173
+[22:21:40] [A-PNL] FILL BUY  10x A @ 709  pos=-182  fv=686  edge=-23
+[22:21:40] [A-PNL] ── Status (246 trades) ──
+  A: pos=-182  cost=-130579  val=-129038  uPnL=+1541  fv=686  mid=709
+  TOTAL: uPnL=+1541  realized=+53226  net=+54767
+[22:21:40] [A-PNL] FILL SELL 8x A @ 699  pos=-190  fv=686  edge=+13
+[22:21:40] [A-PNL] ── Status (247 trades) ──
+  A: pos=-190  cost=-136279  val=-133855  uPnL=+2424  fv=686  mid=704
+  TOTAL: uPnL=+2424  realized=+53226  net=+55650
+[22:21:48] [A-PNL] FILL SELL 10x A @ 701  pos=-200  fv=686  edge=+15
+[22:21:48] [A-PNL] ── Status (248 trades) ──
+  A: pos=-200  cost=-143406  val=-140200  uPnL=+3206  fv=686  mid=701
+  TOTAL: uPnL=+3206  realized=+53226  net=+56432
+[22:21:49] [A-PNL] FILL SELL 5x A @ 699  pos=-195  fv=686  edge=+13
+[22:21:49] [A-PNL] ── Status (249 trades) ──
+  A: pos=-195  cost=-139797  val=-136305  uPnL=+3492  fv=686  mid=699
+  TOTAL: uPnL=+3492  realized=+53226  net=+56718
+[22:21:50] [A-PNL] FILL SELL 5x A @ 702  pos=-200  fv=686  edge=+16
+[22:21:50] [A-PNL] ── Status (250 trades) ──
+  A: pos=-200  cost=-143361  val=-140400  uPnL=+2961  fv=686  mid=702
+  TOTAL: uPnL=+2961  realized=+53226  net=+56187
+[22:21:50] [A-PNL] FILL BUY  5x A @ 710  pos=-190  fv=686  edge=-24
+[22:21:50] [A-PNL] ── Status (251 trades) ──
+  A: pos=-190  cost=-136193  val=-134900  uPnL=+1293  fv=686  mid=710
+  TOTAL: uPnL=+1293  realized=+53260  net=+54553
+[22:21:50] [A-PNL] FILL SELL 5x A @ 710  pos=-190  fv=686  edge=+24
+[22:21:50] [A-PNL] ── Status (252 trades) ──
+  A: pos=-190  cost=-136184  val=-134900  uPnL=+1284  fv=686  mid=710
+  TOTAL: uPnL=+1284  realized=+53260  net=+54544
+[22:21:50] [A-PNL] FILL BUY  5x A @ 710  pos=-190  fv=686  edge=-24
+[22:21:50] [A-PNL] ── Status (253 trades) ──
+  A: pos=-190  cost=-136184  val=-134900  uPnL=+1284  fv=686  mid=710
+  TOTAL: uPnL=+1284  realized=+53294  net=+54578
+[22:21:50] [A-PNL] FILL SELL 5x A @ 710  pos=-190  fv=686  edge=+24
+[22:21:50] [A-PNL] ── Status (254 trades) ──
+  A: pos=-190  cost=-136175  val=-134900  uPnL=+1275  fv=686  mid=710
+  TOTAL: uPnL=+1275  realized=+53294  net=+54569
+[22:21:51] [A-PNL] FILL SELL 5x A @ 705  pos=-190  fv=686  edge=+19
+[22:21:51] [A-PNL] ── Status (255 trades) ──
+  A: pos=-190  cost=-136160  val=-133950  uPnL=+2210  fv=686  mid=705
+  TOTAL: uPnL=+2210  realized=+53294  net=+55504
+[22:21:51] [A-PNL] FILL SELL 5x A @ 709  pos=-190  fv=686  edge=+23
+[22:21:51] [A-PNL] ── Status (256 trades) ──
+  A: pos=-190  cost=-136150  val=-134710  uPnL=+1440  fv=686  mid=709
+  TOTAL: uPnL=+1440  realized=+53294  net=+54734
+[22:21:52] [A-PNL] FILL BUY  5x A @ 709  pos=-185  fv=686  edge=-23
+[22:21:52] [A-PNL] ── Status (257 trades) ──
+  A: pos=-185  cost=-132568  val=-131165  uPnL=+1403  fv=686  mid=709
+  TOTAL: uPnL=+1403  realized=+53332  net=+54734
+[22:21:52] [A-PNL] FILL SELL 5x A @ 709  pos=-185  fv=686  edge=+23
+[22:21:52] [A-PNL] ── Status (258 trades) ──
+  A: pos=-185  cost=-132558  val=-131165  uPnL=+1393  fv=686  mid=709
+  TOTAL: uPnL=+1393  realized=+53332  net=+54725
+[22:21:52] [A-PNL] FILL SELL 5x A @ 709  pos=-185  fv=686  edge=+23
+[22:21:52] [A-PNL] ── Status (259 trades) ──
+  A: pos=-185  cost=-132549  val=-131165  uPnL=+1384  fv=686  mid=709
+  TOTAL: uPnL=+1384  realized=+53332  net=+54715
+[22:21:53] [A-PNL] FILL SELL 3x A @ 719  pos=-188  fv=686  edge=+33
+[22:21:53] [A-PNL] ── Status (260 trades) ──
+  A: pos=-188  cost=-134700  val=-135548  uPnL=-848  fv=686  mid=721
+  TOTAL: uPnL=-848  realized=+53332  net=+52484
+[22:21:53] [A-PNL] FILL SELL 5x A @ 710  pos=-188  fv=686  edge=+24
+[22:21:53] [A-PNL] ── Status (261 trades) ──
+  A: pos=-188  cost=-134692  val=-133480  uPnL=+1212  fv=686  mid=710
+  TOTAL: uPnL=+1212  realized=+53332  net=+54544
+[22:21:53] [A-PNL] FILL BUY  5x A @ 709  pos=-183  fv=686  edge=-23
+[22:21:53] [A-PNL] ── Status (262 trades) ──
+  A: pos=-183  cost=-131110  val=-129747  uPnL=+1363  fv=686  mid=709
+  TOTAL: uPnL=+1363  realized=+53369  net=+54732
+[22:21:53] [A-PNL] FILL SELL 5x A @ 709  pos=-183  fv=686  edge=+23
+[22:21:53] [A-PNL] ── Status (263 trades) ──
+  A: pos=-183  cost=-131101  val=-129747  uPnL=+1354  fv=686  mid=709
+  TOTAL: uPnL=+1354  realized=+53369  net=+54723
+[22:21:54] [A-PNL] FILL BUY  5x A @ 709  pos=-183  fv=686  edge=-23
+[22:21:54] [A-PNL] ── Status (264 trades) ──
+  A: pos=-183  cost=-131101  val=-129747  uPnL=+1354  fv=686  mid=709
+  TOTAL: uPnL=+1354  realized=+53406  net=+54760
+[22:21:54] [A-PNL] FILL SELL 5x A @ 709  pos=-183  fv=686  edge=+23
+[22:21:54] [A-PNL] ── Status (265 trades) ──
+  A: pos=-183  cost=-131092  val=-129747  uPnL=+1345  fv=686  mid=709
+  TOTAL: uPnL=+1345  realized=+53406  net=+54751
+[22:21:56] [A-PNL] FILL SELL 10x A @ 708  pos=-188  fv=686  edge=+22
+[22:21:56] [A-PNL] ── Status (266 trades) ──
+  A: pos=-188  cost=-134653  val=-133010  uPnL=+1643  fv=686  mid=708
+  TOTAL: uPnL=+1643  realized=+53406  net=+55049
+[22:21:56] [A-PNL] FILL SELL 5x A @ 708  pos=-188  fv=686  edge=+22
+[22:21:56] [A-PNL] ── Status (267 trades) ──
+  A: pos=-188  cost=-134643  val=-133104  uPnL=+1539  fv=686  mid=708
+  TOTAL: uPnL=+1539  realized=+53406  net=+54945
+[22:21:56] [A-PNL] FILL SELL 5x A @ 710  pos=-188  fv=686  edge=+24
+[22:21:56] [A-PNL] ── Status (268 trades) ──
+  A: pos=-188  cost=-134635  val=-133480  uPnL=+1155  fv=686  mid=710
+  TOTAL: uPnL=+1155  realized=+53406  net=+54561
+[22:21:56] [A-PNL] FILL BUY  5x A @ 709  pos=-183  fv=686  edge=-23
+[22:21:56] [A-PNL] ── Status (269 trades) ──
+  A: pos=-183  cost=-131055  val=-129747  uPnL=+1308  fv=686  mid=709
+  TOTAL: uPnL=+1308  realized=+53442  net=+54749
+[22:21:56] [A-PNL] FILL SELL 5x A @ 709  pos=-183  fv=686  edge=+23
+[22:21:56] [A-PNL] ── Status (270 trades) ──
+  A: pos=-183  cost=-131046  val=-129747  uPnL=+1299  fv=686  mid=709
+  TOTAL: uPnL=+1299  realized=+53442  net=+54741
+[22:21:56] [A-PNL] FILL BUY  5x A @ 709  pos=-183  fv=686  edge=-23
+[22:21:56] [A-PNL] ── Status (271 trades) ──
+  A: pos=-183  cost=-131046  val=-129747  uPnL=+1299  fv=686  mid=709
+  TOTAL: uPnL=+1299  realized=+53477  net=+54776
+[22:21:56] [A-PNL] FILL SELL 5x A @ 709  pos=-183  fv=686  edge=+23
+[22:21:56] [A-PNL] ── Status (272 trades) ──
+  A: pos=-183  cost=-131038  val=-129747  uPnL=+1291  fv=686  mid=709
+  TOTAL: uPnL=+1291  realized=+53477  net=+54768
+[22:21:57] [A-PNL] FILL SELL 5x A @ 707  pos=-183  fv=686  edge=+21
+[22:21:57] [A-PNL] ── Status (273 trades) ──
+  A: pos=-183  cost=-131027  val=-129381  uPnL=+1646  fv=686  mid=707
+  TOTAL: uPnL=+1646  realized=+53477  net=+55123
+[22:21:57] [A-PNL] FILL SELL 5x A @ 709  pos=-188  fv=686  edge=+23
+[22:21:57] [A-PNL] ── Status (274 trades) ──
+  A: pos=-188  cost=-134599  val=-133292  uPnL=+1307  fv=686  mid=709
+  TOTAL: uPnL=+1307  realized=+53477  net=+54784
+[22:21:58] [A-PNL] FILL BUY  5x A @ 708  pos=-183  fv=686  edge=-22
+[22:21:58] [A-PNL] ── Status (275 trades) ──
+  A: pos=-183  cost=-131019  val=-129564  uPnL=+1455  fv=686  mid=708
+  TOTAL: uPnL=+1455  realized=+53517  net=+54972
+[22:21:58] [A-PNL] FILL SELL 5x A @ 708  pos=-183  fv=686  edge=+22
+[22:21:58] [A-PNL] ── Status (276 trades) ──
+  A: pos=-183  cost=-131010  val=-129564  uPnL=+1446  fv=686  mid=708
+  TOTAL: uPnL=+1446  realized=+53517  net=+54962
+[22:21:58] [A-PNL] FILL BUY  5x A @ 708  pos=-183  fv=686  edge=-22
+[22:21:58] [A-PNL] ── Status (277 trades) ──
+  A: pos=-183  cost=-131010  val=-129564  uPnL=+1446  fv=686  mid=708
+  TOTAL: uPnL=+1446  realized=+53556  net=+55002
+[22:21:58] [A-PNL] FILL SELL 5x A @ 708  pos=-183  fv=686  edge=+22
+[22:21:58] [A-PNL] ── Status (278 trades) ──
+  A: pos=-183  cost=-131000  val=-129564  uPnL=+1436  fv=686  mid=708
+  TOTAL: uPnL=+1436  realized=+53556  net=+54993
+[22:21:58] [A-PNL] FILL SELL 5x A @ 706  pos=-183  fv=686  edge=+20
+[22:21:58] [A-PNL] ── Status (279 trades) ──
+  A: pos=-183  cost=-130989  val=-129198  uPnL=+1791  fv=686  mid=706
+  TOTAL: uPnL=+1791  realized=+53556  net=+55347
+[22:21:59] [A-PNL] FILL SELL 5x A @ 702  pos=-178  fv=686  edge=+16
+[22:21:59] [A-PNL] ── Status (280 trades) ──
+  A: pos=-178  cost=-127394  val=-124956  uPnL=+2438  fv=686  mid=702
+  TOTAL: uPnL=+2438  realized=+53556  net=+55995
+[22:21:59] [A-PNL] FILL SELL 5x A @ 701  pos=-178  fv=686  edge=+15
+[22:21:59] [A-PNL] ── Status (281 trades) ──
+  A: pos=-178  cost=-127378  val=-124778  uPnL=+2600  fv=686  mid=701
+  TOTAL: uPnL=+2600  realized=+53556  net=+56157
+[22:22:00] [A-PNL] FILL SELL 5x A @ 698  pos=-178  fv=686  edge=+12
+[22:22:00] [A-PNL] ── Status (282 trades) ──
+  A: pos=-178  cost=-127359  val=-124244  uPnL=+3115  fv=686  mid=698
+  TOTAL: uPnL=+3115  realized=+53556  net=+56671
+[22:22:01] [A-PNL] FILL BUY  10x A @ 707  pos=-178  fv=686  edge=-21
+[22:22:01] [A-PNL] ── Status (283 trades) ──
+  A: pos=-178  cost=-127359  val=-125846  uPnL=+1513  fv=686  mid=707
+  TOTAL: uPnL=+1513  realized=+53641  net=+55154
+[22:22:01] [A-PNL] FILL SELL 10x A @ 707  pos=-178  fv=686  edge=+21
+[22:22:01] [A-PNL] ── Status (284 trades) ──
+  A: pos=-178  cost=-127340  val=-125846  uPnL=+1494  fv=686  mid=707
+  TOTAL: uPnL=+1494  realized=+53641  net=+55135
+[22:22:04] [A-PNL] FILL SELL 5x A @ 695  pos=-173  fv=686  edge=+9
+[22:22:04] [A-PNL] ── Status (285 trades) ──
+  A: pos=-173  cost=-123741  val=-120235  uPnL=+3506  fv=686  mid=695
+  TOTAL: uPnL=+3506  realized=+53641  net=+57147
+[22:22:07] [A-PNL] FILL BUY  10x A @ 707  pos=-173  fv=686  edge=-21
+[22:22:07] [A-PNL] ── Status (286 trades) ──
+  A: pos=-173  cost=-123741  val=-122311  uPnL=+1430  fv=686  mid=707
+  TOTAL: uPnL=+1430  realized=+53724  net=+55154
+[22:22:07] [A-PNL] FILL SELL 10x A @ 707  pos=-173  fv=686  edge=+21
+[22:22:07] [A-PNL] ── Status (287 trades) ──
+  A: pos=-173  cost=-123723  val=-122311  uPnL=+1412  fv=686  mid=707
+  TOTAL: uPnL=+1412  realized=+53724  net=+55136
+[22:22:10] [A-PNL] FILL SELL 3x A @ 717  pos=-176  fv=686  edge=+31
+[22:22:10] [A-PNL] ── Status (288 trades) ──
+  A: pos=-176  cost=-125870  val=-126808  uPnL=-938  fv=686  mid=720
+  TOTAL: uPnL=-938  realized=+53724  net=+52786
+[22:22:10] [A-PNL] FILL SELL 24x A @ 711  pos=-200  fv=686  edge=+25
+[22:22:10] [A-PNL] ── Status (289 trades) ──
+  A: pos=-200  cost=-143010  val=-142200  uPnL=+810  fv=686  mid=711
+  TOTAL: uPnL=+810  realized=+53724  net=+54534
+[22:22:11] [A-PNL] FILL BUY  10x A @ 710  pos=-190  fv=686  edge=-24
+[22:22:11] [A-PNL] ── Status (290 trades) ──
+  A: pos=-190  cost=-135860  val=-134330  uPnL=+1530  fv=686  mid=707
+  TOTAL: uPnL=+1530  realized=+53775  net=+55304
+[22:22:11] [A-PNL] FILL BUY  30x A @ 717  pos=-160  fv=783  edge=+66
+[22:22:11] [A-PNL] ── Status (291 trades) ──
+  A: pos=-160  cost=-114408  val=-115040  uPnL=-632  fv=783  mid=719
+  TOTAL: uPnL=-632  realized=+53716  net=+53084
+[22:22:11] [A-PNL] FILL BUY  22x A @ 717  pos=-138  fv=783  edge=+66
+[22:22:11] [A-PNL] ── Status (292 trades) ──
+  A: pos=-138  cost=-98677  val=-99291  uPnL=-614  fv=783  mid=720
+  TOTAL: uPnL=-614  realized=+53673  net=+53059
+[22:22:11] [A-PNL] FILL BUY  8x A @ 718  pos=-130  fv=783  edge=+65
+[22:22:11] [A-PNL] ── Status (293 trades) ──
+  A: pos=-130  cost=-92957  val=-93535  uPnL=-578  fv=783  mid=720
+  TOTAL: uPnL=-578  realized=+53650  net=+53071
+[22:22:11] [A-PNL] FILL BUY  30x A @ 718  pos=-100  fv=783  edge=+65
+[22:22:11] [A-PNL] ── Status (294 trades) ──
+  A: pos=-100  cost=-71505  val=-72050  uPnL=-545  fv=783  mid=720
+  TOTAL: uPnL=-545  realized=+53561  net=+53016
+[22:22:11] [A-PNL] FILL BUY  30x A @ 714  pos=-70  fv=783  edge=+69
+[22:22:11] [A-PNL] ── Status (295 trades) ──
+  A: pos=-70  cost=-50054  val=-50120  uPnL=-66  fv=783  mid=716
+  TOTAL: uPnL=-66  realized=+53593  net=+53526
+[22:22:11] [A-PNL] FILL BUY  22x A @ 714  pos=-48  fv=783  edge=+69
+[22:22:11] [A-PNL] ── Status (296 trades) ──
+  A: pos=-48  cost=-34322  val=-34392  uPnL=-70  fv=783  mid=716
+  TOTAL: uPnL=-70  realized=+53616  net=+53546
+[22:22:11] [A-PNL] FILL BUY  8x A @ 715  pos=-40  fv=783  edge=+68
+[22:22:11] [A-PNL] ── Status (297 trades) ──
+  A: pos=-40  cost=-28602  val=-28660  uPnL=-58  fv=783  mid=716
+  TOTAL: uPnL=-58  realized=+53616  net=+53558
+[22:22:11] [A-PNL] FILL BUY  30x A @ 715  pos=-10  fv=783  edge=+68
+[22:22:11] [A-PNL] ── Status (298 trades) ──
+  A: pos=-10  cost=-7151  val=-7190  uPnL=-39  fv=783  mid=719
+  TOTAL: uPnL=-39  realized=+53618  net=+53578
+[22:22:11] [A-PNL] FILL BUY  30x A @ 710  pos=+20  fv=783  edge=+73
+[22:22:11] [A-PNL] ── Status (299 trades) ──
+  A: pos=+20  cost=+14301  val=+14200  uPnL=-101  fv=783  mid=710
+  TOTAL: uPnL=-101  realized=+53769  net=+53668
+[22:22:11] [A-PNL] FILL BUY  22x A @ 710  pos=+42  fv=783  edge=+73
+[22:22:11] [A-PNL] ── Status (300 trades) ──
+  A: pos=+42  cost=+30032  val=+29841  uPnL=-191  fv=783  mid=710
+  TOTAL: uPnL=-191  realized=+53880  net=+53689
+[22:22:11] [A-PNL] FILL BUY  8x A @ 711  pos=+50  fv=783  edge=+72
+[22:22:11] [A-PNL] ── Status (301 trades) ──
+  A: pos=+50  cost=+35753  val=+35525  uPnL=-228  fv=783  mid=710
+  TOTAL: uPnL=-228  realized=+53913  net=+53685
+[22:22:11] [A-PNL] FILL BUY  30x A @ 711  pos=+80  fv=783  edge=+72
+[22:22:11] [A-PNL] ── Status (302 trades) ──
+  A: pos=+80  cost=+57204  val=+56920  uPnL=-284  fv=783  mid=712
+  TOTAL: uPnL=-284  realized=+54034  net=+53750
+[22:22:11] [A-PNL] FILL BUY  30x A @ 711  pos=+110  fv=783  edge=+72
+[22:22:11] [A-PNL] ── Status (303 trades) ──
+  A: pos=+110  cost=+78656  val=+78485  uPnL=-171  fv=783  mid=714
+  TOTAL: uPnL=-171  realized=+54156  net=+53985
+[22:22:11] [A-PNL] FILL BUY  6x A @ 710  pos=+116  fv=783  edge=+73
+[22:22:11] [A-PNL] ── Status (304 trades) ──
+  A: pos=+116  cost=+82946  val=+82418  uPnL=-528  fv=783  mid=710
+  TOTAL: uPnL=-528  realized=+54186  net=+53658
+[22:22:11] [A-PNL] FILL BUY  30x A @ 710  pos=+146  fv=783  edge=+73
+[22:22:11] [A-PNL] ── Status (305 trades) ──
+  A: pos=+146  cost=+104397  val=+103806  uPnL=-591  fv=783  mid=711
+  TOTAL: uPnL=-591  realized=+54337  net=+53746
+[22:22:11] [A-PNL] FILL BUY  16x A @ 710  pos=+162  fv=783  edge=+73
+[22:22:11] [A-PNL] ── Status (306 trades) ──
+  A: pos=+162  cost=+115838  val=+115506  uPnL=-332  fv=783  mid=713
+  TOTAL: uPnL=-332  realized=+54418  net=+54086
+[22:22:11] [A-PNL] FILL BUY  14x A @ 711  pos=+176  fv=783  edge=+72
+[22:22:11] [A-PNL] ── Status (307 trades) ──
+  A: pos=+176  cost=+125849  val=+125488  uPnL=-361  fv=783  mid=713
+  TOTAL: uPnL=-361  realized=+54475  net=+54114
+[22:22:12] [A-PNL] FILL BUY  24x A @ 711  pos=+200  fv=783  edge=+72
+[22:22:12] [A-PNL] ── Status (308 trades) ──
+  A: pos=+200  cost=+143010  val=+142200  uPnL=-810  fv=783  mid=711
+  TOTAL: uPnL=-810  realized=+54572  net=+53762
+[22:22:13] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:13] [A-PNL] ── Status (309 trades) ──
+  A: pos=+190  cost=+136047  val=+144495  uPnL=+8448  fv=783  mid=760
+  TOTAL: uPnL=+8448  realized=+54572  net=+63020
+[22:22:15] [A-PNL] FILL BUY  10x A @ 772  pos=+200  fv=783  edge=+11
+[22:22:15] [A-PNL] ── Status (310 trades) ──
+  A: pos=+200  cost=+143208  val=+154400  uPnL=+11192  fv=783  mid=772
+  TOTAL: uPnL=+11192  realized=+54013  net=+65205
+[22:22:17] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:17] [A-PNL] ── Status (311 trades) ──
+  A: pos=+190  cost=+136231  val=+144210  uPnL=+7979  fv=783  mid=759
+  TOTAL: uPnL=+7979  realized=+54013  net=+61992
+[22:22:18] [A-PNL] FILL BUY  10x A @ 771  pos=+200  fv=783  edge=+12
+[22:22:18] [A-PNL] ── Status (312 trades) ──
+  A: pos=+200  cost=+143401  val=+154200  uPnL=+10799  fv=783  mid=771
+  TOTAL: uPnL=+10799  realized=+53473  net=+64272
+[22:22:19] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:19] [A-PNL] ── Status (313 trades) ──
+  A: pos=+190  cost=+136410  val=+144305  uPnL=+7895  fv=783  mid=760
+  TOTAL: uPnL=+7895  realized=+53473  net=+61368
+[22:22:20] [A-PNL] FILL BUY  10x A @ 769  pos=+200  fv=783  edge=+14
+[22:22:20] [A-PNL] ── Status (314 trades) ──
+  A: pos=+200  cost=+143589  val=+153800  uPnL=+10211  fv=783  mid=769
+  TOTAL: uPnL=+10211  realized=+52962  net=+63173
+[22:22:25] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:25] [A-PNL] ── Status (315 trades) ──
+  A: pos=+190  cost=+136585  val=+144305  uPnL=+7720  fv=783  mid=760
+  TOTAL: uPnL=+7720  realized=+52962  net=+60682
+[22:22:25] [A-PNL] FILL BUY  10x A @ 771  pos=+200  fv=783  edge=+12
+[22:22:25] [A-PNL] ── Status (316 trades) ──
+  A: pos=+200  cost=+143774  val=+154200  uPnL=+10426  fv=783  mid=771
+  TOTAL: uPnL=+10426  realized=+52441  net=+62867
+[22:22:28] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:28] [A-PNL] ── Status (317 trades) ──
+  A: pos=+190  cost=+136757  val=+144210  uPnL=+7453  fv=783  mid=759
+  TOTAL: uPnL=+7453  realized=+52441  net=+59894
+[22:22:28] [A-PNL] FILL BUY  10x A @ 770  pos=+200  fv=783  edge=+13
+[22:22:28] [A-PNL] ── Status (318 trades) ──
+  A: pos=+200  cost=+143954  val=+154100  uPnL=+10146  fv=783  mid=770
+  TOTAL: uPnL=+10146  realized=+51938  net=+62084
+[22:22:32] [A-PNL] FILL SELL 10x A @ 759  pos=+190  fv=783  edge=-24
+[22:22:32] [A-PNL] ── Status (319 trades) ──
+  A: pos=+190  cost=+136924  val=+144210  uPnL=+7286  fv=783  mid=759
+  TOTAL: uPnL=+7286  realized=+51938  net=+59224
+[22:22:32] [A-PNL] FILL BUY  10x A @ 769  pos=+200  fv=783  edge=+14
+[22:22:32] [A-PNL] ── Status (320 trades) ──
+  A: pos=+200  cost=+144131  val=+154000  uPnL=+9869  fv=783  mid=770
+  TOTAL: uPnL=+9869  realized=+51455  net=+61324
+[22:22:35] [A-PNL] FILL SELL 30x A @ 759  pos=+170  fv=697  edge=+62
+[22:22:35] [A-PNL] ── Status (321 trades) ──
+  A: pos=+170  cost=+122932  val=+129030  uPnL=+6098  fv=697  mid=759
+  TOTAL: uPnL=+6098  realized=+51455  net=+57553
+[22:22:35] [A-PNL] FILL SELL 22x A @ 759  pos=+148  fv=697  edge=+62
+[22:22:35] [A-PNL] ── Status (322 trades) ──
+  A: pos=+148  cost=+107263  val=+112258  uPnL=+4995  fv=697  mid=758
+  TOTAL: uPnL=+4995  realized=+51455  net=+56450
+[22:22:35] [A-PNL] FILL SELL 8x A @ 758  pos=+140  fv=697  edge=+61
+[22:22:35] [A-PNL] ── Status (323 trades) ──
+  A: pos=+140  cost=+101540  val=+106190  uPnL=+4650  fv=697  mid=758
+  TOTAL: uPnL=+4650  realized=+51455  net=+56105
+[22:22:35] [A-PNL] FILL SELL 30x A @ 758  pos=+110  fv=697  edge=+61
+[22:22:35] [A-PNL] ── Status (324 trades) ──
+  A: pos=+110  cost=+79987  val=+83325  uPnL=+3338  fv=697  mid=758
+  TOTAL: uPnL=+3338  realized=+51455  net=+54793
+[22:22:35] [A-PNL] FILL SELL 30x A @ 758  pos=+80  fv=697  edge=+61
+[22:22:35] [A-PNL] ── Status (325 trades) ──
+  A: pos=+80  cost=+58306  val=+60560  uPnL=+2254  fv=697  mid=757
+  TOTAL: uPnL=+2254  realized=+51455  net=+53709
+[22:22:35] [A-PNL] FILL SELL 30x A @ 719  pos=+50  fv=697  edge=+22
+[22:22:35] [A-PNL] ── Status (326 trades) ──
+  A: pos=+50  cost=+36416  val=+35950  uPnL=-466  fv=697  mid=719
+  TOTAL: uPnL=-466  realized=+51455  net=+50989
+[22:22:35] [A-PNL] FILL SELL 22x A @ 719  pos=+28  fv=697  edge=+22
+[22:22:35] [A-PNL] ── Status (327 trades) ──
+  A: pos=+28  cost=+20383  val=+20118  uPnL=-265  fv=697  mid=718
+  TOTAL: uPnL=-265  realized=+51455  net=+51190
+[22:22:35] [A-PNL] FILL SELL 8x A @ 718  pos=+20  fv=697  edge=+21
+[22:22:35] [A-PNL] ── Status (328 trades) ──
+  A: pos=+20  cost=+14557  val=+14370  uPnL=-187  fv=697  mid=718
+  TOTAL: uPnL=-187  realized=+51455  net=+51268
+[22:22:35] [A-PNL] FILL SELL 30x A @ 718  pos=-10  fv=697  edge=+21
+[22:22:35] [A-PNL] ── Status (329 trades) ──
+  A: pos=-10  cost=-7274  val=-7175  uPnL=+99  fv=697  mid=718
+  TOTAL: uPnL=+99  realized=+51455  net=+51554
+[22:22:36] [A-PNL] FILL BUY  30x A @ 690  pos=+20  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (330 trades) ──
+  A: pos=+20  cost=+14548  val=+13800  uPnL=-748  fv=697  mid=690
+  TOTAL: uPnL=-748  realized=+52577  net=+51829
+[22:22:36] [A-PNL] FILL BUY  22x A @ 690  pos=+42  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (331 trades) ──
+  A: pos=+42  cost=+30550  val=+29001  uPnL=-1549  fv=697  mid=690
+  TOTAL: uPnL=-1549  realized=+53399  net=+51850
+[22:22:36] [A-PNL] FILL BUY  8x A @ 691  pos=+50  fv=697  edge=+6
+[22:22:36] [A-PNL] ── Status (332 trades) ──
+  A: pos=+50  cost=+36370  val=+34525  uPnL=-1845  fv=697  mid=690
+  TOTAL: uPnL=-1845  realized=+53691  net=+51846
+[22:22:36] [A-PNL] FILL BUY  30x A @ 691  pos=+80  fv=697  edge=+6
+[22:22:36] [A-PNL] ── Status (333 trades) ──
+  A: pos=+80  cost=+58191  val=+55320  uPnL=-2871  fv=697  mid=692
+  TOTAL: uPnL=-2871  realized=+54782  net=+51911
+[22:22:36] [A-PNL] FILL BUY  30x A @ 689  pos=+110  fv=697  edge=+8
+[22:22:36] [A-PNL] ── Status (334 trades) ──
+  A: pos=+110  cost=+80013  val=+75900  uPnL=-4113  fv=697  mid=690
+  TOTAL: uPnL=-4113  realized=+55934  net=+51821
+[22:22:36] [A-PNL] FILL BUY  22x A @ 689  pos=+132  fv=697  edge=+8
+[22:22:36] [A-PNL] ── Status (335 trades) ──
+  A: pos=+132  cost=+96016  val=+91146  uPnL=-4870  fv=697  mid=690
+  TOTAL: uPnL=-4870  realized=+56779  net=+51909
+[22:22:36] [A-PNL] FILL BUY  8x A @ 690  pos=+140  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (336 trades) ──
+  A: pos=+140  cost=+101835  val=+96670  uPnL=-5165  fv=697  mid=690
+  TOTAL: uPnL=-5165  realized=+57078  net=+51913
+[22:22:36] [A-PNL] FILL BUY  7x A @ 690  pos=+147  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (337 trades) ──
+  A: pos=+147  cost=+106927  val=+101430  uPnL=-5497  fv=697  mid=690
+  TOTAL: uPnL=-5497  realized=+57340  net=+51843
+[22:22:36] [A-PNL] FILL BUY  23x A @ 690  pos=+170  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (338 trades) ──
+  A: pos=+170  cost=+123657  val=+117300  uPnL=-6357  fv=697  mid=690
+  TOTAL: uPnL=-6357  realized=+58200  net=+51843
+[22:22:36] [A-PNL] FILL BUY  29x A @ 690  pos=+199  fv=697  edge=+7
+[22:22:36] [A-PNL] ── Status (339 trades) ──
+  A: pos=+199  cost=+144751  val=+137410  uPnL=-7342  fv=697  mid=690
+  TOTAL: uPnL=-7342  realized=+59284  net=+51942
+[22:22:36] [A-PNL] FILL BUY  1x A @ 691  pos=+200  fv=697  edge=+6
+[22:22:36] [A-PNL] ── Status (340 trades) ──
+  A: pos=+200  cost=+145478  val=+138100  uPnL=-7378  fv=697  mid=690
+  TOTAL: uPnL=-7378  realized=+59320  net=+51942
+[22:22:40] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:22:40] [A-PNL] ── Status (341 trades) ──
+  A: pos=+190  cost=+137972  val=+128915  uPnL=-9057  fv=697  mid=678
+  TOTAL: uPnL=-9057  realized=+59320  net=+50263
+[22:22:40] [A-PNL] FILL BUY  10x A @ 685  pos=+200  fv=697  edge=+12
+[22:22:40] [A-PNL] ── Status (342 trades) ──
+  A: pos=+200  cost=+145234  val=+137000  uPnL=-8234  fv=697  mid=685
+  TOTAL: uPnL=-8234  realized=+59732  net=+51498
+[22:22:44] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:22:44] [A-PNL] ── Status (343 trades) ──
+  A: pos=+190  cost=+137745  val=+128155  uPnL=-9590  fv=697  mid=674
+  TOTAL: uPnL=-9590  realized=+59732  net=+50142
+[22:22:44] [A-PNL] FILL BUY  10x A @ 686  pos=+200  fv=697  edge=+11
+[22:22:44] [A-PNL] ── Status (344 trades) ──
+  A: pos=+200  cost=+144995  val=+137200  uPnL=-7795  fv=697  mid=686
+  TOTAL: uPnL=-7795  realized=+60122  net=+52327
+[22:22:47] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:22:47] [A-PNL] ── Status (345 trades) ──
+  A: pos=+190  cost=+137523  val=+128440  uPnL=-9083  fv=697  mid=676
+  TOTAL: uPnL=-9083  realized=+60122  net=+51038
+[22:22:47] [A-PNL] FILL BUY  10x A @ 681  pos=+200  fv=697  edge=+16
+[22:22:47] [A-PNL] ── Status (346 trades) ──
+  A: pos=+200  cost=+144761  val=+136200  uPnL=-8561  fv=697  mid=681
+  TOTAL: uPnL=-8561  realized=+60550  net=+51988
+[22:22:54] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:22:54] [A-PNL] ── Status (347 trades) ──
+  A: pos=+190  cost=+137306  val=+128155  uPnL=-9151  fv=697  mid=674
+  TOTAL: uPnL=-9151  realized=+60550  net=+51398
+[22:22:55] [A-PNL] FILL BUY  10x A @ 688  pos=+200  fv=697  edge=+9
+[22:22:55] [A-PNL] ── Status (348 trades) ──
+  A: pos=+200  cost=+144533  val=+137600  uPnL=-6933  fv=697  mid=688
+  TOTAL: uPnL=-6933  realized=+60897  net=+53963
+[22:23:09] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:23:09] [A-PNL] ── Status (349 trades) ──
+  A: pos=+190  cost=+137094  val=+127870  uPnL=-9224  fv=697  mid=673
+  TOTAL: uPnL=-9224  realized=+60897  net=+51672
+[22:23:09] [A-PNL] FILL BUY  10x A @ 684  pos=+200  fv=697  edge=+13
+[22:23:09] [A-PNL] ── Status (350 trades) ──
+  A: pos=+200  cost=+144310  val=+136900  uPnL=-7410  fv=697  mid=684
+  TOTAL: uPnL=-7410  realized=+61272  net=+53862
+[22:23:19] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:23:19] [A-PNL] ── Status (351 trades) ──
+  A: pos=+190  cost=+136887  val=+127870  uPnL=-9017  fv=697  mid=673
+  TOTAL: uPnL=-9017  realized=+61272  net=+52255
+[22:23:20] [A-PNL] FILL BUY  10x A @ 682  pos=+200  fv=697  edge=+15
+[22:23:20] [A-PNL] ── Status (352 trades) ──
+  A: pos=+200  cost=+144092  val=+136400  uPnL=-7692  fv=697  mid=682
+  TOTAL: uPnL=-7692  realized=+61657  net=+53965
+[22:23:21] [A-PNL] FILL SELL 10x A @ 674  pos=+190  fv=697  edge=-23
+[22:23:21] [A-PNL] ── Status (353 trades) ──
+  A: pos=+190  cost=+136689  val=+128250  uPnL=-8439  fv=697  mid=675
+  TOTAL: uPnL=-8439  realized=+61657  net=+53218
+[22:23:21] [A-PNL] FILL SELL 10x A @ 676  pos=+180  fv=697  edge=-21
+[22:23:21] [A-PNL] ── Status (354 trades) ──
+  A: pos=+180  cost=+129323  val=+121410  uPnL=-7913  fv=697  mid=674
+  TOTAL: uPnL=-7913  realized=+61657  net=+53744
+[22:23:21] [A-PNL] FILL BUY  5x A @ 682  pos=+185  fv=697  edge=+15
+[22:23:21] [A-PNL] ── Status (355 trades) ──
+  A: pos=+185  cost=+132915  val=+126170  uPnL=-6745  fv=697  mid=682
+  TOTAL: uPnL=-6745  realized=+61839  net=+55094
+[22:23:21] [A-PNL] FILL BUY  15x A @ 683  pos=+200  fv=697  edge=+14
+[22:23:21] [A-PNL] ── Status (356 trades) ──
+  A: pos=+200  cost=+143692  val=+136600  uPnL=-7092  fv=697  mid=683
+  TOTAL: uPnL=-7092  realized=+62371  net=+55279
+[22:23:40] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:23:40] [A-PNL] ── Status (357 trades) ──
+  A: pos=+190  cost=+136313  val=+127870  uPnL=-8443  fv=697  mid=673
+  TOTAL: uPnL=-8443  realized=+62371  net=+53927
+[22:23:40] [A-PNL] FILL BUY  10x A @ 682  pos=+200  fv=697  edge=+15
+[22:23:40] [A-PNL] ── Status (358 trades) ──
+  A: pos=+200  cost=+143488  val=+136400  uPnL=-7088  fv=697  mid=682
+  TOTAL: uPnL=-7088  realized=+62725  net=+55637
+[22:23:59] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:23:59] [A-PNL] ── Status (359 trades) ──
+  A: pos=+190  cost=+136124  val=+128440  uPnL=-7684  fv=697  mid=676
+  TOTAL: uPnL=-7684  realized=+62725  net=+55042
+[22:23:59] [A-PNL] FILL BUY  10x A @ 675  pos=+200  fv=697  edge=+22
+[22:23:59] [A-PNL] ── Status (360 trades) ──
+  A: pos=+200  cost=+143288  val=+135000  uPnL=-8288  fv=697  mid=675
+  TOTAL: uPnL=-8288  realized=+63140  net=+54852
+[22:24:15] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:24:15] [A-PNL] ── Status (361 trades) ──
+  A: pos=+190  cost=+135938  val=+127965  uPnL=-7973  fv=697  mid=674
+  TOTAL: uPnL=-7973  realized=+63140  net=+55166
+[22:24:15] [A-PNL] FILL BUY  10x A @ 682  pos=+200  fv=697  edge=+15
+[22:24:15] [A-PNL] ── Status (362 trades) ──
+  A: pos=+200  cost=+143093  val=+136400  uPnL=-6693  fv=697  mid=682
+  TOTAL: uPnL=-6693  realized=+63474  net=+56781
+[22:24:34] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:24:34] [A-PNL] ── Status (363 trades) ──
+  A: pos=+190  cost=+135757  val=+128630  uPnL=-7127  fv=697  mid=677
+  TOTAL: uPnL=-7127  realized=+63474  net=+56347
+[22:24:35] [A-PNL] FILL BUY  10x A @ 680  pos=+200  fv=697  edge=+17
+[22:24:35] [A-PNL] ── Status (364 trades) ──
+  A: pos=+200  cost=+142902  val=+136000  uPnL=-6902  fv=697  mid=680
+  TOTAL: uPnL=-6902  realized=+63819  net=+56917
+[22:24:47] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:24:47] [A-PNL] ── Status (365 trades) ──
+  A: pos=+190  cost=+135580  val=+127965  uPnL=-7615  fv=697  mid=674
+  TOTAL: uPnL=-7615  realized=+63819  net=+56205
+[22:24:51] [A-PNL] FILL BUY  10x A @ 688  pos=+200  fv=697  edge=+9
+[22:24:51] [A-PNL] ── Status (366 trades) ──
+  A: pos=+200  cost=+142715  val=+137600  uPnL=-5115  fv=697  mid=688
+  TOTAL: uPnL=-5115  realized=+64075  net=+58960
+[22:24:56] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:24:56] [A-PNL] ── Status (367 trades) ──
+  A: pos=+190  cost=+135406  val=+128060  uPnL=-7346  fv=697  mid=674
+  TOTAL: uPnL=-7346  realized=+64075  net=+56729
+[22:24:57] [A-PNL] FILL BUY  10x A @ 686  pos=+200  fv=697  edge=+11
+[22:24:57] [A-PNL] ── Status (368 trades) ──
+  A: pos=+200  cost=+142533  val=+137200  uPnL=-5333  fv=697  mid=686
+  TOTAL: uPnL=-5333  realized=+64342  net=+59009
+[22:25:07] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:25:07] [A-PNL] ── Status (369 trades) ──
+  A: pos=+190  cost=+135237  val=+127965  uPnL=-7272  fv=697  mid=674
+  TOTAL: uPnL=-7272  realized=+64342  net=+57070
+[22:25:07] [A-PNL] FILL BUY  10x A @ 687  pos=+200  fv=697  edge=+10
+[22:25:07] [A-PNL] ── Status (370 trades) ──
+  A: pos=+200  cost=+142355  val=+137400  uPnL=-4955  fv=697  mid=687
+  TOTAL: uPnL=-4955  realized=+64589  net=+59635
+[22:25:12] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:25:12] [A-PNL] ── Status (371 trades) ──
+  A: pos=+190  cost=+135071  val=+128345  uPnL=-6726  fv=697  mid=676
+  TOTAL: uPnL=-6726  realized=+64589  net=+57863
+[22:25:12] [A-PNL] FILL BUY  10x A @ 673  pos=+200  fv=697  edge=+24
+[22:25:12] [A-PNL] ── Status (372 trades) ──
+  A: pos=+200  cost=+142180  val=+134600  uPnL=-7580  fv=697  mid=673
+  TOTAL: uPnL=-7580  realized=+64969  net=+57388
+[22:25:48] [A-PNL] FILL SELL 10x A @ 673  pos=+190  fv=697  edge=-24
+[22:25:48] [A-PNL] ── Status (373 trades) ──
+  A: pos=+190  cost=+134910  val=+128535  uPnL=-6375  fv=697  mid=676
+  TOTAL: uPnL=-6375  realized=+64969  net=+58594
+[22:25:48] [A-PNL] FILL BUY  10x A @ 676  pos=+200  fv=697  edge=+21
+[22:25:48] [A-PNL] ── Status (374 trades) ──
+  A: pos=+200  cost=+142010  val=+135200  uPnL=-6810  fv=697  mid=676
+  TOTAL: uPnL=-6810  realized=+65309  net=+58499
