@@ -5470,3 +5470,2391 @@
   Est. total PnL:  -74695  (uPnL + realized payouts)
   Trades:          ≈10677
 ════════════════════════════════════════════════════════════
+[22:47:27] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 764s  |  22:47:27
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-1836  trades≈3584
+    A            pos=-105  avg=  875.5  mid=   893  uPnL=   -1836
+  [Stock C]  uPnL=-4967  trades≈3388
+    C            pos= +86  avg=  926.8  mid=   869  uPnL=   -4967
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1367  trades≈3379
+    ETF          pos= +40  avg= 2813.2  mid=  2779  uPnL=   -1367
+  [Fed]  uPnL=-123790  trades≈610
+    R_CUT        pos=+200  avg=  145.3  mid=     6  uPnL=  -27960
+    R_HOLD       pos=-200  avg=  515.4  mid=   994  uPnL=  -95830
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -131961
+  Fed realized:    +0
+  Cash:            34339
+  Est. total PnL:  -131961  (uPnL + realized payouts)
+  Trades:          ≈10961
+════════════════════════════════════════════════════════════
+[22:47:37] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 774s  |  22:47:37
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-3726  trades≈3584
+    A            pos=-105  avg=  875.5  mid=   911  uPnL=   -3726
+  [Stock C]  uPnL=-5913  trades≈3388
+    C            pos= +86  avg=  926.8  mid=   858  uPnL=   -5913
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1727  trades≈3379
+    ETF          pos= +40  avg= 2813.2  mid=  2770  uPnL=   -1727
+  [Fed]  uPnL=-96730  trades≈610
+    R_CUT        pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=-200  avg=  515.4  mid=   999  uPnL=  -96730
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -108097
+  Fed realized:    +0
+  Cash:            34339
+  Est. total PnL:  -108097  (uPnL + realized payouts)
+  Trades:          ≈10961
+════════════════════════════════════════════════════════════
+[22:47:47] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 784s  |  22:47:47
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-4069  trades≈3679
+    A            pos=-105  avg=  876.2  mid=   915  uPnL=   -4069
+  [Stock C]  uPnL=-6430  trades≈3483
+    C            pos= +86  avg=  924.8  mid=   850  uPnL=   -6430
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1103  trades≈3474
+    ETF          pos= +40  avg= 2812.6  mid=  2785  uPnL=   -1103
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -11602
+  Fed realized:    +0
+  Cash:            -168976
+  Est. total PnL:  -11602  (uPnL + realized payouts)
+  Trades:          ≈11246
+════════════════════════════════════════════════════════════
+[22:47:57] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 794s  |  22:47:57
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2124  trades≈3754
+    A            pos=-105  avg=  876.8  mid=   897  uPnL=   -2124
+  [Stock C]  uPnL=-11439  trades≈3543
+    C            pos=+101  avg=  923.3  mid=   810  uPnL=  -11439
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-3704  trades≈3549
+    ETF          pos= +40  avg= 2811.6  mid=  2719  uPnL=   -3704
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -17267
+  Fed realized:    +0
+  Cash:            -183861
+  Est. total PnL:  -17267  (uPnL + realized payouts)
+  Trades:          ≈11456
+════════════════════════════════════════════════════════════
+[22:48:07] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 804s  |  22:48:07
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+7661  trades≈3799
+    A            pos=-105  avg=  877.0  mid=   804  uPnL=   +7661
+  [Stock C]  uPnL=-10338  trades≈3593
+    C            pos= +96  avg=  921.7  mid=   814  uPnL=  -10338
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-7570  trades≈3594
+    ETF          pos= +40  avg= 2810.2  mid=  2621  uPnL=   -7570
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -10247
+  Fed realized:    +0
+  Cash:            -180371
+  Est. total PnL:  -10247  (uPnL + realized payouts)
+  Trades:          ≈11596
+════════════════════════════════════════════════════════════
+[22:48:17] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 814s  |  22:48:17
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+7639  trades≈3809
+    A            pos=-105  avg=  876.8  mid=   804  uPnL=   +7639
+  [Stock C]  uPnL=-10980  trades≈3603
+    C            pos= +96  avg=  921.4  mid=   807  uPnL=  -10980
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-7184  trades≈3605
+    ETF          pos= +41  avg= 2809.7  mid=  2634  uPnL=   -7184
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -10524
+  Fed realized:    +0
+  Cash:            -183175
+  Est. total PnL:  -10524  (uPnL + realized payouts)
+  Trades:          ≈11627
+════════════════════════════════════════════════════════════
+[22:48:27] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 824s  |  22:48:27
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+4446  trades≈3829
+    A            pos=-105  avg=  876.3  mid=   834  uPnL=   +4446
+  [Stock C]  uPnL=-10534  trades≈3623
+    C            pos= +96  avg=  920.7  mid=   811  uPnL=  -10534
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-5311  trades≈3624
+    ETF          pos= +40  avg= 2808.8  mid=  2676  uPnL=   -5311
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -11399
+  Fed realized:    +0
+  Cash:            -180841
+  Est. total PnL:  -11399  (uPnL + realized payouts)
+  Trades:          ≈11686
+════════════════════════════════════════════════════════════
+[22:48:37] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 834s  |  22:48:37
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+4513  trades≈3904
+    A            pos=-105  avg=  875.5  mid=   832  uPnL=   +4513
+  [Stock C]  uPnL=-10319  trades≈3698
+    C            pos= +96  avg=  918.5  mid=   811  uPnL=  -10319
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-6276  trades≈3699
+    ETF          pos= +40  avg= 2805.9  mid=  2649  uPnL=   -6276
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -12082
+  Fed realized:    +0
+  Cash:            -192346
+  Est. total PnL:  -12082  (uPnL + realized payouts)
+  Trades:          ≈11911
+════════════════════════════════════════════════════════════
+[22:48:47] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 844s  |  22:48:47
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+4182  trades≈3955
+    A            pos=-101  avg=  874.9  mid=   834  uPnL=   +4182
+  [Stock C]  uPnL=-9974  trades≈3753
+    C            pos= +96  avg=  916.9  mid=   813  uPnL=   -9974
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-6145  trades≈3754
+    ETF          pos= +40  avg= 2803.6  mid=  2650  uPnL=   -6145
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -11937
+  Fed realized:    +0
+  Cash:            -196924
+  Est. total PnL:  -11937  (uPnL + realized payouts)
+  Trades:          ≈12072
+════════════════════════════════════════════════════════════
+[22:48:57] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 854s  |  22:48:57
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+0  trades≈4024
+    A            pos=-105  avg=    0.0  mid=   N/A  uPnL=      +0
+  [Stock C]  uPnL=+0  trades≈3813
+    C            pos=+101  avg=    0.0  mid=   N/A  uPnL=      +0
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+0  trades≈3819
+    ETF          pos= +40  avg=    0.0  mid=   N/A  uPnL=      +0
+  [Fed]  uPnL=+0  trades≈610
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +0
+  Fed realized:    +0
+  Cash:            -198853
+  Est. total PnL:  +0  (uPnL + realized payouts)
+  Trades:          ≈12266
+════════════════════════════════════════════════════════════
+[22:49:22] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 10s  |  22:49:22
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-593  trades≈145
+    A            pos= -95  avg=  597.8  mid=   604  uPnL=    -593
+  [Stock C]  uPnL=-1238  trades≈40
+    C            pos= +90  avg=  984.8  mid=   971  uPnL=   -1238
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-637  trades≈90
+    ETF          pos= +40  avg= 2575.9  mid=  2560  uPnL=    -637
+  [Fed]  uPnL=+0  trades≈0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -2467
+  Fed realized:    +0
+  Cash:            -135238
+  Est. total PnL:  -2467  (uPnL + realized payouts)
+  Trades:          ≈275
+════════════════════════════════════════════════════════════
+[22:49:32] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 20s  |  22:49:32
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+332  trades≈175
+    A            pos= -65  avg=  597.1  mid=   592  uPnL=    +332
+  [Stock C]  uPnL=+1613  trades≈30
+    C            pos= +80  avg=  961.8  mid=   982  uPnL=   +1613
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+151  trades≈150
+    ETF          pos= +40  avg= 2571.2  mid=  2575  uPnL=    +151
+  [Fed]  uPnL=+0  trades≈0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +2097
+  Fed realized:    +0
+  Cash:            -144273
+  Est. total PnL:  +2097  (uPnL + realized payouts)
+  Trades:          ≈355
+════════════════════════════════════════════════════════════
+[22:49:42] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 30s  |  22:49:42
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-96  trades≈140
+    A            pos= +10  avg=  596.6  mid=   587  uPnL=     -96
+  [Stock C]  uPnL=-537  trades≈70
+    C            pos= +80  avg=  952.7  mid=   946  uPnL=    -537
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1452  trades≈190
+    ETF          pos= +40  avg= 2565.3  mid=  2529  uPnL=   -1452
+  [Fed]  uPnL=-2637  trades≈148
+    R_CUT        pos= -80  avg=  361.6  mid=   380  uPnL=   -1516
+    R_HIKE       pos= +68  avg=  238.0  mid=   222  uPnL=   -1121
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -4722
+  Fed realized:    +0
+  Cash:            -181442
+  Est. total PnL:  -4722  (uPnL + realized payouts)
+  Trades:          ≈548
+════════════════════════════════════════════════════════════
+[22:49:52] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 40s  |  22:49:52
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-36  trades≈125
+    A            pos= +50  avg=  596.7  mid=   596  uPnL=     -36
+  [Stock C]  uPnL=-526  trades≈95
+    C            pos= +80  avg=  949.6  mid=   943  uPnL=    -526
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+768  trades≈215
+    ETF          pos= +40  avg= 2562.8  mid=  2582  uPnL=    +768
+  [Fed]  uPnL=-97  trades≈299
+    R_CUT        pos=-155  avg=  367.1  mid=   367  uPnL=     +21
+    R_HIKE       pos=+144  avg=  232.8  mid=   232  uPnL=    -118
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +108
+  Fed realized:    +0
+  Cash:            -189913
+  Est. total PnL:  +108  (uPnL + realized payouts)
+  Trades:          ≈734
+════════════════════════════════════════════════════════════
+[22:50:02] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 50s  |  22:50:02
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-67  trades≈180
+    A            pos= +40  avg=  595.2  mid=   594  uPnL=     -67
+  [Stock C]  uPnL=-532  trades≈135
+    C            pos= +85  avg=  947.3  mid=   941  uPnL=    -532
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-455  trades≈260
+    ETF          pos= +40  avg= 2562.4  mid=  2551  uPnL=    -455
+  [Fed]  uPnL=-12967  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   409  uPnL=   -7100
+    R_HIKE       pos=+200  avg=  225.8  mid=   196  uPnL=   -5867
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -14021
+  Fed realized:    +0
+  Cash:            -197754
+  Est. total PnL:  -14021  (uPnL + realized payouts)
+  Trades:          ≈975
+════════════════════════════════════════════════════════════
+[22:50:12] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 60s  |  22:50:12
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+216  trades≈254
+    A            pos= +46  avg=  593.8  mid=   598  uPnL=    +216
+  [Stock C]  uPnL=+98  trades≈220
+    C            pos= +80  avg=  945.8  mid=   947  uPnL=     +98
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1161  trades≈340
+    ETF          pos= +40  avg= 2560.0  mid=  2531  uPnL=   -1161
+  [Fed]  uPnL=-16467  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   418  uPnL=   -9000
+    R_HIKE       pos=+200  avg=  225.8  mid=   188  uPnL=   -7467
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -17314
+  Fed realized:    +0
+  Cash:            -198786
+  Est. total PnL:  -17314  (uPnL + realized payouts)
+  Trades:          ≈1214
+════════════════════════════════════════════════════════════
+[22:50:22] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 70s  |  22:50:22
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+12  trades≈269
+    A            pos= +36  avg=  594.2  mid=   594  uPnL=     +12
+  [Stock C]  uPnL=+260  trades≈225
+    C            pos= +80  avg=  945.8  mid=   949  uPnL=    +260
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+448  trades≈345
+    ETF          pos= +40  avg= 2559.8  mid=  2571  uPnL=    +448
+  [Fed]  uPnL=-22067  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   434  uPnL=  -12100
+    R_HIKE       pos=+200  avg=  225.8  mid=   176  uPnL=   -9967
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -21347
+  Fed realized:    +0
+  Cash:            -178677
+  Est. total PnL:  -21347  (uPnL + realized payouts)
+  Trades:          ≈1239
+════════════════════════════════════════════════════════════
+[22:50:32] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 80s  |  22:50:32
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-35  trades≈372
+    A            pos= -42  avg=  595.2  mid=   596  uPnL=     -35
+  [Stock C]  uPnL=+483  trades≈250
+    C            pos= +80  avg=  946.0  mid=   952  uPnL=    +483
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+213  trades≈370
+    ETF          pos= +40  avg= 2560.2  mid=  2566  uPnL=    +213
+  [Fed]  uPnL=-20167  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   427  uPnL=  -10700
+    R_HIKE       pos=+200  avg=  225.8  mid=   178  uPnL=   -9467
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -19507
+  Fed realized:    +0
+  Cash:            -132172
+  Est. total PnL:  -19507  (uPnL + realized payouts)
+  Trades:          ≈1392
+════════════════════════════════════════════════════════════
+[22:50:42] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 91s  |  22:50:42
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-14  trades≈397
+    A            pos= -12  avg=  594.8  mid=   596  uPnL=     -14
+  [Stock C]  uPnL=-98  trades≈305
+    C            pos= +80  avg=  946.2  mid=   945  uPnL=     -98
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+589  trades≈425
+    ETF          pos= +40  avg= 2560.3  mid=  2575  uPnL=    +589
+  [Fed]  uPnL=-5767  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   384  uPnL=   -2200
+    R_HIKE       pos=+200  avg=  225.8  mid=   208  uPnL=   -3567
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -5290
+  Fed realized:    +0
+  Cash:            -150547
+  Est. total PnL:  -5290  (uPnL + realized payouts)
+  Trades:          ≈1527
+════════════════════════════════════════════════════════════
+[22:50:52] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 101s  |  22:50:52
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-3696  trades≈495
+    A            pos= -95  avg=  603.1  mid=   642  uPnL=   -3696
+  [Stock C]  uPnL=-1467  trades≈315
+    C            pos= +85  avg=  945.8  mid=   928  uPnL=   -1467
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+1889  trades≈440
+    ETF          pos= +40  avg= 2562.3  mid=  2610  uPnL=   +1889
+  [Fed]  uPnL=+16133  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   323  uPnL=  +10100
+    R_HIKE       pos=+200  avg=  225.8  mid=   256  uPnL=   +6033
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +12859
+  Fed realized:    +0
+  Cash:            -107750
+  Est. total PnL:  +12859  (uPnL + realized payouts)
+  Trades:          ≈1650
+════════════════════════════════════════════════════════════
+[22:51:02] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 111s  |  22:51:02
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2120  trades≈580
+    A            pos= -95  avg=  607.7  mid=   630  uPnL=   -2120
+  [Stock C]  uPnL=-330  trades≈405
+    C            pos= +80  avg=  942.6  mid=   938  uPnL=    -330
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+1604  trades≈525
+    ETF          pos= +40  avg= 2572.9  mid=  2613  uPnL=   +1604
+  [Fed]  uPnL=-8167  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   388  uPnL=   -2900
+    R_HIKE       pos=+200  avg=  225.8  mid=   200  uPnL=   -5267
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -9013
+  Fed realized:    +0
+  Cash:            -110356
+  Est. total PnL:  -9013  (uPnL + realized payouts)
+  Trades:          ≈1910
+════════════════════════════════════════════════════════════
+[22:51:13] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 121s  |  22:51:13
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2367  trades≈670
+    A            pos=-100  avg=  610.8  mid=   634  uPnL=   -2367
+  [Stock C]  uPnL=+1301  trades≈490
+    C            pos= +80  avg=  944.7  mid=   961  uPnL=   +1301
+  [Options]  uPnL=-7  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    89  uPnL=      -4
+    B_P_950      pos=  +1  avg=   10.0  mid=     7  uPnL=      -3
+  [ETF]  uPnL=+2278  trades≈610
+    ETF          pos= +40  avg= 2581.0  mid=  2638  uPnL=   +2278
+  [Fed]  uPnL=-13267  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   402  uPnL=   -5700
+    R_HIKE       pos=+200  avg=  225.8  mid=   188  uPnL=   -7567
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -12061
+  Fed realized:    +0
+  Cash:            -104729
+  Est. total PnL:  -12061  (uPnL + realized payouts)
+  Trades:          ≈2172
+════════════════════════════════════════════════════════════
+[22:51:23] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 131s  |  22:51:23
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2682  trades≈745
+    A            pos=-100  avg=  613.2  mid=   640  uPnL=   -2682
+  [Stock C]  uPnL=+533  trades≈565
+    C            pos= +80  avg=  945.3  mid=   952  uPnL=    +533
+  [Options]  uPnL=-8  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    88  uPnL=      -3
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=+1649  trades≈685
+    ETF          pos= +40  avg= 2587.3  mid=  2628  uPnL=   +1649
+  [Fed]  uPnL=-2167  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   367  uPnL=   +1300
+    R_HIKE       pos=+200  avg=  225.8  mid=   208  uPnL=   -3467
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -2675
+  Fed realized:    +0
+  Cash:            -106889
+  Est. total PnL:  -2675  (uPnL + realized payouts)
+  Trades:          ≈2397
+════════════════════════════════════════════════════════════
+[22:51:33] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 141s  |  22:51:33
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-10482  trades≈745
+    A            pos=-100  avg=  613.2  mid=   718  uPnL=  -10482
+  [Stock C]  uPnL=+1173  trades≈565
+    C            pos= +80  avg=  945.3  mid=   960  uPnL=   +1173
+  [Options]  uPnL=-16  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=   101  uPnL=     -16
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+5069  trades≈685
+    ETF          pos= +40  avg= 2587.3  mid=  2714  uPnL=   +5069
+  [Fed]  uPnL=+1833  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   356  uPnL=   +3400
+    R_HIKE       pos=+200  avg=  225.8  mid=   218  uPnL=   -1567
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -2423
+  Fed realized:    +0
+  Cash:            -106889
+  Est. total PnL:  -2423  (uPnL + realized payouts)
+  Trades:          ≈2397
+════════════════════════════════════════════════════════════
+[22:51:43] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 151s  |  22:51:43
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-9656  trades≈795
+    A            pos=-100  avg=  618.9  mid=   716  uPnL=   -9656
+  [Stock C]  uPnL=+1081  trades≈610
+    C            pos= +85  avg=  946.3  mid=   959  uPnL=   +1081
+  [Options]  uPnL=-16  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    95  uPnL=     -10
+    B_P_950      pos=  +1  avg=   10.0  mid=     4  uPnL=      -6
+  [ETF]  uPnL=+4498  trades≈735
+    ETF          pos= +40  avg= 2597.0  mid=  2710  uPnL=   +4498
+  [Fed]  uPnL=+11533  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   331  uPnL=   +8500
+    R_HIKE       pos=+200  avg=  225.8  mid=   241  uPnL=   +3033
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +7441
+  Fed realized:    +0
+  Cash:            -112964
+  Est. total PnL:  +7441  (uPnL + realized payouts)
+  Trades:          ≈2542
+════════════════════════════════════════════════════════════
+[22:51:53] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 161s  |  22:51:53
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-11121  trades≈805
+    A            pos=-105  avg=  620.1  mid=   726  uPnL=  -11121
+  [Stock C]  uPnL=+54  trades≈615
+    C            pos= +85  avg=  946.4  mid=   947  uPnL=     +54
+  [Options]  uPnL=-13  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    98  uPnL=     -13
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+4726  trades≈740
+    ETF          pos= +40  avg= 2597.8  mid=  2716  uPnL=   +4726
+  [Fed]  uPnL=+27233  trades≈400
+    R_CUT        pos=-200  avg=  373.5  mid=   286  uPnL=  +17400
+    R_HIKE       pos=+200  avg=  225.8  mid=   275  uPnL=   +9833
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +20879
+  Fed realized:    +0
+  Cash:            -109459
+  Est. total PnL:  +20879  (uPnL + realized payouts)
+  Trades:          ≈2562
+════════════════════════════════════════════════════════════
+[22:52:03] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 171s  |  22:52:03
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-10306  trades≈850
+    A            pos=-105  avg=  624.9  mid=   723  uPnL=  -10306
+  [Stock C]  uPnL=-1372  trades≈660
+    C            pos= +85  avg=  945.6  mid=   930  uPnL=   -1372
+  [Options]  uPnL=-27  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=   112  uPnL=     -27
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+4327  trades≈785
+    ETF          pos= +40  avg= 2605.3  mid=  2714  uPnL=   +4327
+  [Fed]  uPnL=+72230  trades≈281
+    R_CUT        pos=-164  avg=  413.7  mid=   179  uPnL=  +38497
+    R_HIKE       pos=+117  avg=  110.7  mid=   399  uPnL=  +33733
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +64852
+  Fed realized:    +0
+  Cash:            -89498
+  Est. total PnL:  +64852  (uPnL + realized payouts)
+  Trades:          ≈2578
+════════════════════════════════════════════════════════════
+[22:52:13] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 181s  |  22:52:13
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-7783  trades≈890
+    A            pos= -95  avg=  629.1  mid=   711  uPnL=   -7783
+  [Stock C]  uPnL=-3776  trades≈705
+    C            pos= +90  avg=  944.5  mid=   902  uPnL=   -3776
+  [Options]  uPnL=-6  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    84  uPnL=      +1
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=+1752  trades≈835
+    ETF          pos= +40  avg= 2610.2  mid=  2654  uPnL=   +1752
+  [Fed]  uPnL=+80648  trades≈88
+    R_CUT        pos= -22  avg= 2200.7  mid=   110  uPnL=  +45985
+    R_HIKE       pos= -66  avg= 1042.7  mid=   518  uPnL=  +34663
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +70835
+  Fed realized:    +0
+  Cash:            -44127
+  Est. total PnL:  +70835  (uPnL + realized payouts)
+  Trades:          ≈2520
+════════════════════════════════════════════════════════════
+[22:52:23] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 191s  |  22:52:23
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6579  trades≈970
+    A            pos= -95  avg=  634.7  mid=   704  uPnL=   -6579
+  [Stock C]  uPnL=-4161  trades≈785
+    C            pos= +90  avg=  939.7  mid=   894  uPnL=   -4161
+  [Options]  uPnL=+4  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    82  uPnL=      +4
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+1233  trades≈915
+    ETF          pos= +40  avg= 2614.2  mid=  2645  uPnL=   +1233
+  [Fed]  uPnL=+79794  trades≈221
+    R_CUT        pos= +75  avg= -497.2  mid=   106  uPnL=  +45276
+    R_HOLD       pos=  +7  avg=  372.0  mid=   374  uPnL=     +10
+    R_HIKE       pos=-139  avg=  764.8  mid=   516  uPnL=  +34508
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +70290
+  Fed realized:    +0
+  Cash:            -22996
+  Est. total PnL:  +70290  (uPnL + realized payouts)
+  Trades:          ≈2893
+════════════════════════════════════════════════════════════
+[22:52:33] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 201s  |  22:52:33
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-9155  trades≈980
+    A            pos=-100  avg=  635.5  mid=   727  uPnL=   -9155
+  [Stock C]  uPnL=-3923  trades≈795
+    C            pos= +85  avg=  939.1  mid=   893  uPnL=   -3923
+  [Options]  uPnL=-6  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    91  uPnL=      -6
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+2026  trades≈920
+    ETF          pos= +40  avg= 2614.4  mid=  2665  uPnL=   +2026
+  [Fed]  uPnL=+92704  trades≈356
+    R_CUT        pos=+149  avg= -190.3  mid=   134  uPnL=  +48398
+    R_HOLD       pos=  +7  avg=  372.0  mid=   402  uPnL=    +210
+    R_HIKE       pos=-200  avg=  685.0  mid=   464  uPnL=  +44096
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +81646
+  Fed realized:    +0
+  Cash:            11758
+  Est. total PnL:  +81646  (uPnL + realized payouts)
+  Trades:          ≈3053
+════════════════════════════════════════════════════════════
+[22:52:43] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 211s  |  22:52:43
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+0  trades≈995
+    A            pos=-100  avg=    0.0  mid=   N/A  uPnL=      +0
+  [Stock C]  uPnL=-1939  trades≈805
+    C            pos= +90  avg=  938.5  mid=   917  uPnL=   -1939
+  [Options]  uPnL=-14  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    99  uPnL=     -14
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+377  trades≈935
+    ETF          pos= +40  avg= 2615.1  mid=  2624  uPnL=    +377
+  [Fed]  uPnL=+72520  trades≈407
+    R_CUT        pos=+200  avg= -110.2  mid=    99  uPnL=  +41838
+    R_HOLD       pos=  +7  avg=  372.0  mid=   370  uPnL=     -14
+    R_HIKE       pos=-200  avg=  685.0  mid=   532  uPnL=  +30696
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +70943
+  Fed realized:    +0
+  Cash:            -4826
+  Est. total PnL:  +70943  (uPnL + realized payouts)
+  Trades:          ≈3144
+════════════════════════════════════════════════════════════
+[22:52:53] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 221s  |  22:52:53
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-14  trades≈1080
+    A            pos=-100  avg=  635.9  mid=   636  uPnL=     -14
+  [Stock C]  uPnL=-2130  trades≈890
+    C            pos= +90  avg=  935.7  mid=   912  uPnL=   -2130
+  [Options]  uPnL=+5  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    80  uPnL=      +5
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1821  trades≈1020
+    ETF          pos= +40  avg= 2612.5  mid=  2567  uPnL=   -1821
+  [Fed]  uPnL=+67131  trades≈481
+    R_CUT        pos=+200  avg= -110.2  mid=    88  uPnL=  +39638
+    R_HOLD       pos= +81  avg=  353.6  mid=   361  uPnL=    +597
+    R_HIKE       pos=-200  avg=  685.0  mid=   550  uPnL=  +26896
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +63171
+  Fed realized:    +0
+  Cash:            -31886
+  Est. total PnL:  +63171  (uPnL + realized payouts)
+  Trades:          ≈3473
+════════════════════════════════════════════════════════════
+[22:53:03] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 231s  |  22:53:03
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-114  trades≈1100
+    A            pos= -95  avg=  635.8  mid=   637  uPnL=    -114
+  [Stock C]  uPnL=-1891  trades≈915
+    C            pos= +90  avg=  935.0  mid=   914  uPnL=   -1891
+  [Options]  uPnL=+3  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    76  uPnL=      +9
+    B_P_950      pos=  +1  avg=   10.0  mid=     4  uPnL=      -6
+  [ETF]  uPnL=-1427  trades≈1045
+    ETF          pos= +40  avg= 2611.7  mid=  2576  uPnL=   -1427
+  [Fed]  uPnL=+66155  trades≈532
+    R_CUT        pos=+200  avg= -110.2  mid=    86  uPnL=  +39338
+    R_HOLD       pos=+132  avg=  358.6  mid=   361  uPnL=    +321
+    R_HIKE       pos=-200  avg=  685.0  mid=   552  uPnL=  +26496
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +62726
+  Fed realized:    +0
+  Cash:            -54148
+  Est. total PnL:  +62726  (uPnL + realized payouts)
+  Trades:          ≈3594
+════════════════════════════════════════════════════════════
+[22:53:13] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 241s  |  22:53:13
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+188  trades≈1180
+    A            pos=-100  avg=  635.4  mid=   634  uPnL=    +188
+  [Stock C]  uPnL=-2112  trades≈985
+    C            pos= +95  avg=  933.7  mid=   912  uPnL=   -2112
+  [Options]  uPnL=+1  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    77  uPnL=      +8
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=-1962  trades≈1120
+    ETF          pos= +40  avg= 2609.1  mid=  2560  uPnL=   -1962
+  [Fed]  uPnL=+48072  trades≈568
+    R_CUT        pos=+200  avg= -110.2  mid=    67  uPnL=  +35438
+    R_HOLD       pos=+168  avg=  359.1  mid=   332  uPnL=   -4462
+    R_HIKE       pos=-200  avg=  685.0  mid=   600  uPnL=  +17096
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +44187
+  Fed realized:    +0
+  Cash:            -69624
+  Est. total PnL:  +44187  (uPnL + realized payouts)
+  Trades:          ≈3855
+════════════════════════════════════════════════════════════
+[22:53:23] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 251s  |  22:53:23
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1324  trades≈1200
+    A            pos=-100  avg=  635.2  mid=   622  uPnL=   +1324
+  [Stock C]  uPnL=-1184  trades≈1010
+    C            pos= +90  avg=  933.2  mid=   920  uPnL=   -1184
+  [Options]  uPnL=+9  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    76  uPnL=      +9
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1129  trades≈1140
+    ETF          pos= +40  avg= 2608.2  mid=  2580  uPnL=   -1129
+  [Fed]  uPnL=+74342  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    90  uPnL=  +40038
+    R_HOLD       pos=+200  avg=  357.5  mid=   377  uPnL=   +3908
+    R_HIKE       pos=-200  avg=  685.0  mid=   533  uPnL=  +30396
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +73362
+  Fed realized:    +0
+  Cash:            -76509
+  Est. total PnL:  +73362  (uPnL + realized payouts)
+  Trades:          ≈3952
+════════════════════════════════════════════════════════════
+[22:53:33] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 261s  |  22:53:33
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-3282  trades≈1205
+    A            pos=-100  avg=  635.2  mid=   668  uPnL=   -3282
+  [Stock C]  uPnL=-1809  trades≈1015
+    C            pos= +90  avg=  933.1  mid=   913  uPnL=   -1809
+  [Options]  uPnL=-6  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    91  uPnL=      -6
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+277  trades≈1145
+    ETF          pos= +40  avg= 2608.1  mid=  2615  uPnL=    +277
+  [Fed]  uPnL=+64642  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    80  uPnL=  +37938
+    R_HOLD       pos=+200  avg=  357.5  mid=   363  uPnL=   +1108
+    R_HIKE       pos=-200  avg=  685.0  mid=   557  uPnL=  +25596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +59822
+  Fed realized:    +0
+  Cash:            -76569
+  Est. total PnL:  +59822  (uPnL + realized payouts)
+  Trades:          ≈3967
+════════════════════════════════════════════════════════════
+[22:53:43] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 271s  |  22:53:43
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2244  trades≈1260
+    A            pos=-100  avg=  636.1  mid=   658  uPnL=   -2244
+  [Stock C]  uPnL=-3581  trades≈1065
+    C            pos= +95  avg=  932.2  mid=   894  uPnL=   -3581
+  [Options]  uPnL=-8  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    93  uPnL=      -8
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-337  trades≈1200
+    ETF          pos= +40  avg= 2608.9  mid=  2600  uPnL=    -337
+  [Fed]  uPnL=+92142  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   108  uPnL=  +43538
+    R_HOLD       pos=+200  avg=  357.5  mid=   404  uPnL=   +9308
+    R_HIKE       pos=-200  avg=  685.0  mid=   488  uPnL=  +39296
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +85972
+  Fed realized:    +0
+  Cash:            -82270
+  Est. total PnL:  +85972  (uPnL + realized payouts)
+  Trades:          ≈4127
+════════════════════════════════════════════════════════════
+[22:53:53] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 281s  |  22:53:53
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-917  trades≈1325
+    A            pos=-100  avg=  636.8  mid=   646  uPnL=    -917
+  [Stock C]  uPnL=-3783  trades≈1125
+    C            pos=+105  avg=  930.0  mid=   894  uPnL=   -3783
+  [Options]  uPnL=+9  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    76  uPnL=      +9
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-852  trades≈1270
+    ETF          pos= +40  avg= 2608.3  mid=  2587  uPnL=    -852
+  [Fed]  uPnL=+112342  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   130  uPnL=  +47938
+    R_HOLD       pos=+200  avg=  357.5  mid=   432  uPnL=  +14908
+    R_HIKE       pos=-200  avg=  685.0  mid=   438  uPnL=  +49496
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +106799
+  Fed realized:    +0
+  Cash:            -112572
+  Est. total PnL:  +106799  (uPnL + realized payouts)
+  Trades:          ≈4322
+════════════════════════════════════════════════════════════
+[22:54:03] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 292s  |  22:54:03
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2422  trades≈1410
+    A            pos=-100  avg=  637.8  mid=   662  uPnL=   -2422
+  [Stock C]  uPnL=-5353  trades≈1210
+    C            pos=+100  avg=  927.0  mid=   874  uPnL=   -5353
+  [Options]  uPnL=+4  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    76  uPnL=      +9
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-2271  trades≈1350
+    ETF          pos= +40  avg= 2606.3  mid=  2550  uPnL=   -2271
+  [Fed]  uPnL=+69342  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    80  uPnL=  +38038
+    R_HOLD       pos=+200  avg=  357.5  mid=   374  uPnL=   +3408
+    R_HIKE       pos=-200  avg=  685.0  mid=   546  uPnL=  +27896
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +59299
+  Fed realized:    +0
+  Cash:            -106139
+  Est. total PnL:  +59299  (uPnL + realized payouts)
+  Trades:          ≈4572
+════════════════════════════════════════════════════════════
+[22:54:13] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 302s  |  22:54:13
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6034  trades≈1415
+    A            pos= -95  avg=  638.0  mid=   702  uPnL=   -6034
+  [Stock C]  uPnL=-7442  trades≈1220
+    C            pos=+100  avg=  926.4  mid=   852  uPnL=   -7442
+  [Options]  uPnL=-1  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    86  uPnL=      -1
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-768  trades≈1360
+    ETF          pos= +40  avg= 2606.2  mid=  2587  uPnL=    -768
+  [Fed]  uPnL=+92842  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   102  uPnL=  +42438
+    R_HOLD       pos=+200  avg=  357.5  mid=   412  uPnL=  +10808
+    R_HIKE       pos=-200  avg=  685.0  mid=   487  uPnL=  +39596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +78597
+  Fed realized:    +0
+  Cash:            -104699
+  Est. total PnL:  +78597  (uPnL + realized payouts)
+  Trades:          ≈4597
+════════════════════════════════════════════════════════════
+[22:54:23] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 312s  |  22:54:23
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-4966  trades≈1500
+    A            pos= -95  avg=  640.7  mid=   693  uPnL=   -4966
+  [Stock C]  uPnL=-5897  trades≈1305
+    C            pos=+100  avg=  922.0  mid=   863  uPnL=   -5897
+  [Options]  uPnL=-5  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    90  uPnL=      -5
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-782  trades≈1445
+    ETF          pos= +40  avg= 2606.1  mid=  2586  uPnL=    -782
+  [Fed]  uPnL=+105242  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   114  uPnL=  +44938
+    R_HOLD       pos=+200  avg=  357.5  mid=   430  uPnL=  +14408
+    R_HIKE       pos=-200  avg=  685.0  mid=   456  uPnL=  +45896
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +93592
+  Fed realized:    +0
+  Cash:            -107299
+  Est. total PnL:  +93592  (uPnL + realized payouts)
+  Trades:          ≈4852
+════════════════════════════════════════════════════════════
+[22:54:34] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 322s  |  22:54:34
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5245  trades≈1565
+    A            pos= -95  avg=  642.8  mid=   698  uPnL=   -5245
+  [Stock C]  uPnL=-6276  trades≈1365
+    C            pos=+105  avg=  919.3  mid=   860  uPnL=   -6276
+  [Options]  uPnL=+2  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    76  uPnL=      +9
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=-677  trades≈1510
+    ETF          pos= +40  avg= 2605.4  mid=  2588  uPnL=    -677
+  [Fed]  uPnL=+110673  trades≈596
+    R_CUT        pos=+200  avg= -110.2  mid=   118  uPnL=  +45638
+    R_HOLD       pos=+196  avg=  355.6  mid=   440  uPnL=  +16439
+    R_HIKE       pos=-200  avg=  685.0  mid=   442  uPnL=  +48596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +98477
+  Fed realized:    +0
+  Cash:            -116345
+  Est. total PnL:  +98477  (uPnL + realized payouts)
+  Trades:          ≈5038
+════════════════════════════════════════════════════════════
+[22:54:44] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 332s  |  22:54:44
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5208  trades≈1635
+    A            pos=-100  avg=  644.9  mid=   697  uPnL=   -5208
+  [Stock C]  uPnL=-4302  trades≈1435
+    C            pos=+100  avg=  916.5  mid=   874  uPnL=   -4302
+  [Options]  uPnL=+20  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    64  uPnL=     +20
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-369  trades≈1575
+    ETF          pos= +40  avg= 2605.2  mid=  2596  uPnL=    -369
+  [Fed]  uPnL=+151853  trades≈566
+    R_CUT        pos=+200  avg= -110.2  mid=   177  uPnL=  +57438
+    R_HOLD       pos=+166  avg=  336.9  mid=   484  uPnL=  +24419
+    R_HIKE       pos=-200  avg=  685.0  mid=   335  uPnL=  +69996
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +141995
+  Fed realized:    +0
+  Cash:            -96962
+  Est. total PnL:  +141995  (uPnL + realized payouts)
+  Trades:          ≈5213
+════════════════════════════════════════════════════════════
+[22:54:54] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 342s  |  22:54:54
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5224  trades≈1665
+    A            pos=-100  avg=  645.8  mid=   698  uPnL=   -5224
+  [Stock C]  uPnL=-4755  trades≈1465
+    C            pos=+100  avg=  915.6  mid=   868  uPnL=   -4755
+  [Options]  uPnL=+40  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    46  uPnL=     +39
+    B_P_950      pos=  +1  avg=   10.0  mid=    11  uPnL=      +1
+  [ETF]  uPnL=-1228  trades≈1605
+    ETF          pos= +40  avg= 2604.7  mid=  2574  uPnL=   -1228
+  [Fed]  uPnL=+145104  trades≈489
+    R_CUT        pos=+200  avg= -110.2  mid=   166  uPnL=  +55238
+    R_HOLD       pos= +89  avg=  219.3  mid=   478  uPnL=  +23070
+    R_HIKE       pos=-200  avg=  685.0  mid=   351  uPnL=  +66796
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +133937
+  Fed realized:    +0
+  Cash:            -67393
+  Est. total PnL:  +133937  (uPnL + realized payouts)
+  Trades:          ≈5226
+════════════════════════════════════════════════════════════
+[22:55:04] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 352s  |  22:55:04
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5419  trades≈1685
+    A            pos=-100  avg=  646.3  mid=   700  uPnL=   -5419
+  [Stock C]  uPnL=-4891  trades≈1485
+    C            pos=+100  avg=  914.9  mid=   866  uPnL=   -4891
+  [Options]  uPnL=+26  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    60  uPnL=     +26
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-939  trades≈1625
+    ETF          pos= +40  avg= 2604.5  mid=  2581  uPnL=    -939
+  [Fed]  uPnL=+133189  trades≈409
+    R_CUT        pos=+200  avg= -110.2  mid=   139  uPnL=  +49838
+    R_HOLD       pos=  +9  avg=-2054.3  mid=   474  uPnL=  +22755
+    R_HIKE       pos=-200  avg=  685.0  mid=   382  uPnL=  +60596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +121966
+  Fed realized:    +0
+  Cash:            -29158
+  Est. total PnL:  +121966  (uPnL + realized payouts)
+  Trades:          ≈5206
+════════════════════════════════════════════════════════════
+[22:55:14] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 362s  |  22:55:14
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5755  trades≈1705
+    A            pos= -95  avg=  646.9  mid=   708  uPnL=   -5755
+  [Stock C]  uPnL=-5148  trades≈1510
+    C            pos=+100  avg=  914.0  mid=   862  uPnL=   -5148
+  [Options]  uPnL=+23  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    62  uPnL=     +23
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1089  trades≈1650
+    ETF          pos= +40  avg= 2604.2  mid=  2577  uPnL=   -1089
+  [Fed]  uPnL=+133293  trades≈447
+    R_CUT        pos=+200  avg= -110.2  mid=   141  uPnL=  +50238
+    R_HOLD       pos= -47  avg=  945.1  mid=   480  uPnL=  +21859
+    R_HIKE       pos=-200  avg=  685.0  mid=   379  uPnL=  +61196
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +121324
+  Fed realized:    +0
+  Cash:            -12243
+  Est. total PnL:  +121324  (uPnL + realized payouts)
+  Trades:          ≈5314
+════════════════════════════════════════════════════════════
+[22:55:24] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 372s  |  22:55:24
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-4313  trades≈1800
+    A            pos= -95  avg=  650.1  mid=   696  uPnL=   -4313
+  [Stock C]  uPnL=-4216  trades≈1605
+    C            pos=+100  avg=  911.2  mid=   869  uPnL=   -4216
+  [Options]  uPnL=+6  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    72  uPnL=     +13
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=-901  trades≈1745
+    ETF          pos= +40  avg= 2603.5  mid=  2581  uPnL=    -901
+  [Fed]  uPnL=+138614  trades≈530
+    R_CUT        pos=+200  avg= -110.2  mid=   150  uPnL=  +52038
+    R_HOLD       pos=-130  avg=  653.4  mid=   490  uPnL=  +21180
+    R_HIKE       pos=-200  avg=  685.0  mid=   358  uPnL=  +65396
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +129190
+  Fed realized:    +0
+  Cash:            37543
+  Est. total PnL:  +129190  (uPnL + realized payouts)
+  Trades:          ≈5682
+════════════════════════════════════════════════════════════
+[22:55:34] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 382s  |  22:55:34
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-4385  trades≈1900
+    A            pos=-100  avg=  652.1  mid=   696  uPnL=   -4385
+  [Stock C]  uPnL=-4010  trades≈1700
+    C            pos=+100  avg=  908.6  mid=   868  uPnL=   -4010
+  [Options]  uPnL=+22  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    56  uPnL=     +29
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=-705  trades≈1840
+    ETF          pos= +40  avg= 2602.6  mid=  2585  uPnL=    -705
+  [Fed]  uPnL=+142141  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   160  uPnL=  +54038
+    R_HOLD       pos=-200  avg=  595.5  mid=   502  uPnL=  +18707
+    R_HIKE       pos=-200  avg=  685.0  mid=   338  uPnL=  +69396
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +133063
+  Fed realized:    +0
+  Cash:            72770
+  Est. total PnL:  +133063  (uPnL + realized payouts)
+  Trades:          ≈6042
+════════════════════════════════════════════════════════════
+[22:55:44] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 392s  |  22:55:44
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5300  trades≈1935
+    A            pos=-100  avg=  653.0  mid=   706  uPnL=   -5300
+  [Stock C]  uPnL=-3832  trades≈1735
+    C            pos=+100  avg=  907.8  mid=   870  uPnL=   -3832
+  [Options]  uPnL=+20  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    64  uPnL=     +20
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-324  trades≈1875
+    ETF          pos= +40  avg= 2602.1  mid=  2594  uPnL=    -324
+  [Fed]  uPnL=+117641  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    99  uPnL=  +41838
+    R_HOLD       pos=-200  avg=  595.5  mid=   457  uPnL=  +27707
+    R_HIKE       pos=-200  avg=  685.0  mid=   444  uPnL=  +48096
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +108206
+  Fed realized:    +0
+  Cash:            72365
+  Est. total PnL:  +108206  (uPnL + realized payouts)
+  Trades:          ≈6147
+════════════════════════════════════════════════════════════
+[22:55:54] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 402s  |  22:55:54
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5213  trades≈1980
+    A            pos= -95  avg=  654.1  mid=   709  uPnL=   -5213
+  [Stock C]  uPnL=-3379  trades≈1785
+    C            pos=+100  avg=  906.8  mid=   873  uPnL=   -3379
+  [Options]  uPnL=+20  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    58  uPnL=     +27
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=-1076  trades≈1925
+    ETF          pos= +40  avg= 2601.9  mid=  2575  uPnL=   -1076
+  [Fed]  uPnL=+117241  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    98  uPnL=  +41538
+    R_HOLD       pos=-200  avg=  595.5  mid=   462  uPnL=  +26707
+    R_HIKE       pos=-200  avg=  685.0  mid=   440  uPnL=  +48996
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +107593
+  Fed realized:    +0
+  Cash:            68125
+  Est. total PnL:  +107593  (uPnL + realized payouts)
+  Trades:          ≈6292
+════════════════════════════════════════════════════════════
+[22:56:04] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 412s  |  22:56:04
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5296  trades≈2000
+    A            pos=-105  avg=  654.6  mid=   705  uPnL=   -5296
+  [Stock C]  uPnL=-1958  trades≈1795
+    C            pos=+100  avg=  906.6  mid=   887  uPnL=   -1958
+  [Options]  uPnL=+27  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    58  uPnL=     +27
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-509  trades≈1935
+    ETF          pos= +40  avg= 2601.7  mid=  2589  uPnL=    -509
+  [Fed]  uPnL=+126241  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   120  uPnL=  +46038
+    R_HOLD       pos=-200  avg=  595.5  mid=   493  uPnL=  +20507
+    R_HIKE       pos=-200  avg=  685.0  mid=   386  uPnL=  +59696
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +118505
+  Fed realized:    +0
+  Cash:            75045
+  Est. total PnL:  +118505  (uPnL + realized payouts)
+  Trades:          ≈6332
+════════════════════════════════════════════════════════════
+[22:56:14] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 422s  |  22:56:14
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-1801  trades≈2060
+    A            pos= -95  avg=  655.5  mid=   674  uPnL=   -1801
+  [Stock C]  uPnL=-1978  trades≈1865
+    C            pos=+100  avg=  905.8  mid=   886  uPnL=   -1978
+  [Options]  uPnL=+31  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    49  uPnL=     +36
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-1915  trades≈2005
+    ETF          pos= +40  avg= 2600.9  mid=  2553  uPnL=   -1915
+  [Fed]  uPnL=+130841  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   132  uPnL=  +48338
+    R_HOLD       pos=-200  avg=  595.5  mid=   506  uPnL=  +17907
+    R_HIKE       pos=-200  avg=  685.0  mid=   362  uPnL=  +64596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +125178
+  Fed realized:    +0
+  Cash:            57441
+  Est. total PnL:  +125178  (uPnL + realized payouts)
+  Trades:          ≈6532
+════════════════════════════════════════════════════════════
+[22:56:24] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 432s  |  22:56:24
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-1345  trades≈2135
+    A            pos=-100  avg=  656.0  mid=   670  uPnL=   -1345
+  [Stock C]  uPnL=-2796  trades≈1935
+    C            pos=+100  avg=  905.0  mid=   877  uPnL=   -2796
+  [Options]  uPnL=+17  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    68  uPnL=     +17
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1530  trades≈2075
+    ETF          pos= +40  avg= 2599.2  mid=  2561  uPnL=   -1530
+  [Fed]  uPnL=+117141  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    97  uPnL=  +41438
+    R_HOLD       pos=-200  avg=  595.5  mid=   483  uPnL=  +22507
+    R_HIKE       pos=-200  avg=  685.0  mid=   419  uPnL=  +53196
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +111487
+  Fed realized:    +0
+  Cash:            70046
+  Est. total PnL:  +111487  (uPnL + realized payouts)
+  Trades:          ≈6747
+════════════════════════════════════════════════════════════
+[22:56:34] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 442s  |  22:56:34
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-794  trades≈2145
+    A            pos=-100  avg=  656.1  mid=   664  uPnL=    -794
+  [Stock C]  uPnL=-2083  trades≈1945
+    C            pos=+100  avg=  904.8  mid=   884  uPnL=   -2083
+  [Options]  uPnL=+36  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    49  uPnL=     +36
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-2219  trades≈2085
+    ETF          pos= +40  avg= 2599.0  mid=  2544  uPnL=   -2219
+  [Fed]  uPnL=+128541  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   126  uPnL=  +47138
+    R_HOLD       pos=-200  avg=  595.5  mid=   518  uPnL=  +15607
+    R_HIKE       pos=-200  avg=  685.0  mid=   356  uPnL=  +65796
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +123481
+  Fed realized:    +0
+  Cash:            69861
+  Est. total PnL:  +123481  (uPnL + realized payouts)
+  Trades:          ≈6777
+════════════════════════════════════════════════════════════
+[22:56:44] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 452s  |  22:56:44
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-1603  trades≈2160
+    A            pos= -95  avg=  656.1  mid=   673  uPnL=   -1603
+  [Stock C]  uPnL=-4468  trades≈1955
+    C            pos=+110  avg=  904.6  mid=   864  uPnL=   -4468
+  [Options]  uPnL=+30  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    50  uPnL=     +35
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-2977  trades≈2105
+    ETF          pos= +40  avg= 2598.4  mid=  2524  uPnL=   -2977
+  [Fed]  uPnL=+134341  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   138  uPnL=  +49638
+    R_HOLD       pos=-200  avg=  595.5  mid=   530  uPnL=  +13107
+    R_HIKE       pos=-200  avg=  685.0  mid=   327  uPnL=  +71596
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +125323
+  Fed realized:    +0
+  Cash:            57541
+  Est. total PnL:  +125323  (uPnL + realized payouts)
+  Trades:          ≈6822
+════════════════════════════════════════════════════════════
+[22:56:54] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 462s  |  22:56:54
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-1955  trades≈2205
+    A            pos=-100  avg=  656.5  mid=   676  uPnL=   -1955
+  [Stock C]  uPnL=-3908  trades≈2000
+    C            pos=+105  avg=  903.7  mid=   866  uPnL=   -3908
+  [Options]  uPnL=+38  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    42  uPnL=     +43
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-2727  trades≈2145
+    ETF          pos= +40  avg= 2597.2  mid=  2529  uPnL=   -2727
+  [Fed]  uPnL=+144225  trades≈590
+    R_CUT        pos=+200  avg= -110.2  mid=   166  uPnL=  +55138
+    R_HOLD       pos=-200  avg=  595.5  mid=   551  uPnL=   +8907
+    R_HIKE       pos=-190  avg=  706.0  mid=   284  uPnL=  +80180
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +135673
+  Fed realized:    +0
+  Cash:            56980
+  Est. total PnL:  +135673  (uPnL + realized payouts)
+  Trades:          ≈6942
+════════════════════════════════════════════════════════════
+[22:57:04] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 472s  |  22:57:04
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5642  trades≈2230
+    A            pos=-100  avg=  656.6  mid=   713  uPnL=   -5642
+  [Stock C]  uPnL=-2519  trades≈2030
+    C            pos=+100  avg=  903.2  mid=   878  uPnL=   -2519
+  [Options]  uPnL=+33  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    47  uPnL=     +38
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=+105  trades≈2170
+    ETF          pos= +40  avg= 2596.4  mid=  2599  uPnL=    +105
+  [Fed]  uPnL=+159234  trades≈509
+    R_CUT        pos=+200  avg= -110.2  mid=   211  uPnL=  +64238
+    R_HOLD       pos=-200  avg=  595.5  mid=   568  uPnL=   +5507
+    R_HIKE       pos=-109  avg= 1042.5  mid=   222  uPnL=  +89488
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +151211
+  Fed realized:    +0
+  Cash:            45562
+  Est. total PnL:  +151211  (uPnL + realized payouts)
+  Trades:          ≈6941
+════════════════════════════════════════════════════════════
+[22:57:14] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 482s  |  22:57:14
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5759  trades≈2265
+    A            pos= -95  avg=  657.4  mid=   718  uPnL=   -5759
+  [Stock C]  uPnL=-5318  trades≈2070
+    C            pos=+100  avg=  902.2  mid=   849  uPnL=   -5318
+  [Options]  uPnL=+48  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    35  uPnL=     +50
+    B_P_950      pos=  +1  avg=   10.0  mid=     8  uPnL=      -2
+  [ETF]  uPnL=-2817  trades≈2210
+    ETF          pos= +40  avg= 2595.4  mid=  2525  uPnL=   -2817
+  [Fed]  uPnL=+136300  trades≈481
+    R_CUT        pos=+200  avg= -110.2  mid=   123  uPnL=  +46638
+    R_HOLD       pos=-200  avg=  595.5  mid=   544  uPnL=  +10307
+    R_HIKE       pos= -81  avg= 1312.7  mid=   333  uPnL=  +79355
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +122454
+  Fed realized:    +0
+  Cash:            24613
+  Est. total PnL:  +122454  (uPnL + realized payouts)
+  Trades:          ≈7028
+════════════════════════════════════════════════════════════
+[22:57:24] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 492s  |  22:57:24
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5156  trades≈2355
+    A            pos= -95  avg=  659.7  mid=   714  uPnL=   -5156
+  [Stock C]  uPnL=-5875  trades≈2155
+    C            pos=+105  avg=  900.0  mid=   844  uPnL=   -5875
+  [Options]  uPnL=+79  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    16  uPnL=     +69
+    B_P_950      pos=  +1  avg=   10.0  mid=    20  uPnL=     +10
+  [ETF]  uPnL=-3872  trades≈2300
+    ETF          pos= +40  avg= 2592.8  mid=  2496  uPnL=   -3872
+  [Fed]  uPnL=+137020  trades≈481
+    R_CUT        pos=+200  avg= -110.2  mid=   131  uPnL=  +48238
+    R_HOLD       pos=-200  avg=  595.5  mid=   556  uPnL=   +7807
+    R_HIKE       pos= -81  avg= 1312.7  mid=   313  uPnL=  +80975
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +122196
+  Fed realized:    +0
+  Cash:            20138
+  Est. total PnL:  +122196  (uPnL + realized payouts)
+  Trades:          ≈7293
+════════════════════════════════════════════════════════════
+[22:57:34] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 503s  |  22:57:34
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-20889  trades≈2450
+    A            pos=-170  avg=  667.6  mid=   790  uPnL=  -20889
+  [Stock C]  uPnL=-5428  trades≈2180
+    C            pos=+100  avg=  899.3  mid=   845  uPnL=   -5428
+  [Options]  uPnL=+52  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    33  uPnL=     +52
+    B_P_950      pos=  +1  avg=   10.0  mid=    10  uPnL=      +0
+  [ETF]  uPnL=+840  trades≈2320
+    ETF          pos= +40  avg= 2592.0  mid=  2613  uPnL=    +840
+  [Fed]  uPnL=+133938  trades≈488
+    R_CUT        pos=+200  avg= -110.2  mid=   118  uPnL=  +45738
+    R_HOLD       pos=-200  avg=  595.5  mid=   556  uPnL=   +7907
+    R_HIKE       pos= -88  avg= 1237.4  mid=   325  uPnL=  +80293
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +108512
+  Fed realized:    +0
+  Cash:            99378
+  Est. total PnL:  +108512  (uPnL + realized payouts)
+  Trades:          ≈7440
+════════════════════════════════════════════════════════════
+[22:57:44] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 513s  |  22:57:44
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-18504  trades≈2450
+    A            pos=-155  avg=  667.6  mid=   787  uPnL=  -18504
+  [Stock C]  uPnL=-5089  trades≈2195
+    C            pos=+100  avg=  898.9  mid=   848  uPnL=   -5089
+  [Options]  uPnL=+54  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    27  uPnL=     +58
+    B_P_950      pos=  +1  avg=   10.0  mid=     6  uPnL=      -4
+  [ETF]  uPnL=+478  trades≈2335
+    ETF          pos= +40  avg= 2592.1  mid=  2604  uPnL=    +478
+  [Fed]  uPnL=+137976  trades≈482
+    R_CUT        pos=+200  avg= -110.2  mid=   140  uPnL=  +50138
+    R_HOLD       pos=-200  avg=  595.5  mid=   576  uPnL=   +3807
+    R_HIKE       pos= -82  avg= 1307.3  mid=   282  uPnL=  +84031
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +114916
+  Fed realized:    +0
+  Cash:            85736
+  Est. total PnL:  +114916  (uPnL + realized payouts)
+  Trades:          ≈7464
+════════════════════════════════════════════════════════════
+[22:57:54] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 523s  |  22:57:54
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-14419  trades≈2450
+    A            pos=-115  avg=  667.6  mid=   793  uPnL=  -14419
+  [Stock C]  uPnL=-6172  trades≈2235
+    C            pos=+100  avg=  897.7  mid=   836  uPnL=   -6172
+  [Options]  uPnL=+46  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    32  uPnL=     +54
+    B_P_950      pos=  +1  avg=   10.0  mid=     3  uPnL=      -7
+  [ETF]  uPnL=+626  trades≈2375
+    ETF          pos= +40  avg= 2592.4  mid=  2608  uPnL=    +626
+  [Fed]  uPnL=+128500  trades≈481
+    R_CUT        pos=+200  avg= -110.2  mid=    98  uPnL=  +41638
+    R_HOLD       pos=-200  avg=  595.5  mid=   554  uPnL=   +8207
+    R_HIKE       pos= -81  avg= 1319.6  mid=   348  uPnL=  +78656
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +108582
+  Fed realized:    +0
+  Cash:            52969
+  Est. total PnL:  +108582  (uPnL + realized payouts)
+  Trades:          ≈7543
+════════════════════════════════════════════════════════════
+[22:58:05] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 533s  |  22:58:05
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-12216  trades≈2455
+    A            pos=-100  avg=  667.8  mid=   790  uPnL=  -12216
+  [Stock C]  uPnL=-4418  trades≈2255
+    C            pos=+100  avg=  897.2  mid=   853  uPnL=   -4418
+  [Options]  uPnL=+53  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    28  uPnL=     +57
+    B_P_950      pos=  +1  avg=   10.0  mid=     6  uPnL=      -4
+  [ETF]  uPnL=+1258  trades≈2395
+    ETF          pos= +40  avg= 2592.6  mid=  2624  uPnL=   +1258
+  [Fed]  uPnL=+142369  trades≈438
+    R_CUT        pos=+200  avg= -110.2  mid=   174  uPnL=  +56838
+    R_HOLD       pos=-200  avg=  595.5  mid=   607  uPnL=   -2293
+    R_HIKE       pos= -38  avg= 2531.2  mid=   220  uPnL=  +87824
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +127045
+  Fed realized:    +0
+  Cash:            29989
+  Est. total PnL:  +127045  (uPnL + realized payouts)
+  Trades:          ≈7545
+════════════════════════════════════════════════════════════
+[22:58:15] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 543s  |  22:58:15
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-12766  trades≈2500
+    A            pos= -95  avg=  670.1  mid=   804  uPnL=  -12766
+  [Stock C]  uPnL=-6403  trades≈2295
+    C            pos=+110  avg=  896.2  mid=   838  uPnL=   -6403
+  [Options]  uPnL=+41  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    38  uPnL=     +47
+    B_P_950      pos=  +1  avg=   10.0  mid=     4  uPnL=      -6
+  [ETF]  uPnL=+588  trades≈2445
+    ETF          pos= +40  avg= 2593.3  mid=  2608  uPnL=    +588
+  [Fed]  uPnL=+135276  trades≈439
+    R_CUT        pos=+200  avg= -110.2  mid=   143  uPnL=  +50638
+    R_HOLD       pos=-200  avg=  595.5  mid=   608  uPnL=   -2493
+    R_HIKE       pos= +39  avg=-1985.1  mid=   249  uPnL=  +87131
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +116737
+  Fed realized:    +0
+  Cash:            -6790
+  Est. total PnL:  +116737  (uPnL + realized payouts)
+  Trades:          ≈7681
+════════════════════════════════════════════════════════════
+[22:58:25] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 553s  |  22:58:25
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-12496  trades≈2540
+    A            pos=-100  avg=  672.0  mid=   797  uPnL=  -12496
+  [Stock C]  uPnL=-5972  trades≈2330
+    C            pos=+110  avg=  895.3  mid=   841  uPnL=   -5972
+  [Options]  uPnL=+57  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    25  uPnL=     +60
+    B_P_950      pos=  +1  avg=   10.0  mid=     7  uPnL=      -3
+  [ETF]  uPnL=+643  trades≈2482
+    ETF          pos= +42  avg= 2593.7  mid=  2609  uPnL=    +643
+  [Fed]  uPnL=+132455  trades≈497
+    R_CUT        pos=+200  avg= -110.2  mid=   133  uPnL=  +48638
+    R_HOLD       pos=-200  avg=  595.5  mid=   611  uPnL=   -3093
+    R_HIKE       pos= +97  avg= -639.0  mid=   257  uPnL=  +86910
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +114687
+  Fed realized:    +0
+  Cash:            -33703
+  Est. total PnL:  +114687  (uPnL + realized payouts)
+  Trades:          ≈7851
+════════════════════════════════════════════════════════════
+[22:58:35] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 563s  |  22:58:35
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+106  trades≈2376
+    A            pos=+134  avg=  672.7  mid=   674  uPnL=    +106
+  [Stock C]  uPnL=-7814  trades≈2392
+    C            pos=+118  avg=  893.7  mid=   828  uPnL=   -7814
+  [Options]  uPnL=+64  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    20  uPnL=     +64
+    B_P_950      pos=  +1  avg=   10.0  mid=    10  uPnL=      +0
+  [ETF]  uPnL=-4831  trades≈2550
+    ETF          pos= +40  avg= 2591.3  mid=  2470  uPnL=   -4831
+  [Fed]  uPnL=+145986  trades≈558
+    R_CUT        pos=+200  avg= -110.2  mid=    72  uPnL=  +36338
+    R_HOLD       pos=-200  avg=  595.5  mid=   560  uPnL=   +7107
+    R_HIKE       pos=+158  avg= -283.0  mid=   366  uPnL= +102541
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +133511
+  Fed realized:    +0
+  Cash:            -210861
+  Est. total PnL:  +133511  (uPnL + realized payouts)
+  Trades:          ≈7878
+════════════════════════════════════════════════════════════
+[22:58:45] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 573s  |  22:58:45
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1252  trades≈2413
+    A            pos=+117  avg=  672.8  mid=   684  uPnL=   +1252
+  [Stock C]  uPnL=-6379  trades≈2420
+    C            pos=+110  avg=  893.0  mid=   835  uPnL=   -6379
+  [Options]  uPnL=+60  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    24  uPnL=     +61
+    B_P_950      pos=  +1  avg=   10.0  mid=     9  uPnL=      -1
+  [ETF]  uPnL=-4339  trades≈2572
+    ETF          pos= +42  avg= 2590.3  mid=  2487  uPnL=   -4339
+  [Fed]  uPnL=+167858  trades≈503
+    R_CUT        pos=+200  avg= -110.2  mid=    42  uPnL=  +30438
+    R_HOLD       pos=-200  avg=  595.5  mid=   495  uPnL=  +20107
+    R_HIKE       pos=+103  avg= -676.0  mid=   463  uPnL= +117313
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +158452
+  Fed realized:    +0
+  Cash:            -166190
+  Est. total PnL:  +158452  (uPnL + realized payouts)
+  Trades:          ≈7910
+════════════════════════════════════════════════════════════
+[22:58:55] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 583s  |  22:58:55
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1382  trades≈2485
+    A            pos= +90  avg=  673.1  mid=   688  uPnL=   +1382
+  [Stock C]  uPnL=-6911  trades≈2465
+    C            pos=+110  avg=  891.8  mid=   829  uPnL=   -6911
+  [Options]  uPnL=+56  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    30  uPnL=     +54
+    B_P_950      pos=  +1  avg=   10.0  mid=    11  uPnL=      +1
+  [ETF]  uPnL=-4523  trades≈2617
+    ETF          pos= +42  avg= 2588.7  mid=  2481  uPnL=   -4523
+  [Fed]  uPnL=+178322  trades≈433
+    R_CUT        pos=+200  avg= -110.2  mid=    23  uPnL=  +26638
+    R_HOLD       pos=-200  avg=  595.5  mid=   432  uPnL=  +32607
+    R_HIKE       pos= -33  avg= 4150.9  mid=   542  uPnL= +119078
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +168325
+  Fed realized:    +0
+  Cash:            -85978
+  Est. total PnL:  +168325  (uPnL + realized payouts)
+  Trades:          ≈8002
+════════════════════════════════════════════════════════════
+[22:59:05] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 593s  |  22:59:05
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1620  trades≈2550
+    A            pos=+100  avg=  673.3  mid=   690  uPnL=   +1620
+  [Stock C]  uPnL=-6811  trades≈2540
+    C            pos=+110  avg=  889.9  mid=   828  uPnL=   -6811
+  [Options]  uPnL=+66  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    17  uPnL=     +68
+    B_P_950      pos=  +1  avg=   10.0  mid=     8  uPnL=      -2
+  [ETF]  uPnL=-3923  trades≈2692
+    ETF          pos= +42  avg= 2585.9  mid=  2492  uPnL=   -3923
+  [Fed]  uPnL=+174946  trades≈504
+    R_CUT        pos=+200  avg= -110.2  mid=    26  uPnL=  +27238
+    R_HOLD       pos=-200  avg=  595.5  mid=   461  uPnL=  +26907
+    R_HIKE       pos=-104  avg= 1673.5  mid=   512  uPnL= +120801
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +165899
+  Fed realized:    +0
+  Cash:            -62404
+  Est. total PnL:  +165899  (uPnL + realized payouts)
+  Trades:          ≈8288
+════════════════════════════════════════════════════════════
+[22:59:15] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 603s  |  22:59:15
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1496  trades≈2570
+    A            pos= +85  avg=  673.4  mid=   691  uPnL=   +1496
+  [Stock C]  uPnL=-5146  trades≈2545
+    C            pos=+110  avg=  889.8  mid=   843  uPnL=   -5146
+  [Options]  uPnL=+67  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    21  uPnL=     +64
+    B_P_950      pos=  +1  avg=   10.0  mid=    13  uPnL=      +3
+  [ETF]  uPnL=-4252  trades≈2697
+    ETF          pos= +42  avg= 2585.7  mid=  2484  uPnL=   -4252
+  [Fed]  uPnL=+175670  trades≈507
+    R_CUT        pos=+200  avg= -110.2  mid=    59  uPnL=  +33838
+    R_HOLD       pos=-200  avg=  595.5  mid=   585  uPnL=   +2107
+    R_HIKE       pos=-107  avg= 1661.3  mid=   356  uPnL= +139726
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +167835
+  Fed realized:    +0
+  Cash:            -48509
+  Est. total PnL:  +167835  (uPnL + realized payouts)
+  Trades:          ≈8321
+════════════════════════════════════════════════════════════
+[22:59:25] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 613s  |  22:59:25
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1817  trades≈2605
+    A            pos=+110  avg=  673.5  mid=   690  uPnL=   +1817
+  [Stock C]  uPnL=-5783  trades≈2605
+    C            pos=+110  avg=  888.6  mid=   836  uPnL=   -5783
+  [Options]  uPnL=+50  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    30  uPnL=     +54
+    B_P_950      pos=  +1  avg=   10.0  mid=     6  uPnL=      -4
+  [ETF]  uPnL=-3982  trades≈2757
+    ETF          pos= +42  avg= 2583.8  mid=  2489  uPnL=   -3982
+  [Fed]  uPnL=+173112  trades≈446
+    R_CUT        pos=+200  avg= -110.2  mid=    62  uPnL=  +34338
+    R_HOLD       pos=-200  avg=  595.5  mid=   610  uPnL=   -2993
+    R_HIKE       pos= -46  avg= 3408.9  mid=   327  uPnL= +141767
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +165214
+  Fed realized:    +0
+  Cash:            -88109
+  Est. total PnL:  +165214  (uPnL + realized payouts)
+  Trades:          ≈8415
+════════════════════════════════════════════════════════════
+[22:59:35] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 623s  |  22:59:35
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+1695  trades≈2665
+    A            pos= +90  avg=  673.7  mid=   692  uPnL=   +1695
+  [Stock C]  uPnL=-4704  trades≈2645
+    C            pos=+110  avg=  887.8  mid=   845  uPnL=   -4704
+  [Options]  uPnL=+54  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    26  uPnL=     +59
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-3034  trades≈2797
+    ETF          pos= +42  avg= 2582.7  mid=  2510  uPnL=   -3034
+  [Fed]  uPnL=+168773  trades≈421
+    R_CUT        pos=+200  avg= -110.2  mid=    66  uPnL=  +35238
+    R_HOLD       pos=-200  avg=  595.5  mid=   632  uPnL=   -7193
+    R_HIKE       pos= +21  avg=-6397.3  mid=   304  uPnL= +140728
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +162784
+  Fed realized:    +0
+  Cash:            -97652
+  Est. total PnL:  +162784  (uPnL + realized payouts)
+  Trades:          ≈8530
+════════════════════════════════════════════════════════════
+[22:59:45] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 633s  |  22:59:45
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5362  trades≈2900
+    A            pos=-100  avg=  677.9  mid=   732  uPnL=   -5362
+  [Stock C]  uPnL=-4188  trades≈2690
+    C            pos=+110  avg=  887.1  mid=   849  uPnL=   -4188
+  [Options]  uPnL=+52  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    28  uPnL=     +57
+    B_P_950      pos=  +1  avg=   10.0  mid=     5  uPnL=      -5
+  [ETF]  uPnL=-505  trades≈2847
+    ETF          pos= +47  avg= 2582.7  mid=  2572  uPnL=    -505
+  [Fed]  uPnL=+162294  trades≈496
+    R_CUT        pos=+200  avg= -110.2  mid=   123  uPnL=  +46638
+    R_HOLD       pos=-200  avg=  595.5  mid=   693  uPnL=  -19493
+    R_HIKE       pos= +96  avg=-1224.3  mid=   184  uPnL= +135149
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +152291
+  Fed realized:    +0
+  Cash:            248
+  Est. total PnL:  +152291  (uPnL + realized payouts)
+  Trades:          ≈8935
+════════════════════════════════════════════════════════════
+[22:59:55] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 643s  |  22:59:55
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6894  trades≈2818
+    A            pos= +82  avg=  683.6  mid=   600  uPnL=   -6894
+  [Stock C]  uPnL=-4226  trades≈2790
+    C            pos=+110  avg=  885.4  mid=   847  uPnL=   -4226
+  [Options]  uPnL=+44  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    34  uPnL=     +50
+    B_P_950      pos=  +1  avg=   10.0  mid=     4  uPnL=      -6
+  [ETF]  uPnL=-6014  trades≈2942
+    ETF          pos= +42  avg= 2581.2  mid=  2438  uPnL=   -6014
+  [Fed]  uPnL=+155013  trades≈577
+    R_CUT        pos=+200  avg= -110.2  mid=    99  uPnL=  +41838
+    R_HOLD       pos=-200  avg=  595.5  mid=   698  uPnL=  -20493
+    R_HIKE       pos=+177  avg= -552.2  mid=   203  uPnL= +133668
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +137923
+  Fed realized:    +0
+  Cash:            -114843
+  Est. total PnL:  +137923  (uPnL + realized payouts)
+  Trades:          ≈9129
+════════════════════════════════════════════════════════════
+[23:00:05] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 653s  |  23:00:05
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-7725  trades≈2860
+    A            pos=+100  avg=  682.2  mid=   605  uPnL=   -7725
+  [Stock C]  uPnL=-4634  trades≈2850
+    C            pos=+110  avg=  884.6  mid=   842  uPnL=   -4634
+  [Options]  uPnL=+49  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    36  uPnL=     +49
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-5769  trades≈3002
+    ETF          pos= +42  avg= 2578.3  mid=  2441  uPnL=   -5769
+  [Fed]  uPnL=+145744  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   131  uPnL=  +48238
+    R_HOLD       pos=-200  avg=  595.5  mid=   721  uPnL=  -25093
+    R_HIKE       pos=+200  avg= -465.0  mid=   148  uPnL= +122599
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +127665
+  Fed realized:    +0
+  Cash:            -131776
+  Est. total PnL:  +127665  (uPnL + realized payouts)
+  Trades:          ≈9314
+════════════════════════════════════════════════════════════
+[23:00:15] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 663s  |  23:00:15
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-9360  trades≈2950
+    A            pos=+100  avg=  679.6  mid=   586  uPnL=   -9360
+  [Stock C]  uPnL=-9691  trades≈2933
+    C            pos=+117  avg=  882.3  mid=   800  uPnL=   -9691
+  [Options]  uPnL=+47  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    32  uPnL=     +53
+    B_P_950      pos=  +1  avg=   10.0  mid=     4  uPnL=      -6
+  [ETF]  uPnL=-7695  trades≈3092
+    ETF          pos= +42  avg= 2573.2  mid=  2390  uPnL=   -7695
+  [Fed]  uPnL=+150144  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    78  uPnL=  +37638
+    R_HOLD       pos=-200  avg=  595.5  mid=   710  uPnL=  -22893
+    R_HIKE       pos=+200  avg= -465.0  mid=   212  uPnL= +135399
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +123444
+  Fed realized:    +0
+  Cash:            -140519
+  Est. total PnL:  +123444  (uPnL + realized payouts)
+  Trades:          ≈9577
+════════════════════════════════════════════════════════════
+[23:00:25] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 673s  |  23:00:25
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-8351  trades≈3005
+    A            pos=+110  avg=  677.9  mid=   602  uPnL=   -8351
+  [Stock C]  uPnL=-10024  trades≈2995
+    C            pos=+120  avg=  880.5  mid=   797  uPnL=  -10024
+  [Options]  uPnL=+38  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    48  uPnL=     +38
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6668  trades≈3157
+    ETF          pos= +42  avg= 2569.8  mid=  2411  uPnL=   -6668
+  [Fed]  uPnL=+159144  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    51  uPnL=  +32238
+    R_HOLD       pos=-200  avg=  595.5  mid=   688  uPnL=  -18393
+    R_HIKE       pos=+200  avg= -465.0  mid=   262  uPnL= +145299
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +134138
+  Fed realized:    +0
+  Cash:            -151164
+  Est. total PnL:  +134138  (uPnL + realized payouts)
+  Trades:          ≈9759
+════════════════════════════════════════════════════════════
+[23:00:35] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 683s  |  23:00:35
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-9273  trades≈3085
+    A            pos=+115  avg=  675.6  mid=   595  uPnL=   -9273
+  [Stock C]  uPnL=-9446  trades≈3085
+    C            pos=+115  avg=  878.1  mid=   796  uPnL=   -9446
+  [Options]  uPnL=+36  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    49  uPnL=     +36
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6715  trades≈3242
+    ETF          pos= +42  avg= 2565.4  mid=  2406  uPnL=   -6715
+  [Fed]  uPnL=+154044  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    43  uPnL=  +30638
+    R_HOLD       pos=-200  avg=  595.5  mid=   696  uPnL=  -20193
+    R_HIKE       pos=+200  avg= -465.0  mid=   253  uPnL= +143599
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +128646
+  Fed realized:    +0
+  Cash:            -152859
+  Est. total PnL:  +128646  (uPnL + realized payouts)
+  Trades:          ≈10014
+════════════════════════════════════════════════════════════
+[23:00:45] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 693s  |  23:00:45
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-9061  trades≈3090
+    A            pos=+120  avg=  675.5  mid=   600  uPnL=   -9061
+  [Stock C]  uPnL=-10200  trades≈3090
+    C            pos=+120  avg=  878.0  mid=   793  uPnL=  -10200
+  [Options]  uPnL=+30  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    56  uPnL=     +30
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6130  trades≈3252
+    ETF          pos= +42  avg= 2565.0  mid=  2419  uPnL=   -6130
+  [Fed]  uPnL=+148444  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    40  uPnL=  +30138
+    R_HOLD       pos=-200  avg=  595.5  mid=   715  uPnL=  -23893
+    R_HIKE       pos=+200  avg= -465.0  mid=   246  uPnL= +142199
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +123082
+  Fed realized:    +0
+  Cash:            -160149
+  Est. total PnL:  +123082  (uPnL + realized payouts)
+  Trades:          ≈10034
+════════════════════════════════════════════════════════════
+[23:00:55] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 703s  |  23:00:55
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-8000  trades≈3150
+    A            pos=+115  avg=  674.1  mid=   604  uPnL=   -8000
+  [Stock C]  uPnL=-10159  trades≈3150
+    C            pos=+115  avg=  876.3  mid=   788  uPnL=  -10159
+  [Options]  uPnL=+31  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    54  uPnL=     +31
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6554  trades≈3309
+    ETF          pos= +44  avg= 2562.5  mid=  2414  uPnL=   -6554
+  [Fed]  uPnL=+147444  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    35  uPnL=  +29038
+    R_HOLD       pos=-200  avg=  595.5  mid=   717  uPnL=  -24293
+    R_HIKE       pos=+200  avg= -465.0  mid=   248  uPnL= +142699
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +122762
+  Fed realized:    +0
+  Cash:            -159592
+  Est. total PnL:  +122762  (uPnL + realized payouts)
+  Trades:          ≈10211
+════════════════════════════════════════════════════════════
+[23:01:05] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 714s  |  23:01:05
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-8681  trades≈3179
+    A            pos=+116  avg=  673.3  mid=   598  uPnL=   -8681
+  [Stock C]  uPnL=-7895  trades≈3180
+    C            pos=+115  avg=  875.7  mid=   807  uPnL=   -7895
+  [Options]  uPnL=+39  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    46  uPnL=     +39
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-7519  trades≈3342
+    ETF          pos= +47  avg= 2561.0  mid=  2401  uPnL=   -7519
+  [Fed]  uPnL=+120144  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    58  uPnL=  +33538
+    R_HOLD       pos=-200  avg=  595.5  mid=   786  uPnL=  -37993
+    R_HIKE       pos=+200  avg= -465.0  mid=   158  uPnL= +124599
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +96088
+  Fed realized:    +0
+  Cash:            -168351
+  Est. total PnL:  +96088  (uPnL + realized payouts)
+  Trades:          ≈10303
+════════════════════════════════════════════════════════════
+[23:01:15] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 724s  |  23:01:15
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6914  trades≈3210
+    A            pos=+115  avg=  672.6  mid=   612  uPnL=   -6914
+  [Stock C]  uPnL=-11767  trades≈3205
+    C            pos=+120  avg=  875.1  mid=   777  uPnL=  -11767
+  [Options]  uPnL=+33  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    52  uPnL=     +33
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-7778  trades≈3372
+    ETF          pos= +47  avg= 2559.5  mid=  2394  uPnL=   -7778
+  [Fed]  uPnL=+114744  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    46  uPnL=  +31338
+    R_HOLD       pos=-200  avg=  595.5  mid=   799  uPnL=  -40693
+    R_HIKE       pos=+200  avg= -465.0  mid=   156  uPnL= +124099
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +88317
+  Fed realized:    +0
+  Cash:            -171949
+  Est. total PnL:  +88317  (uPnL + realized payouts)
+  Trades:          ≈10389
+════════════════════════════════════════════════════════════
+[23:01:26] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 734s  |  23:01:26
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-7358  trades≈3240
+    A            pos=+115  avg=  672.0  mid=   608  uPnL=   -7358
+  [Stock C]  uPnL=-13329  trades≈3235
+    C            pos=+120  avg=  874.1  mid=   763  uPnL=  -13329
+  [Options]  uPnL=+14  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    71  uPnL=     +14
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-8316  trades≈3402
+    ETF          pos= +47  avg= 2557.9  mid=  2381  uPnL=   -8316
+  [Fed]  uPnL=+137644  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    18  uPnL=  +25638
+    R_HOLD       pos=-200  avg=  595.5  mid=   742  uPnL=  -29193
+    R_HIKE       pos=+200  avg= -465.0  mid=   241  uPnL= +141199
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +108655
+  Fed realized:    +0
+  Cash:            -172349
+  Est. total PnL:  +108655  (uPnL + realized payouts)
+  Trades:          ≈10479
+════════════════════════════════════════════════════════════
+[23:01:36] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 744s  |  23:01:36
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-8744  trades≈3280
+    A            pos=+115  avg=  671.0  mid=   595  uPnL=   -8744
+  [Stock C]  uPnL=-9108  trades≈3275
+    C            pos=+120  avg=  872.9  mid=   797  uPnL=   -9108
+  [Options]  uPnL=+15  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    70  uPnL=     +15
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6075  trades≈3442
+    ETF          pos= +47  avg= 2556.2  mid=  2427  uPnL=   -6075
+  [Fed]  uPnL=+92844  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    94  uPnL=  +40738
+    R_HOLD       pos=-200  avg=  595.5  mid=   853  uPnL=  -51493
+    R_HIKE       pos=+200  avg= -465.0  mid=    53  uPnL= +103599
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +68932
+  Fed realized:    +0
+  Cash:            -173318
+  Est. total PnL:  +68932  (uPnL + realized payouts)
+  Trades:          ≈10599
+════════════════════════════════════════════════════════════
+[23:01:46] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 754s  |  23:01:46
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-8284  trades≈3280
+    A            pos=+115  avg=  671.0  mid=   599  uPnL=   -8284
+  [Stock C]  uPnL=-4788  trades≈3275
+    C            pos=+120  avg=  872.9  mid=   833  uPnL=   -4788
+  [Options]  uPnL=+42  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    43  uPnL=     +42
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-6122  trades≈3442
+    ETF          pos= +47  avg= 2556.2  mid=  2426  uPnL=   -6122
+  [Fed]  uPnL=+104544  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   158  uPnL=  +53638
+    R_HOLD       pos=-200  avg=  595.5  mid=   824  uPnL=  -45693
+    R_HIKE       pos=+200  avg= -465.0  mid=    18  uPnL=  +96599
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +85392
+  Fed realized:    +0
+  Cash:            -173318
+  Est. total PnL:  +85392  (uPnL + realized payouts)
+  Trades:          ≈10599
+════════════════════════════════════════════════════════════
+[23:01:56] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 764s  |  23:01:56
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2281  trades≈3495
+    A            pos= -35  avg=  670.8  mid=   736  uPnL=   -2281
+  [Stock C]  uPnL=-4102  trades≈3340
+    C            pos=+120  avg=  872.2  mid=   838  uPnL=   -4102
+  [Options]  uPnL=+38  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    47  uPnL=     +38
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+839  trades≈3507
+    ETF          pos= +47  avg= 2554.1  mid=  2572  uPnL=    +839
+  [Fed]  uPnL=+123844  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   218  uPnL=  +65638
+    R_HOLD       pos=-200  avg=  595.5  mid=   776  uPnL=  -35993
+    R_HIKE       pos=+200  avg= -465.0  mid=     6  uPnL=  +94199
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +118339
+  Fed realized:    +0
+  Cash:            -70018
+  Est. total PnL:  +118339  (uPnL + realized payouts)
+  Trades:          ≈10944
+════════════════════════════════════════════════════════════
+[23:02:06] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 774s  |  23:02:06
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6676  trades≈3580
+    A            pos=-100  avg=  672.2  mid=   739  uPnL=   -6676
+  [Stock C]  uPnL=-4851  trades≈3360
+    C            pos=+120  avg=  871.9  mid=   832  uPnL=   -4851
+  [Options]  uPnL=+46  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    39  uPnL=     +46
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-195  trades≈3532
+    ETF          pos= +52  avg= 2554.3  mid=  2550  uPnL=    -195
+  [Fed]  uPnL=+88344  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   126  uPnL=  +47138
+    R_HOLD       pos=-200  avg=  595.5  mid=   864  uPnL=  -53793
+    R_HIKE       pos=+200  avg= -465.0  mid=    10  uPnL=  +94999
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +76668
+  Fed realized:    +0
+  Cash:            -35808
+  Est. total PnL:  +76668  (uPnL + realized payouts)
+  Trades:          ≈11074
+════════════════════════════════════════════════════════════
+[23:02:16] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 784s  |  23:02:16
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5608  trades≈3625
+    A            pos=-100  avg=  672.9  mid=   729  uPnL=   -5608
+  [Stock C]  uPnL=-4368  trades≈3405
+    C            pos=+120  avg=  871.4  mid=   835  uPnL=   -4368
+  [Options]  uPnL=+24  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    61  uPnL=     +24
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+1538  trades≈3572
+    ETF          pos= +47  avg= 2554.3  mid=  2587  uPnL=   +1538
+  [Fed]  uPnL=+85944  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   124  uPnL=  +46738
+    R_HOLD       pos=-200  avg=  595.5  mid=   870  uPnL=  -54993
+    R_HIKE       pos=+200  avg= -465.0  mid=     6  uPnL=  +94199
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +77530
+  Fed realized:    +0
+  Cash:            -23706
+  Est. total PnL:  +77530  (uPnL + realized payouts)
+  Trades:          ≈11204
+════════════════════════════════════════════════════════════
+[23:02:26] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 794s  |  23:02:26
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5138  trades≈3655
+    A            pos= -95  avg=  673.4  mid=   728  uPnL=   -5138
+  [Stock C]  uPnL=-3853  trades≈3440
+    C            pos=+120  avg=  871.1  mid=   839  uPnL=   -3853
+  [Options]  uPnL=+22  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    63  uPnL=     +22
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+1889  trades≈3607
+    ETF          pos= +47  avg= 2554.8  mid=  2595  uPnL=   +1889
+  [Fed]  uPnL=-655  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   144  uPnL=  +50938
+    R_HOLD       pos=-200  avg=  595.5  mid=   854  uPnL=  -51593
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -7736
+  Fed realized:    +0
+  Cash:            -28161
+  Est. total PnL:  -7736  (uPnL + realized payouts)
+  Trades:          ≈11304
+════════════════════════════════════════════════════════════
+[23:02:36] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 804s  |  23:02:36
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5980  trades≈3755
+    A            pos= -95  avg=  675.1  mid=   738  uPnL=   -5980
+  [Stock C]  uPnL=-2567  trades≈3540
+    C            pos=+120  avg=  870.4  mid=   849  uPnL=   -2567
+  [Options]  uPnL=+28  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    57  uPnL=     +28
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+1362  trades≈3707
+    ETF          pos= +47  avg= 2556.0  mid=  2585  uPnL=   +1362
+  [Fed]  uPnL=+50945  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   274  uPnL=  +76838
+    R_HOLD       pos=-200  avg=  595.5  mid=   725  uPnL=  -25893
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +43788
+  Fed realized:    +0
+  Cash:            -29146
+  Est. total PnL:  +43788  (uPnL + realized payouts)
+  Trades:          ≈11604
+════════════════════════════════════════════════════════════
+[23:02:46] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 814s  |  23:02:46
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-6393  trades≈3815
+    A            pos=-100  avg=  676.1  mid=   740  uPnL=   -6393
+  [Stock C]  uPnL=-3115  trades≈3595
+    C            pos=+120  avg=  870.0  mid=   844  uPnL=   -3115
+  [Options]  uPnL=+26  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    60  uPnL=     +26
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+2394  trades≈3762
+    ETF          pos= +47  avg= 2556.6  mid=  2608  uPnL=   +2394
+  [Fed]  uPnL=+8245  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=   168  uPnL=  +55538
+    R_HOLD       pos=-200  avg=  595.5  mid=   832  uPnL=  -47293
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +1156
+  Fed realized:    +0
+  Cash:            -25811
+  Est. total PnL:  +1156  (uPnL + realized payouts)
+  Trades:          ≈11774
+════════════════════════════════════════════════════════════
+[23:02:56] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 824s  |  23:02:56
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5667  trades≈3905
+    A            pos= -95  avg=  677.3  mid=   737  uPnL=   -5667
+  [Stock C]  uPnL=-3747  trades≈3690
+    C            pos=+120  avg=  869.2  mid=   838  uPnL=   -3747
+  [Options]  uPnL=+19  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    66  uPnL=     +19
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+2218  trades≈3857
+    ETF          pos= +47  avg= 2557.8  mid=  2605  uPnL=   +2218
+  [Fed]  uPnL=-26255  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    81  uPnL=  +38238
+    R_HOLD       pos=-200  avg=  595.5  mid=   918  uPnL=  -64493
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -33432
+  Fed realized:    +0
+  Cash:            -31951
+  Est. total PnL:  -33432  (uPnL + realized payouts)
+  Trades:          ≈12054
+════════════════════════════════════════════════════════════
+[23:03:06] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 834s  |  23:03:06
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-5840  trades≈3995
+    A            pos=-100  avg=  678.6  mid=   737  uPnL=   -5840
+  [Stock C]  uPnL=-3666  trades≈3775
+    C            pos=+120  avg=  868.5  mid=   838  uPnL=   -3666
+  [Options]  uPnL=+23  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    62  uPnL=     +23
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+1501  trades≈3942
+    ETF          pos= +47  avg= 2558.6  mid=  2590  uPnL=   +1501
+  [Fed]  uPnL=-51255  trades≈600
+    R_CUT        pos=+200  avg= -110.2  mid=    18  uPnL=  +25738
+    R_HOLD       pos=-200  avg=  595.5  mid=   980  uPnL=  -76993
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -59237
+  Fed realized:    +0
+  Cash:            -34366
+  Est. total PnL:  -59237  (uPnL + realized payouts)
+  Trades:          ≈12314
+════════════════════════════════════════════════════════════
+[23:03:16] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 844s  |  23:03:16
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+421  trades≈4060
+    A            pos=-100  avg=  678.7  mid=   674  uPnL=    +421
+  [Stock C]  uPnL=-3952  trades≈3840
+    C            pos=+120  avg=  867.9  mid=   835  uPnL=   -3952
+  [Options]  uPnL=+10  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    75  uPnL=     +10
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1373  trades≈4007
+    ETF          pos= +47  avg= 2558.2  mid=  2529  uPnL=   -1373
+  [Fed]  uPnL=-80593  trades≈600
+    R_CUT        pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=-200  avg=  595.5  mid=   998  uPnL=  -80593
+    R_HIKE       pos=+200  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -85487
+  Fed realized:    +0
+  Cash:            -29841
+  Est. total PnL:  -85487  (uPnL + realized payouts)
+  Trades:          ≈12509
+════════════════════════════════════════════════════════════
+[23:03:26] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 854s  |  23:03:26
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-527  trades≈4150
+    A            pos=-100  avg=  678.7  mid=   684  uPnL=    -527
+  [Stock C]  uPnL=-4211  trades≈3925
+    C            pos=+125  avg=  867.2  mid=   834  uPnL=   -4211
+  [Options]  uPnL=+16  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    69  uPnL=     +16
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-1514  trades≈4097
+    ETF          pos= +47  avg= 2557.7  mid=  2526  uPnL=   -1514
+  [Fed]  uPnL=+0  trades≈600
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -6236
+  Fed realized:    +0
+  Cash:            -239521
+  Est. total PnL:  -6236  (uPnL + realized payouts)
+  Trades:          ≈12774
+════════════════════════════════════════════════════════════
+[23:03:36] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 864s  |  23:03:36
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+972  trades≈4155
+    A            pos=-100  avg=  678.7  mid=   669  uPnL=    +972
+  [Stock C]  uPnL=-3132  trades≈3935
+    C            pos=+120  avg=  867.1  mid=   841  uPnL=   -3132
+  [Options]  uPnL=-2  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    87  uPnL=      -2
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=-361  trades≈4102
+    ETF          pos= +47  avg= 2557.7  mid=  2550  uPnL=    -361
+  [Fed]  uPnL=+0  trades≈600
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -2522
+  Fed realized:    +0
+  Cash:            -230271
+  Est. total PnL:  -2522  (uPnL + realized payouts)
+  Trades:          ≈12794
+════════════════════════════════════════════════════════════
+[23:03:46] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 874s  |  23:03:46
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-12183  trades≈4165
+    A            pos=-100  avg=  678.7  mid=   800  uPnL=  -12183
+  [Stock C]  uPnL=-3722  trades≈3945
+    C            pos=+120  avg=  867.0  mid=   836  uPnL=   -3722
+  [Options]  uPnL=+6  trades≈2
+    B_C_950      pos=  -1  avg=   85.0  mid=    79  uPnL=      +6
+    B_P_950      pos=  +1  avg=    0.0  mid=   N/A  uPnL=      +0
+  [ETF]  uPnL=+4529  trades≈4112
+    ETF          pos= +47  avg= 2557.6  mid=  2654  uPnL=   +4529
+  [Fed]  uPnL=+0  trades≈600
+    R_CUT        pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HOLD       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+    R_HIKE       pos=  +0  avg=    0.0  mid=   N/A  uPnL=      +0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -11371
+  Fed realized:    +0
+  Cash:            -230616
+  Est. total PnL:  -11371  (uPnL + realized payouts)
+  Trades:          ≈12824
+════════════════════════════════════════════════════════════
+[23:05:01] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 10s  |  23:05:01
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2284  trades≈40
+    A            pos=+105  avg= 1155.2  mid=  1134  uPnL=   -2284
+  [Stock C]  uPnL=+634  trades≈65
+    C            pos= +80  avg=  975.1  mid=   983  uPnL=    +634
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-255  trades≈113
+    ETF          pos= +48  avg= 3124.8  mid=  3120  uPnL=    -255
+  [Fed]  uPnL=+0  trades≈0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -1905
+  Fed realized:    +0
+  Cash:            -348643
+  Est. total PnL:  -1905  (uPnL + realized payouts)
+  Trades:          ≈218
+════════════════════════════════════════════════════════════
+[23:05:11] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 20s  |  23:05:11
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-2482  trades≈265
+    A            pos=-135  avg= 1128.1  mid=  1146  uPnL=   -2482
+  [Stock C]  uPnL=+858  trades≈130
+    C            pos= +80  avg=  982.8  mid=   994  uPnL=    +858
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-159  trades≈178
+    ETF          pos= +48  avg= 3123.3  mid=  3120  uPnL=    -159
+  [Fed]  uPnL=+0  trades≈0
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -1782
+  Fed realized:    +0
+  Cash:            -77688
+  Est. total PnL:  -1782  (uPnL + realized payouts)
+  Trades:          ≈573
+════════════════════════════════════════════════════════════
+[23:05:21] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 30s  |  23:05:21
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-3207  trades≈265
+    A            pos=-115  avg= 1128.1  mid=  1156  uPnL=   -3207
+  [Stock C]  uPnL=+773  trades≈150
+    C            pos= +80  avg=  982.3  mid=   992  uPnL=    +773
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=+996  trades≈198
+    ETF          pos= +48  avg= 3121.8  mid=  3142  uPnL=    +996
+  [Fed]  uPnL=+4168  trades≈159
+    R_CUT        pos= +75  avg=  192.0  mid=   212  uPnL=   +1497
+    R_HIKE       pos= -84  avg=  422.8  mid=   391  uPnL=   +2671
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      +2730
+  Fed realized:    +0
+  Cash:            -79291
+  Est. total PnL:  +2730  (uPnL + realized payouts)
+  Trades:          ≈772
+════════════════════════════════════════════════════════════
+[23:05:31] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 40s  |  23:05:31
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=-287  trades≈280
+    A            pos= -95  avg= 1129.0  mid=  1132  uPnL=    -287
+  [Stock C]  uPnL=+649  trades≈185
+    C            pos= +80  avg=  982.9  mid=   991  uPnL=    +649
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-768  trades≈233
+    ETF          pos= +48  avg= 3121.5  mid=  3106  uPnL=    -768
+  [Fed]  uPnL=-3110  trades≈315
+    R_CUT        pos=+155  avg=  194.6  mid=   183  uPnL=   -1795
+    R_HIKE       pos=-160  avg=  417.8  mid=   426  uPnL=   -1315
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -3516
+  Fed realized:    +0
+  Cash:            -86298
+  Est. total PnL:  -3516  (uPnL + realized payouts)
+  Trades:          ≈1013
+════════════════════════════════════════════════════════════
+[23:05:41] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 50s  |  23:05:41
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+2772  trades≈375
+    A            pos=-100  avg= 1123.7  mid=  1096  uPnL=   +2772
+  [Stock C]  uPnL=-531  trades≈275
+    C            pos= +80  avg=  982.6  mid=   976  uPnL=    -531
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-1224  trades≈323
+    ETF          pos= +48  avg= 3115.5  mid=  3090  uPnL=   -1224
+  [Fed]  uPnL=-35065  trades≈422
+    R_CUT        pos=+200  avg=  192.3  mid=   123  uPnL=  -13870
+    R_HOLD       pos= +22  avg=  348.5  mid=   351  uPnL=     +56
+    R_HIKE       pos=-200  avg=  419.7  mid=   526  uPnL=  -21251
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -34048
+  Fed realized:    +0
+  Cash:            -85460
+  Est. total PnL:  -34048  (uPnL + realized payouts)
+  Trades:          ≈1395
+════════════════════════════════════════════════════════════
+[23:05:52] 
+════════════════════════════════════════════════════════════
+  PnL REPORT  |  elapsed 60s  |  23:05:52
+════════════════════════════════════════════════════════════
+  [Stock A]  uPnL=+823  trades≈430
+    A            pos=-100  avg= 1121.2  mid=  1113  uPnL=    +823
+  [Stock C]  uPnL=-938  trades≈325
+    C            pos= +90  avg=  980.9  mid=   970  uPnL=    -938
+  [Options]  uPnL=+0  trades≈0
+  [ETF]  uPnL=-2280  trades≈378
+    ETF          pos= +48  avg= 3109.5  mid=  3062  uPnL=   -2280
+  [Fed]  uPnL=-23669  trades≈459
+    R_CUT        pos=+200  avg=  192.3  mid=   141  uPnL=  -10270
+    R_HOLD       pos= +59  avg=  354.6  mid=   369  uPnL=    +852
+    R_HIKE       pos=-200  avg=  419.7  mid=   491  uPnL=  -14251
+────────────────────────────────────────────────────────────
+  TOTAL uPnL:      -26063
+  Fed realized:    +0
+  Cash:            -108803
+  Est. total PnL:  -26063  (uPnL + realized payouts)
+  Trades:          ≈1592
+════════════════════════════════════════════════════════════

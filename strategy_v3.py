@@ -316,6 +316,11 @@ class StockAStrategy:
         self._a_open_qty: int      = 0    # signed open qty (mirrors position)
         self._a_open_cost: float   = 0.0  # total cost of open position (|qty| * avg_entry)
 
+        # Auto-calibration: accumulate implied EPS_SCALE_A across earnings events.
+        # Persists across rounds — PE_A is competition-wide, not round-specific.
+        self._scale_obs: list[float] = []
+        self.SCALE_MIN_OBS = 3        # minimum observations before auto-updating
+
     # ── Limit helpers ──────────────────────────────────────────────
 
     def _outstanding_vol(self) -> int:
@@ -644,22 +649,29 @@ class StockAStrategy:
     FV_CLAMP_PCT = 0.12   # max allowed |fv - mid| / mid before clamping
 
     async def on_earnings(self, eps: float, tick: int) -> None:
+        global EPS_SCALE_A
         old_fv = self.client.fair_values.get("A")
-        new_fv = self.calc_fv(eps)
         self.client.eps["A"] = eps
 
-        # ── CALIBRATION INFO ─────────────────────────────────────────────
-        # If new_fv is far from market mid, EPS_SCALE_A is wrong.
-        # Check market mid vs new_fv, then type: scale <correct_scale>
-        # where correct_scale = market_mid / (eps * PE_A)
         b, a = self.client.get_best_bid_ask("A")
         mid = (b + a) / 2 if (b and a) else None
-        implied_scale = (mid / (eps * PE_A)) if mid else None
-        # ─────────────────────────────────────────────────────────────────
 
-        # ── Sanity clamp: if EPS_SCALE_A is miscalibrated, don't let FV
-        # deviate more than FV_CLAMP_PCT from the current market mid.
-        # This prevents sweeping to the position limit on a bad FV.
+        # ── Auto-calibrate EPS_SCALE_A from observed (mid / (eps * PE_A)) ──
+        # Do this BEFORE computing new_fv so the sweep uses the best scale.
+        implied_scale = (mid / (eps * PE_A)) if mid else None
+        scale_updated = False
+        if implied_scale is not None and 20 < implied_scale < 500:
+            self._scale_obs.append(implied_scale)
+            if len(self._scale_obs) >= self.SCALE_MIN_OBS:
+                median_scale = sorted(self._scale_obs)[len(self._scale_obs) // 2]
+                if abs(median_scale - EPS_SCALE_A) > 1.0:
+                    log(f"[A] AUTO-SCALE {EPS_SCALE_A:.1f}→{median_scale:.1f} "
+                        f"(n={len(self._scale_obs)} obs, implied={implied_scale:.1f})")
+                    EPS_SCALE_A   = median_scale
+                    scale_updated = True
+
+        # ── Compute FV with (possibly updated) scale, then sanity clamp ──
+        new_fv  = self.calc_fv(eps)
         clamped = False
         if mid is not None:
             clamp_hi = mid * (1 + self.FV_CLAMP_PCT)
@@ -676,11 +688,11 @@ class StockAStrategy:
         self.client.fair_values["A"] = new_fv
 
         delta = new_fv - old_fv if old_fv is not None else 0
-        log(f"[A] *** EARNINGS *** raw_eps={eps} PE_A={PE_A} scale={EPS_SCALE_A} "
+        log(f"[A] *** EARNINGS *** raw_eps={eps} PE_A={PE_A} scale={EPS_SCALE_A:.1f} "
             f"FV={old_fv}→{new_fv:.0f} Δ={delta:+.1f} "
             f"market_mid={'N/A' if mid is None else f'{mid:.0f}'} "
             f"implied_scale={'N/A' if implied_scale is None else f'{implied_scale:.2f}'} "
-            f"clamped={clamped} "
+            f"scale_updated={scale_updated} clamped={clamped} "
             f"pos={self.client.positions['A']}")
 
         # Arm timer for next expected earnings
@@ -1033,7 +1045,7 @@ class OptionsStrategy:
     """
 
     BOX_PAIRS  = [(950, 1000), (1000, 1050), (950, 1050)]
-    MIN_EDGE   = 2
+    MIN_EDGE   = 1
     COOLDOWN   = 4.0
 
     def __init__(self, client: "MyXchangeClient"):
@@ -1055,9 +1067,9 @@ class OptionsStrategy:
         """Scale order size with edge: larger edge → more units."""
         if edge < self.MIN_EDGE:
             return 0
-        if edge < 5:
+        if edge < 3:
             return 1
-        if edge < 10:
+        if edge < 7:
             return 3
         return 5
 
