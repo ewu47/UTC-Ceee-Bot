@@ -3,6 +3,20 @@ from typing import Optional
 from utcxchangelib import XChangeClient, Side
 import asyncio
 import math
+import time
+
+# ── Logging ──────────────────────────────────────────────────────────
+_log_files = {}
+
+def log(msg, file=None):
+    """Write to both stdout and an optional log file with timestamp."""
+    ts = time.strftime("%H:%M:%S")
+    line = f"[{ts}] {msg}"
+    print(line)
+    if file:
+        if file not in _log_files:
+            _log_files[file] = open(file, "a", buffering=1)  # line-buffered
+        _log_files[file].write(line + "\n")
 
 
 # ── Constants (fill in on competition day) ──────────────────────────
@@ -17,8 +31,8 @@ LAMBDA = 0.65
 RF_RATE = 0
 ETF_COST = 5
 
-GAMMA = None #are we going to get these or will we have to figure them out?
-BETA = None
+GAMMA = 15.0   # PE sensitivity to yield changes — will be refined by fitting
+BETA = 0.004   # yield sensitivity to rate expectations — will be refined by fitting
 
 OPTION_STRIKES = [950, 1000, 1050]
 
@@ -119,9 +133,12 @@ class StockAStrategy:
         return oid
 
     def calc_fair_value(self, eps):
-        # NOTE: EPS arrives as a float in dollars (e.g. 1.023), but exchange
-        # prices are integer cents (e.g. 1023). Multiply by 100 to match units.
-        # Verify: print("[A] raw EPS", eps) and compare to market mid on first run.
+        best_bid, best_ask = self.client.get_best_bid_ask("A")
+        mid = (best_bid + best_ask) / 2 if best_bid and best_ask else None
+        # Try both interpretations and see which is closer to market
+        fv_cents = eps * PE_A          # if EPS is already in cents
+        fv_dollars = eps * PE_A * 100  # if EPS is in dollars
+        print(f"[A] DEBUG: raw EPS={eps} | fv_cents={fv_cents:.0f} fv_dollars={fv_dollars:.0f} | market_mid={mid}")
         return eps * PE_A * 100
 
     # ── Cancel helper ──
@@ -349,9 +366,9 @@ class StockAStrategy:
 class StockCStrategy:
     """Large-cap insurance company. Price depends on earnings + bond portfolio + fed rates."""
 
-    MIN_OBS = 30
-    FIT_EVERY = 10
-    STABILITY_WINDOW = 3
+    MIN_OBS = 10
+    FIT_EVERY = 15
+    STABILITY_WINDOW = 2
 
     def __init__(self, client):
         self.client = client
@@ -365,16 +382,19 @@ class StockCStrategy:
         # if fit converges too slowly, raise by factor of 10
         self.lr_beta = 1e-9
         self.lr_gamma = 1e-6
-        self.n_iter = 500
+        self.n_iter = 100
 
     def calc_fair_value(self, eps):
         if BETA is None or GAMMA is None:
             return None
         expected_rate_change = 25 * self.client.fair_values["R_HIKE"] - 25 * self.client.fair_values["R_CUT"]
         delta_y = BETA * expected_rate_change
+        y_t = Y0 + delta_y
         pe = PE0_C * math.exp(-GAMMA * delta_y)
-        delta_b_over_b0 = -D * delta_y + 0.5 * C * delta_y ** 2
-        return eps * pe + LAMBDA * B0_OVER_N * delta_b_over_b0
+        delta_b = B0_OVER_N * (-D * delta_y + 0.5 * C * delta_y ** 2)
+        fv = eps * pe + LAMBDA * delta_b
+        print(f"[C] eps={eps:.4f} pe0={PE0_C} pe_t={pe:.4f} y0={Y0} y_t={y_t:.6f} delta_y={delta_y:.6f} delta_b={delta_b:.2f} fv={fv:.2f}")
+        return fv
 
     async def record_observation(self):
         if self._committed:
@@ -391,7 +411,8 @@ class StockCStrategy:
         self._obs_since_last_fit += 1
         if len(self.observations) >= self.MIN_OBS and self._obs_since_last_fit >= self.FIT_EVERY:
             self._obs_since_last_fit = 0
-            self.estimate()
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, self.estimate())
 
     def _predict(self, beta, gamma, erc, eps):
         delta_y = beta * erc
@@ -462,16 +483,83 @@ class StockCStrategy:
             print(f"[C] recalc FV={new_fv:.1f}")
 
     async def on_book_update(self):
-        pass
+        """Snipe mispriced orders when market deviates from FV."""
+        fv = self.client.fair_values.get("C")
+        if fv is None:
+            return
+        best_bid, best_ask = self.client.get_best_bid_ask("C")
+        edge = 3
+        if best_ask is not None and best_ask < fv - edge:
+            await self.client.safe_place_order("C", 10, Side.BUY, best_ask)
+            print(f"[C] SNIPE BUY 10 @ {best_ask} | fv={fv:.1f}")
+        elif best_bid is not None and best_bid > fv + edge:
+            await self.client.safe_place_order("C", 10, Side.SELL, best_bid)
+            print(f"[C] SNIPE SELL 10 @ {best_bid} | fv={fv:.1f}")
 
     async def update_quotes(self):
-        pass
+        """Passive MM: quote bid/ask around FV with inventory skew."""
+        fv = self.client.fair_values.get("C")
+        if fv is None:
+            return
+
+        pos = self.client.positions.get("C", 0)
+        best_bid, best_ask = self.client.get_best_bid_ask("C")
+
+        # Dynamic spread + inventory skew
+        base_spread = 4
+        max_pos = 100
+        pos_frac = abs(pos) / max(max_pos, 1)
+        spread = base_spread + int(pos_frac * 3)
+        skew = 0.15 * pos
+
+        bid = round(fv - spread / 2 - skew)
+        ask = round(fv + spread / 2 - skew)
+        if bid >= ask:
+            ask = bid + 1
+
+        # Don't cross the book
+        if best_ask is not None and bid >= best_ask:
+            bid = 0
+        if best_bid is not None and ask <= best_bid:
+            ask = 0
+
+        quote_size = 10
+        bid_size = quote_size if pos < max_pos else max(2, quote_size // 3)
+        ask_size = quote_size if pos > -max_pos else max(2, quote_size // 3)
+
+        # Cancel old C quotes before placing new ones
+        await self.client.cancel_quotes_for("C")
+
+        if bid > 0:
+            await self.client.safe_place_order("C", bid_size, Side.BUY, bid)
+        if ask > 0:
+            await self.client.safe_place_order("C", ask_size, Side.SELL, ask)
 
     async def on_earnings(self, eps):
+        """New EPS → update FV, cancel stale quotes, sweep the book."""
         self.client.eps["C"] = eps
         self.recalc_fair_value()
-
-    # TODO: implement trading strategy using fair value calculations
+        fv = self.client.fair_values.get("C")
+        if fv is None:
+            return
+        # Cancel and sweep after earnings like StockA does
+        await self.client.cancel_quotes_for("C")
+        book = self.client.order_books["C"]
+        pos = self.client.positions.get("C", 0)
+        # Buy cheap asks
+        for px, qty in sorted(book.asks.items()):
+            if qty <= 0 or px >= fv - 1:
+                break
+            buy_qty = min(qty, 20)
+            await self.client.safe_place_order("C", buy_qty, Side.BUY, px)
+            print(f"[C] POST-EARNINGS SNIPE BUY {buy_qty} @ {px} | fv={fv:.1f}")
+        # Sell expensive bids
+        for px, qty in sorted(book.bids.items(), reverse=True):
+            if qty <= 0 or px <= fv + 1:
+                break
+            sell_qty = min(qty, 20)
+            await self.client.safe_place_order("C", sell_qty, Side.SELL, px)
+            print(f"[C] POST-EARNINGS SNIPE SELL {sell_qty} @ {px} | fv={fv:.1f}")
 
 
 class OptionsStrategy:
@@ -495,7 +583,7 @@ class OptionsStrategy:
     def __init__(self, client):
         self.client = client
         self.arb_qty = 1
-        self.min_edge = 3
+        self.min_edge = 1
         # Per-arb cooldown: keyed by arb identifier, value is last-fired time.
         # Prevents re-entering the same arb every tick when legs are getting rejected.
         self._last_arb_time = {}
@@ -524,17 +612,17 @@ class OptionsStrategy:
         buy_call_edge = p_bid + s_bid - c_ask - strike
         if buy_call_edge > self.min_edge and self._cooled_down(f"pcp_buy_{strike}"):
             print(f"[OPT] PCP K={strike}: buy call, sell put, sell B | edge={buy_call_edge}")
-            await self.client.place_order(f"B_C_{strike}", self.arb_qty, Side.BUY, c_ask)
-            await self.client.place_order(f"B_P_{strike}", self.arb_qty, Side.SELL, p_bid)
-            await self.client.place_order("B", self.arb_qty, Side.SELL, s_bid)
+            await self.client.safe_place_order(f"B_C_{strike}", self.arb_qty, Side.BUY, c_ask)
+            await self.client.safe_place_order(f"B_P_{strike}", self.arb_qty, Side.SELL, p_bid)
+            await self.client.safe_place_order("B", self.arb_qty, Side.SELL, s_bid)
             return
 
         sell_call_edge = c_bid - p_ask - s_ask + strike
         if sell_call_edge > self.min_edge and self._cooled_down(f"pcp_sell_{strike}"):
             print(f"[OPT] PCP K={strike}: sell call, buy put, buy B | edge={sell_call_edge}")
-            await self.client.place_order(f"B_C_{strike}", self.arb_qty, Side.SELL, c_bid)
-            await self.client.place_order(f"B_P_{strike}", self.arb_qty, Side.BUY, p_ask)
-            await self.client.place_order("B", self.arb_qty, Side.BUY, s_ask)
+            await self.client.safe_place_order(f"B_C_{strike}", self.arb_qty, Side.SELL, c_bid)
+            await self.client.safe_place_order(f"B_P_{strike}", self.arb_qty, Side.BUY, p_ask)
+            await self.client.safe_place_order("B", self.arb_qty, Side.BUY, s_ask)
 
     async def check_box_spread(self, strike_low, strike_high):
         """Box spread always worth K2 - K1 at expiry (r=0)."""
@@ -553,20 +641,20 @@ class OptionsStrategy:
         buy_edge = theoretical - buy_cost
         if buy_edge > self.min_edge and self._cooled_down(f"box_buy_{k1}_{k2}"):
             print(f"[OPT] BOX BUY ({k1},{k2}): cost={buy_cost} theoretical={theoretical} edge={buy_edge}")
-            await self.client.place_order(f"B_C_{k1}", self.arb_qty, Side.BUY, c1_ask)
-            await self.client.place_order(f"B_C_{k2}", self.arb_qty, Side.SELL, c2_bid)
-            await self.client.place_order(f"B_P_{k1}", self.arb_qty, Side.SELL, p1_bid)
-            await self.client.place_order(f"B_P_{k2}", self.arb_qty, Side.BUY, p2_ask)
+            await self.client.safe_place_order(f"B_C_{k1}", self.arb_qty, Side.BUY, c1_ask)
+            await self.client.safe_place_order(f"B_C_{k2}", self.arb_qty, Side.SELL, c2_bid)
+            await self.client.safe_place_order(f"B_P_{k1}", self.arb_qty, Side.SELL, p1_bid)
+            await self.client.safe_place_order(f"B_P_{k2}", self.arb_qty, Side.BUY, p2_ask)
             return
 
         sell_receipt = c1_bid - c2_ask + p2_bid - p1_ask
         sell_edge = sell_receipt - theoretical
         if sell_edge > self.min_edge and self._cooled_down(f"box_sell_{k1}_{k2}"):
             print(f"[OPT] BOX SELL ({k1},{k2}): receipt={sell_receipt} theoretical={theoretical} edge={sell_edge}")
-            await self.client.place_order(f"B_C_{k1}", self.arb_qty, Side.SELL, c1_bid)
-            await self.client.place_order(f"B_C_{k2}", self.arb_qty, Side.BUY, c2_ask)
-            await self.client.place_order(f"B_P_{k1}", self.arb_qty, Side.BUY, p1_ask)
-            await self.client.place_order(f"B_P_{k2}", self.arb_qty, Side.SELL, p2_bid)
+            await self.client.safe_place_order(f"B_C_{k1}", self.arb_qty, Side.SELL, c1_bid)
+            await self.client.safe_place_order(f"B_C_{k2}", self.arb_qty, Side.BUY, c2_ask)
+            await self.client.safe_place_order(f"B_P_{k1}", self.arb_qty, Side.BUY, p1_ask)
+            await self.client.safe_place_order(f"B_P_{k2}", self.arb_qty, Side.SELL, p2_bid)
 
     async def on_book_update(self, _symbol):
         # Intentionally a no-op — run() handles periodic sweeps.
@@ -579,6 +667,9 @@ class OptionsStrategy:
         if now - self._last_arb_time.get("_run", 0) < 2.0:
             return
         self._last_arb_time["_run"] = now
+        # Cancel old unfilled option/B orders before placing new ones
+        for sym in ["B"] + [f"B_{t}_{k}" for t in ("C", "P") for k in OPTION_STRIKES]:
+            await self.client.cancel_quotes_for(sym)
         for strike in OPTION_STRIKES:
             await self.check_pcp_arb(strike)
         for k1, k2 in self.BOX_PAIRS:
@@ -607,6 +698,8 @@ class FedStrategy:
     NEUTRAL_KEYWORDS = [
         "wide range of views", "stay firm", "weighing", "uncertainties",
         "questions", "complicates", "not in a hurry", "either direction",
+        "both", "no clear", "options open", "conflict", "balanced",
+        "mixed"
     ]
 
     def __init__(self, client):
@@ -622,15 +715,16 @@ class FedStrategy:
         self.min_prob = 0.05
 
     def update_probs_from_book(self):
-        """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs."""
+        """Read R_HIKE/R_HOLD/R_CUT book mids to update fed_probs (market view)."""
         updated = 0
         for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
             best_bid, best_ask = self.client.get_best_bid_ask(contract)
             if best_bid is not None and best_ask is not None:
                 mid = (best_bid + best_ask) / 2
                 self.fed_probs[contract] = mid / 1000
-                # Seed our fair value estimate from the book so we start close to market
-                self.client.fair_values[contract] = mid / 1000
+                # Only seed fair values during warmup — after that, news drives our estimate
+                if self.book_reads < 3:
+                    self.client.fair_values[contract] = mid / 1000
                 updated += 1
         if updated == 3:
             self.book_reads += 1
@@ -646,7 +740,7 @@ class FedStrategy:
     def on_cpi_news(self, forecast, actual):
         """Shift fair value estimation of fed probs based on CPI surprise."""
         surprise = actual - forecast
-        print(f"[FED] CPI surprise={surprise:+.6f} ({'hawkish' if surprise > 0 else 'dovish'})")
+        log(f"[FED] CPI surprise={surprise:+.6f} ({'hawkish' if surprise > 0 else 'dovish'})", "fed.log")
         shift = self.cpi_sensitivity * abs(surprise)
         if abs(surprise) < self.surprise_threshold:
             self.client.fair_values["R_HIKE"] -= self.toward_hold
@@ -661,8 +755,7 @@ class FedStrategy:
             self.client.fair_values["R_HIKE"] -= actual_shift
             self.client.fair_values["R_CUT"] += actual_shift
         self.normalize_probs()
-        print(f"[FED] probs after CPI: R_HIKE={self.client.fair_values["R_HIKE"]}, \
-R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+        log(f"[FED] probs after CPI: R_HIKE={self.client.fair_values['R_HIKE']:.3f}, R_HOLD={self.client.fair_values['R_HOLD']:.3f}, R_CUT={self.client.fair_values['R_CUT']:.3f}", "fed.log")
 
     def on_fedspeak(self, content):
         """Parse unstructured FEDSPEAK for dovish/hawkish signals."""
@@ -675,22 +768,19 @@ R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CU
             shift = min(self.fedspeak_shift, self.client.fair_values["R_HIKE"])
             self.client.fair_values["R_HIKE"] -= shift
             self.client.fair_values["R_CUT"] += shift
-            print(f"[FED] DOVISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
-                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+            log(f"[FED] DOVISH: '{content}' → R_HIKE={self.client.fair_values['R_HIKE']:.3f}, R_HOLD={self.client.fair_values['R_HOLD']:.3f}, R_CUT={self.client.fair_values['R_CUT']:.3f}", "fed.log")
         elif hawkish and not dovish:
             shift = min(self.fedspeak_shift, self.client.fair_values["R_CUT"])
             self.client.fair_values["R_CUT"] -= shift
             self.client.fair_values["R_HIKE"] += shift
-            print(f"[FED] HAWKISH: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
-                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+            log(f"[FED] HAWKISH: '{content}' → R_HIKE={self.client.fair_values['R_HIKE']:.3f}, R_HOLD={self.client.fair_values['R_HOLD']:.3f}, R_CUT={self.client.fair_values['R_CUT']:.3f}", "fed.log")
         elif neutral:
             self.client.fair_values["R_HIKE"] -= self.toward_hold
             self.client.fair_values["R_CUT"] -= self.toward_hold
             self.client.fair_values["R_HOLD"] += self.toward_hold * 2
-            print(f"[FED] NEUTRAL: '{content}' → probs: R_HIKE={self.client.fair_values["R_HIKE"]}, \
-                R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CUT"]}")
+            log(f"[FED] NEUTRAL: '{content}' → R_HIKE={self.client.fair_values['R_HIKE']:.3f}, R_HOLD={self.client.fair_values['R_HOLD']:.3f}, R_CUT={self.client.fair_values['R_CUT']:.3f}", "fed.log")
         else:
-            print(f"[FED] NONE: '{content}'")
+            log(f"[FED] NONE: '{content}'", "fed.log")
         self.normalize_probs()
 
     async def trade_prediction_market(self):
@@ -703,6 +793,10 @@ R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CU
         # trading against 33/33/34 priors when the market already has strong views
         if self.book_reads < 3:
             return
+        # Cancel old unfilled R orders before placing new ones
+        for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
+            await self.client.cancel_quotes_for(contract)
+        max_fed_pos = 20  # hard cap per contract to prevent runaway positions
         for contract in ["R_HIKE", "R_HOLD", "R_CUT"]:
             market_prob = self.fed_probs[contract]
             estimated_fv_prob = self.client.fair_values[contract]
@@ -712,17 +806,14 @@ R_HOLD={self.client.fair_values["R_HOLD"]}, R_CUT={self.client.fair_values["R_CU
             best_bid, best_ask = self.client.get_best_bid_ask(contract)
             if best_bid is None or best_ask is None:
                 continue
-            
-            if divergence > self.edge_threshold:
-                # we think this outcome is more likely than market does -> buy
-                print(f"[FED] {contract} underpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} -> BUY")
-                await self.client.place_order(contract, self.fed_qty, Side.BUY, best_ask)
-            elif divergence < -self.edge_threshold:
-                # we think this outcome is less likely than market does -> sell
-                print(f"[FED] {contract} overpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} -> SELL")
-                await self.client.place_order(contract, self.fed_qty, Side.SELL, best_bid)
-    
-    # TODO: update parser to sort neutral news for hold
+            pos = self.client.positions[contract]
+
+            if divergence > self.edge_threshold and pos < max_fed_pos:
+                log(f"[FED] {contract} underpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} pos={pos} -> BUY", "fed.log")
+                await self.client.safe_place_order(contract, self.fed_qty, Side.BUY, best_ask)
+            elif divergence < -self.edge_threshold and pos > -max_fed_pos:
+                log(f"[FED] {contract} overpriced: estimation={estimated_fv_prob:.3f} market={market_prob:.3f} pos={pos} -> SELL", "fed.log")
+                await self.client.safe_place_order(contract, self.fed_qty, Side.SELL, best_bid)
 
 
 class ETFStrategy:
@@ -791,8 +882,8 @@ class ETFStrategy:
         if mid_a is None or mid_b is None or mid_c is None:
             return
 
-        fv_a = fv_a if fv_a is not None else mid_a
-        fv_c = fv_c if fv_c is not None else mid_c
+        fv_a = fv_a if fv_a is not None and fv_a > 0 else mid_a
+        fv_c = fv_c if fv_c is not None and fv_c > 0 else mid_c
         nav = fv_a + mid_b + fv_c
         diff = etf_mid - nav
         print(f"[ETF] etf_mid={etf_mid:.1f} nav={nav:.1f} diff={diff:.1f}")
@@ -805,9 +896,9 @@ class ETFStrategy:
             self.filled_components = {"A": 0, "B": 0, "C": 0}
             self._target_qty = create_qty
             await asyncio.gather(
-                self.client.place_order("A", create_qty, Side.BUY, ask_a),
-                self.client.place_order("B", create_qty, Side.BUY, ask_b),
-                self.client.place_order("C", create_qty, Side.BUY, ask_c),
+                self.client.safe_place_order("A", create_qty, Side.BUY, ask_a),
+                self.client.safe_place_order("B", create_qty, Side.BUY, ask_b),
+                self.client.safe_place_order("C", create_qty, Side.BUY, ask_c),
             )
         elif diff < -ETF_COST and redeem_qty > 0:
             # ETF underpriced: buy ETF at ask, redeem, sell components at bid
@@ -815,7 +906,7 @@ class ETFStrategy:
             self.pending_etf_redeem = True
             self.filled_etf = 0
             self._target_qty = redeem_qty
-            await self.client.place_order("ETF", redeem_qty, Side.BUY, etf_ask)
+            await self.client.safe_place_order("ETF", redeem_qty, Side.BUY, etf_ask)
 
 
 # ── Main client ─────────────────────────────────────────────────────
@@ -837,6 +928,9 @@ class MyXchangeClient(XChangeClient):
         self.max_outstanding_vol = {s: 120 for s in ALL_SYMBOLS}
         self.max_abs_position = {s: 200 for s in ALL_SYMBOLS}
 
+        # Fill tracking: {symbol: (total_signed_qty, total_cost)}
+        self.fill_tracker = {}
+
         # Strategy modules
         self.strat_a = StockAStrategy(self)
         self.strat_c = StockCStrategy(self)
@@ -845,6 +939,45 @@ class MyXchangeClient(XChangeClient):
         self.strat_etf = ETFStrategy(self)
 
     # ── Helpers ──────────────────────────────────────────────────────
+
+    def _outstanding_volume(self, symbol):
+        total = 0
+        for info in self.open_orders.values():
+            if info and info[0].symbol == symbol and not info[2]:
+                total += info[1]
+        return total
+
+    def _open_order_count(self, symbol):
+        count = 0
+        for info in self.open_orders.values():
+            if info and info[0].symbol == symbol and not info[2]:
+                count += 1
+        return count
+
+    async def safe_place_order(self, symbol, qty, side, price):
+        """Centralized order placement with limit checks for ALL symbols."""
+        if qty <= 0:
+            return None
+        qty = min(qty, self.max_order_size[symbol])
+
+        cur_vol = self._outstanding_volume(symbol)
+        if cur_vol + qty > self.max_outstanding_vol[symbol]:
+            qty = self.max_outstanding_vol[symbol] - cur_vol
+            if qty <= 0:
+                return None
+
+        if self._open_order_count(symbol) + 1 > self.max_open_orders[symbol]:
+            return None
+
+        pos = self.positions[symbol]
+        if side == Side.BUY and pos + qty > self.max_abs_position[symbol]:
+            qty = self.max_abs_position[symbol] - pos
+        elif side == Side.SELL and pos - qty < -self.max_abs_position[symbol]:
+            qty = self.max_abs_position[symbol] + pos
+        if qty <= 0:
+            return None
+
+        return await self.place_order(symbol, qty, side, price)
 
     def get_best_bid_ask(self, symbol):
         """Return (best_bid, best_ask) or (None, None) if book is empty."""
@@ -863,15 +996,13 @@ class MyXchangeClient(XChangeClient):
         return best_bid, best_ask, (best_bid + best_ask) / 2
 
     async def cancel_quotes_for(self, symbol):
-        """Cancel all our outstanding quotes for a given symbol."""
-        # First clean stale IDs that are no longer in open_orders
-        self.my_quote_ids = {oid for oid in self.my_quote_ids if oid in self.open_orders}
-        to_cancel = [oid for oid in self.my_quote_ids
-                     if self.open_orders[oid][0].symbol == symbol]
+        """Cancel ALL open orders for a given symbol (not just tracked ones)."""
+        to_cancel = [
+            oid for oid, info in self.open_orders.items()
+            if info and info[0].symbol == symbol
+        ]
         for oid in to_cancel:
             self.my_quote_ids.discard(oid)
-        # Cancel sequentially to avoid overwhelming gRPC
-        for oid in to_cancel:
             await self.cancel_order(oid)
 
     # ── Handlers ─────────────────────────────────────────────────────
@@ -885,8 +1016,20 @@ class MyXchangeClient(XChangeClient):
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int):
         self.strat_a.pending_cancels.discard(order_id)
-        print(f"[FILL] order {order_id}: {qty} @ {price}")
-        sym = self.open_orders[order_id][0].symbol  # get symbol before it's removed
+        order_info = self.open_orders.get(order_id)
+        if order_info is None:
+            return
+        sym = order_info[0].symbol
+        side = order_info[0].side
+
+        # Track fills: signed qty (positive=buy, negative=sell)
+        signed_qty = qty if side == Side.BUY else -qty
+        if sym not in self.fill_tracker:
+            self.fill_tracker[sym] = (0, 0)
+        prev_qty, prev_cost = self.fill_tracker[sym]
+        self.fill_tracker[sym] = (prev_qty + signed_qty, prev_cost + signed_qty * price)
+
+        log(f"[FILL] {sym} {'BUY' if side == Side.BUY else 'SELL'} {qty} @ {price} | pos={self.positions.get(sym, 0)}", "fills.log")
         if self.strat_etf.pending_etf_create and sym in ("A", "B", "C"):
             self.strat_etf.filled_components[sym] += qty
             if all(self.strat_etf.filled_components[s] >= self.strat_etf._target_qty
@@ -894,7 +1037,7 @@ class MyXchangeClient(XChangeClient):
                 await self.place_swap_order("toETF", self.strat_etf._target_qty)
                 etf_bid, _, _ = self.get_bba_mid("ETF")
                 if etf_bid is not None:
-                    await self.place_order("ETF", self.strat_etf._target_qty, Side.SELL, etf_bid)
+                    await self.safe_place_order("ETF", self.strat_etf._target_qty, Side.SELL, etf_bid)
                 self.strat_etf.pending_etf_create = False
         elif self.strat_etf.pending_etf_redeem and sym == "ETF":
             self.strat_etf.filled_etf += qty
@@ -905,9 +1048,9 @@ class MyXchangeClient(XChangeClient):
                 bid_c, _, _ = self.get_bba_mid("C")
                 if all(x is not None for x in (bid_a, bid_b, bid_c)):
                     await asyncio.gather(
-                        self.place_order("A", self.strat_etf._target_qty, Side.SELL, bid_a),
-                        self.place_order("B", self.strat_etf._target_qty, Side.SELL, bid_b),
-                        self.place_order("C", self.strat_etf._target_qty, Side.SELL, bid_c),
+                        self.safe_place_order("A", self.strat_etf._target_qty, Side.SELL, bid_a),
+                        self.safe_place_order("B", self.strat_etf._target_qty, Side.SELL, bid_b),
+                        self.safe_place_order("C", self.strat_etf._target_qty, Side.SELL, bid_c),
                     )
                 self.strat_etf.pending_etf_redeem = False
                 self.strat_etf.filled_etf = 0
@@ -967,8 +1110,79 @@ class MyXchangeClient(XChangeClient):
 
     # ── Main trade loop ──────────────────────────────────────────────
 
+    ALL_TRADABLE = ["A", "B", "C", "ETF",
+                    "B_C_950", "B_P_950", "B_C_1000", "B_P_1000",
+                    "B_C_1050", "B_P_1050", "R_CUT", "R_HOLD", "R_HIKE"]
+
+    async def flatten_positions(self):
+        """Aggressively unwind all positions toward 0 by crossing the spread."""
+        for sym in self.ALL_TRADABLE:
+            await self.cancel_quotes_for(sym)
+
+        for sym in self.ALL_TRADABLE:
+            pos = self.positions.get(sym, 0)
+            if pos == 0:
+                continue
+            best_bid, best_ask = self.get_best_bid_ask(sym)
+            if pos > 0 and best_bid is not None:
+                await self.safe_place_order(sym, pos, Side.SELL, best_bid)
+                log(f"[FLATTEN] SELL {pos} {sym} @ {best_bid} (pos={pos})", "pnl.log")
+            elif pos < 0 and best_ask is not None:
+                await self.safe_place_order(sym, abs(pos), Side.BUY, best_ask)
+                log(f"[FLATTEN] BUY {abs(pos)} {sym} @ {best_ask} (pos={pos})", "pnl.log")
+
+    def print_status(self):
+        """Print P&L status report to pnl.log."""
+        lines = ["[STATUS] ──────────────────────"]
+        total_upnl = 0
+        for sym in self.ALL_TRADABLE:
+            pos = self.positions.get(sym, 0)
+            if pos == 0:
+                continue
+            _, _, mid = self.get_bba_mid(sym)
+            if mid is None:
+                lines.append(f"  {sym:12s} pos={pos:+d}  mid=N/A")
+                continue
+            # Average fill price
+            tracker = self.fill_tracker.get(sym)
+            if tracker and tracker[0] != 0:
+                avg = tracker[1] / tracker[0]
+                upnl = pos * (mid - avg)
+            else:
+                avg = mid
+                upnl = 0
+            total_upnl += upnl
+            lines.append(f"  {sym:12s} pos={pos:+d}  avg={avg:.0f}  mid={mid:.0f}  uPnL={upnl:+.0f}")
+        lines.append("──────────────────────────────")
+        lines.append(f"  Total uPnL: {total_upnl:+.0f}  cash={self.positions.get('cash', 0)}")
+        fv_a = self.fair_values.get("A", "N/A")
+        fv_c = self.fair_values.get("C", "N/A")
+        fv_a_str = f"{fv_a:.0f}" if isinstance(fv_a, (int, float)) and fv_a is not None else "N/A"
+        fv_c_str = f"{fv_c:.0f}" if isinstance(fv_c, (int, float)) and fv_c is not None else "N/A"
+        lines.append(f"  FV_A={fv_a_str}  FV_C={fv_c_str}  BETA={BETA}  GAMMA={GAMMA}")
+        report = "\n".join(lines)
+        log(report, "pnl.log")
+
+    async def _listen_for_commands(self):
+        """Listen for keyboard commands: 'f' to flatten, 's' to show positions."""
+        import sys
+        loop = asyncio.get_event_loop()
+        while True:
+            cmd = await loop.run_in_executor(None, sys.stdin.readline)
+            cmd = cmd.strip().lower()
+            if cmd == "f":
+                log("[CMD] Manual flatten triggered", "pnl.log")
+                await self.flatten_positions()
+            elif cmd == "s":
+                self.print_status()
+
     async def trade(self):
+        # Clear logs on startup
+        for f in ["pnl.log", "fills.log", "fed.log"]:
+            open(f, "w").close()
         await asyncio.sleep(5)
+        asyncio.create_task(self._listen_for_commands())
+        last_status_time = time.time()
 
         while True:
             await self.strat_a.update_quotes()
@@ -977,6 +1191,13 @@ class MyXchangeClient(XChangeClient):
             await self.strat_etf.check_arb()
             await self.strat_options.run()
             await self.strat_fed.trade_prediction_market()
+
+            # Status report every 10 seconds
+            now = time.time()
+            if now - last_status_time >= 10:
+                last_status_time = now
+                self.print_status()
+
             await asyncio.sleep(0.1)
 
     async def start(self):
