@@ -1059,22 +1059,36 @@ class FedStrategy:
     FEDSPEAK_MSG_TYPES: set[str] = {"FEDSPEAK", "fedspeak", "FED_SPEAK"}
 
     DOVISH  = ["easing", "cooling", "dovish", "cut", "lower rates", "easing inflation",
-               "slowing growth", "policy easing", "expectations of policy easing"]
+               "slowing growth", "policy easing", "expectations of policy easing",
+               "accommodation", "not want to keep rates elevated", "shift toward accommodation",
+               "economic softening", "contraction", "longer than necessary"]
     HAWKISH = ["restrictive", "hawkish", "hike", "inflation risks", "stay restrictive",
-               "tightening", "higher for longer", "restrictive for longer"]
+               "tightening", "higher for longer", "restrictive for longer",
+               "reassess path", "consumer spending", "undermines the case"]
     NEUTRAL = ["wide range of views", "weighing", "uncertainties", "not in a hurry",
-               "either direction", "balanced", "mixed", "no clear", "options open"]
+               "either direction", "balanced", "mixed", "no clear", "options open",
+               "cumulative tightening", "assess", "hold steady", "upside and downside"]
+
+    # Negation words that flip dovish keywords to hawkish when found within 30 chars before
+    NEGATION_WORDS = ["not", "no", "undermines", "against", "case for"]
 
     CONTRACTS  = ("R_HIKE", "R_HOLD", "R_CUT")
     MAX_POS    = 25
     EDGE_MIN   = 0.04   # minimum divergence to trade
     CPI_SENS   = 80     # probability shift per unit CPI surprise
+    CPI_THRESHOLD = 0.0001  # surprises below this are noise
+    CPI_SIGMOID_K = 3000    # sigmoid steepness for tiny surprise magnitudes
     SPEAK_SHIFT= 0.03   # shift per fedspeak headline
 
     def __init__(self, client: "MyXchangeClient"):
         self.client      = client
         self._book_reads = 0
         self._mkt_probs  = {c: None for c in self.CONTRACTS}
+        self._seen_headlines: set[str] = set()
+        # PnL tracking for fed prediction market
+        self._fed_fills: dict[str, list] = {c: [] for c in self.CONTRACTS}  # symbol → [(qty, price, side)]
+        self._fed_realized_pnl: float = 0.0
+        self._fed_trade_count: int = 0
 
     def _read_book_probs(self) -> None:
         updated = 0
@@ -1099,46 +1113,98 @@ class FedStrategy:
 
     def on_cpi(self, forecast: float, actual: float) -> None:
         surprise = actual - forecast
-        log(f"[FED] CPI surprise={surprise:+.5f} ({'hawk' if surprise > 0 else 'dove'})", "fed.log")
-        shift = self.CPI_SENS * abs(surprise)
-        if abs(surprise) < 0.0001:
-            # Inline with expectations → shift toward hold
-            self.client.fair_values["R_HIKE"] = max(0.04, self.client.fair_values["R_HIKE"] - 0.05)
-            self.client.fair_values["R_CUT"]  = max(0.04, self.client.fair_values["R_CUT"]  - 0.05)
-            self.client.fair_values["R_HOLD"] += 0.10
-        elif surprise > 0:   # hawkish
-            mv = min(shift, self.client.fair_values["R_CUT"])
-            self.client.fair_values["R_CUT"]  -= mv
-            self.client.fair_values["R_HIKE"] += mv
-        else:                # dovish
-            mv = min(shift, self.client.fair_values["R_HIKE"])
-            self.client.fair_values["R_HIKE"] -= mv
-            self.client.fair_values["R_CUT"]  += mv
+        abs_surprise = abs(surprise)
+        below_threshold = abs_surprise < self.CPI_THRESHOLD
+        log(f"[FED] CPI surprise={surprise:+.5f} ({'hawk' if surprise > 0 else 'dove'}) "
+            f"threshold={'BELOW' if below_threshold else 'ABOVE'} ({abs_surprise:.6f} vs {self.CPI_THRESHOLD})", "fed.log")
+
+        if below_threshold:
+            # Noise-level surprise → tiny nudge toward HOLD
+            self.client.fair_values["R_HIKE"] = max(0.04, self.client.fair_values["R_HIKE"] - 0.005)
+            self.client.fair_values["R_CUT"]  = max(0.04, self.client.fair_values["R_CUT"]  - 0.005)
+            self.client.fair_values["R_HOLD"] += 0.01
+        else:
+            # Sigmoid scaling with steepness tuned for 0.0001–0.001 magnitude surprises
+            sigmoid_input = self.CPI_SIGMOID_K * abs_surprise
+            shift = self.CPI_SENS * abs_surprise * (2.0 / (1.0 + math.exp(-sigmoid_input)) - 1.0)
+            if surprise > 0:   # hawkish
+                mv = min(shift, self.client.fair_values["R_CUT"])
+                self.client.fair_values["R_CUT"]  -= mv
+                self.client.fair_values["R_HIKE"] += mv
+            else:              # dovish
+                mv = min(shift, self.client.fair_values["R_HIKE"])
+                self.client.fair_values["R_HIKE"] -= mv
+                self.client.fair_values["R_CUT"]  += mv
         self._normalize()
         log(f"[FED] post-CPI: H={self.client.fair_values['R_HIKE']:.3f} "
             f"N={self.client.fair_values['R_HOLD']:.3f} "
             f"C={self.client.fair_values['R_CUT']:.3f}", "fed.log")
 
+    def _is_negated(self, text: str, keyword: str) -> bool:
+        """Check if a dovish keyword is negated by looking at 30 chars before it."""
+        idx = text.find(keyword)
+        if idx < 0:
+            return False
+        prefix = text[max(0, idx - 30):idx]
+        return any(neg in prefix for neg in self.NEGATION_WORDS)
+
     def on_fedspeak(self, content: str) -> None:
-        t      = content.lower()
-        dovish = any(kw in t for kw in self.DOVISH)
-        hawkish= any(kw in t for kw in self.HAWKISH)
-        neutral= any(kw in t for kw in self.NEUTRAL)
+        t = content.lower()
+
+        # --- Deduplication ---
+        dedup_key = t[:40]
+        is_duplicate = dedup_key in self._seen_headlines
+        self._seen_headlines.add(dedup_key)
+        shift_multiplier = 0.25 if is_duplicate else 1.0
+        if is_duplicate:
+            log(f"[FED] DUPLICATE detected (25% weight): {content[:60]}", "fed.log")
+
+        # --- Negation-aware keyword scoring ---
+        dovish_score = 0
+        hawkish_score = 0
+        for kw in self.DOVISH:
+            if kw in t:
+                if self._is_negated(t, kw):
+                    hawkish_score += 1  # negated dovish → hawkish
+                else:
+                    dovish_score += 1
+        for kw in self.HAWKISH:
+            if kw in t:
+                hawkish_score += 1
+        neutral = any(kw in t for kw in self.NEUTRAL)
+
+        dovish = dovish_score > 0
+        hawkish = hawkish_score > 0
 
         if dovish and not hawkish:
-            mv = min(self.SPEAK_SHIFT, self.client.fair_values["R_HIKE"])
+            mv = min(self.SPEAK_SHIFT * shift_multiplier, self.client.fair_values["R_HIKE"])
             self.client.fair_values["R_HIKE"] -= mv
             self.client.fair_values["R_CUT"]  += mv
             log(f"[FED] DOVISH: {content[:80]}", "fed.log")
         elif hawkish and not dovish:
-            mv = min(self.SPEAK_SHIFT, self.client.fair_values["R_CUT"])
+            mv = min(self.SPEAK_SHIFT * shift_multiplier, self.client.fair_values["R_CUT"])
             self.client.fair_values["R_CUT"]  -= mv
             self.client.fair_values["R_HIKE"] += mv
             log(f"[FED] HAWKISH: {content[:80]}", "fed.log")
+        elif hawkish and dovish:
+            # Mixed signal — net direction based on score balance
+            if hawkish_score > dovish_score:
+                mv = min(self.SPEAK_SHIFT * 0.5 * shift_multiplier, self.client.fair_values["R_CUT"])
+                self.client.fair_values["R_CUT"]  -= mv
+                self.client.fair_values["R_HIKE"] += mv
+                log(f"[FED] MIXED→HAWK (h={hawkish_score} d={dovish_score}): {content[:80]}", "fed.log")
+            elif dovish_score > hawkish_score:
+                mv = min(self.SPEAK_SHIFT * 0.5 * shift_multiplier, self.client.fair_values["R_HIKE"])
+                self.client.fair_values["R_HIKE"] -= mv
+                self.client.fair_values["R_CUT"]  += mv
+                log(f"[FED] MIXED→DOVE (h={hawkish_score} d={dovish_score}): {content[:80]}", "fed.log")
+            else:
+                log(f"[FED] MIXED→NEUTRAL (h={hawkish_score} d={dovish_score}): {content[:80]}", "fed.log")
         elif neutral:
-            self.client.fair_values["R_HIKE"] = max(0.04, self.client.fair_values["R_HIKE"] - 0.04)
-            self.client.fair_values["R_CUT"]  = max(0.04, self.client.fair_values["R_CUT"]  - 0.04)
-            self.client.fair_values["R_HOLD"] += 0.08
+            adj = 0.04 * shift_multiplier
+            self.client.fair_values["R_HIKE"] = max(0.04, self.client.fair_values["R_HIKE"] - adj)
+            self.client.fair_values["R_CUT"]  = max(0.04, self.client.fair_values["R_CUT"]  - adj)
+            self.client.fair_values["R_HOLD"] += 2 * adj
             log(f"[FED] NEUTRAL: {content[:80]}", "fed.log")
         else:
             log(f"[FED] UNCLASSIFIED: {content[:80]}", "fed.log")
@@ -1191,9 +1257,60 @@ class FedStrategy:
                     log(f"[FED] SELL {c} {sz}u | our={our_p:.3f} mkt={mkt_p:.3f} div={div:+.3f}", "fed.log")
                     await self.client.safe_place_order(c, sz, Side.SELL, b)
 
+    def record_fill(self, symbol: str, qty: int, price: int, is_buy: bool) -> None:
+        """Called from the main fill handler when a fed contract fills."""
+        if symbol not in self.CONTRACTS:
+            return
+        side_str = "BUY" if is_buy else "SELL"
+        self._fed_fills[symbol].append((qty, price, is_buy))
+        self._fed_trade_count += 1
+        pos = self.client.positions.get(symbol, 0)
+        log(f"[FED-PNL] FILL {side_str} {qty}x {symbol} @ {price}  pos={pos}", "fed_pnl.log")
+        self._log_fed_status()
+
+    def record_payout(self, market_id: str, amount: int) -> None:
+        """Called when a fed prediction market settles."""
+        if any(c in market_id for c in ("HIKE", "HOLD", "CUT")):
+            self._fed_realized_pnl += amount
+            log(f"[FED-PNL] PAYOUT +{amount} from {market_id}  "
+                f"total_realized={self._fed_realized_pnl:+.0f}", "fed_pnl.log")
+
+    def _log_fed_status(self) -> None:
+        """Log current fed positions, cost basis, and unrealized PnL."""
+        lines = [f"[FED-PNL] ── Status ({self._fed_trade_count} trades) ──"]
+        total_cost = 0.0
+        total_value = 0.0
+        for c in self.CONTRACTS:
+            pos = self.client.positions.get(c, 0)
+            b, a = self.client.get_best_bid_ask(c)
+            mid = (b + a) / 2 if b is not None and a is not None else None
+            # Cost basis from fill tracker
+            ft = self.client.fill_tracker.get(c, (0, 0))
+            cost = ft[1] if ft[0] != 0 else 0
+            value = pos * mid if mid is not None and pos != 0 else 0
+            upnl = value - cost if cost != 0 else 0
+            total_cost += cost
+            total_value += value
+            our_p = self.client.fair_values.get(c, 0)
+            mkt_p = self._mkt_probs.get(c)
+            mkt_str = f"{mkt_p:.3f}" if mkt_p else "N/A"
+            lines.append(f"  {c}: pos={pos:+d}  cost={cost:+.0f}  val={value:+.0f}  "
+                         f"uPnL={upnl:+.0f}  our={our_p:.3f}  mkt={mkt_str}")
+        total_upnl = total_value - total_cost
+        lines.append(f"  TOTAL: uPnL={total_upnl:+.0f}  realized={self._fed_realized_pnl:+.0f}  "
+                     f"net={total_upnl + self._fed_realized_pnl:+.0f}")
+        log("\n".join(lines), "fed_pnl.log")
+
     def reset(self) -> None:
         # Keep probability estimates across rounds — they carry over
         self._book_reads = 0
+        self._seen_headlines = set()
+        # Log final PnL before resetting
+        if self._fed_trade_count > 0:
+            log(f"[FED-PNL] ── ROUND END ── realized={self._fed_realized_pnl:+.0f}", "fed_pnl.log")
+        self._fed_fills = {c: [] for c in self.CONTRACTS}
+        self._fed_realized_pnl = 0.0
+        self._fed_trade_count = 0
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -1613,6 +1730,9 @@ class MyXchangeClient(XChangeClient):
         log(f"[FILL] {sym} {'BUY' if is_buy else 'SELL'} {qty} @ {price} "
             f"pos={self.positions.get(sym, 0)}", "fills.log")
 
+        # Fed prediction market PnL tracking
+        self.strat_fed.record_fill(sym, qty, price, is_buy)
+
         # Reset stale timer on any fill — this order is actively filling
         self._order_placed_time[order_id] = time.time()
 
@@ -1721,6 +1841,7 @@ class MyXchangeClient(XChangeClient):
     async def bot_handle_settlement_payout(self, user: str, market_id: str,
                                             amount: int, tick: int) -> None:
         log(f"[PAYOUT] +{amount} from {market_id} @ tick {tick}", "pnl.log")
+        self.strat_fed.record_payout(market_id, amount)
 
     # ── Flatten / Status ──────────────────────────────────────────
 
@@ -1741,7 +1862,8 @@ class MyXchangeClient(XChangeClient):
                 log(f"[FLATTEN] BUY  {abs(pos)} {s} @ {a}", "pnl.log")
 
     def print_status(self) -> None:
-        lines = [f"[STATUS] ── round elapsed {time.time()-self._round_start_wall:.0f}s ──"]
+        elapsed = time.time() - self._round_start_wall
+        lines = [f"[STATUS] ── round elapsed {elapsed:.0f}s ──"]
         total_upnl = 0.0
         for s in self.ALL_TRADABLE:
             pos = self.positions.get(s, 0)
@@ -1772,6 +1894,118 @@ class MyXchangeClient(XChangeClient):
             f"C={self.fair_values['R_CUT']:.3f}",
         ]
         log("\n".join(lines), "pnl.log")
+
+        # ── Detailed PnL breakdown by strategy ──
+        self._log_full_pnl(elapsed)
+
+    # Strategy groupings for PnL attribution
+    _PNL_GROUPS = {
+        "Stock A":    ["A"],
+        "Stock C":    ["C"],
+        "Options":    ["B_C_950", "B_P_950", "B_C_1000", "B_P_1000", "B_C_1050", "B_P_1050"],
+        "ETF":        ["ETF"],
+        "Fed":        ["R_CUT", "R_HOLD", "R_HIKE"],
+    }
+
+    def _log_full_pnl(self, elapsed: float) -> None:
+        """Write a full PnL breakdown to full_pnl.log grouped by strategy."""
+        lines = [
+            "",
+            f"{'═' * 60}",
+            f"  PnL REPORT  |  elapsed {elapsed:.0f}s  |  {time.strftime('%H:%M:%S')}",
+            f"{'═' * 60}",
+        ]
+
+        grand_upnl = 0.0
+        grand_cost = 0.0
+        grand_value = 0.0
+        total_trades = 0
+
+        for group_name, symbols in self._PNL_GROUPS.items():
+            group_upnl = 0.0
+            group_cost = 0.0
+            group_value = 0.0
+            group_trades = 0
+            sym_lines = []
+
+            for s in symbols:
+                pos = self.positions.get(s, 0)
+                ft = self.fill_tracker.get(s, (0, 0))
+                signed_qty, cost = ft
+                num_trades = abs(signed_qty)  # approximation
+                group_trades += num_trades
+                total_trades += num_trades
+
+                if pos == 0 and cost == 0:
+                    continue
+
+                _, _, mid = self.get_bba_mid(s)
+                if mid is not None and signed_qty != 0:
+                    avg = cost / signed_qty
+                    value = pos * mid
+                    upnl = pos * (mid - avg)
+                else:
+                    avg = 0.0
+                    value = 0.0
+                    upnl = 0.0
+
+                group_upnl += upnl
+                group_cost += abs(cost)
+                group_value += value
+
+                mid_str = f"{mid:.0f}" if mid is not None else "N/A"
+                sym_lines.append(
+                    f"    {s:12s} pos={pos:+4d}  avg={avg:7.1f}  "
+                    f"mid={mid_str:>6s}  uPnL={upnl:+8.0f}"
+                )
+
+            grand_upnl += group_upnl
+            grand_cost += group_cost
+            grand_value += group_value
+
+            lines.append(f"  [{group_name}]  uPnL={group_upnl:+.0f}  trades≈{group_trades}")
+            lines.extend(sym_lines)
+
+        # Meta symbols (dynamic)
+        meta_upnl = 0.0
+        meta_lines_list = []
+        for s in MetaStrategy.META_SYMBOLS:
+            pos = self.positions.get(s, 0)
+            ft = self.fill_tracker.get(s, (0, 0))
+            signed_qty, cost = ft
+            if pos == 0 and cost == 0:
+                continue
+            _, _, mid = self.get_bba_mid(s)
+            if mid is not None and signed_qty != 0:
+                avg = cost / signed_qty
+                upnl = pos * (mid - avg)
+            else:
+                avg = upnl = 0.0
+            meta_upnl += upnl
+            mid_str = f"{mid:.0f}" if mid is not None else "N/A"
+            meta_lines_list.append(
+                f"    {s:12s} pos={pos:+4d}  avg={avg:7.1f}  "
+                f"mid={mid_str:>6s}  uPnL={upnl:+8.0f}"
+            )
+        if meta_lines_list:
+            lines.append(f"  [Meta]  uPnL={meta_upnl:+.0f}")
+            lines.extend(meta_lines_list)
+            grand_upnl += meta_upnl
+
+        # Settlement payouts
+        fed_realized = self.strat_fed._fed_realized_pnl
+
+        cash = self.positions.get("cash", 0)
+        lines += [
+            f"{'─' * 60}",
+            f"  TOTAL uPnL:      {grand_upnl:+.0f}",
+            f"  Fed realized:    {fed_realized:+.0f}",
+            f"  Cash:            {cash}",
+            f"  Est. total PnL:  {grand_upnl + fed_realized:+.0f}  (uPnL + realized payouts)",
+            f"  Trades:          ≈{total_trades}",
+            f"{'═' * 60}",
+        ]
+        log("\n".join(lines), "full_pnl.log")
 
     # ── Command listener ──────────────────────────────────────────
 
@@ -1850,7 +2084,7 @@ class MyXchangeClient(XChangeClient):
             except Exception:
                 pass
         _log_handles = {}
-        for f in ["pnl.log", "fills.log", "fed.log", "news.log", "trades.log", "meta.log", "bot.log"]:
+        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
             open(f, "w").close()
 
         await asyncio.sleep(5)
