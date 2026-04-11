@@ -805,6 +805,12 @@ class StockCStrategy:
         self._last_bid: Optional[tuple] = None
         self._last_ask: Optional[tuple] = None
 
+        # PnL tracking for c_pnl.log
+        self._c_trade_count: int    = 0
+        self._c_realized_pnl: float = 0.0
+        self._c_open_qty: int       = 0
+        self._c_open_cost: float    = 0.0
+
     def calc_fv(self, eps: float) -> float:
         p_hike = self.client.fair_values["R_HIKE"]
         p_cut  = self.client.fair_values["R_CUT"]
@@ -1009,8 +1015,77 @@ class StockCStrategy:
             await self.client.safe_place_order("C", min(qty, 15), Side.SELL, px)
             log(f"[C] SWEEP SELL {min(qty,15)} @ {px} | fv={fv:.1f}")
 
+    def on_fill(self, qty: int, price: int, is_buy: bool) -> None:
+        if qty == 0:
+            return
+        sign = 1 if is_buy else -1
+        if self._c_open_qty == 0:
+            self._c_open_qty  = sign * qty
+            self._c_open_cost = qty * price
+        elif (self._c_open_qty > 0 and is_buy) or (self._c_open_qty < 0 and not is_buy):
+            self._c_open_qty  += sign * qty
+            self._c_open_cost += qty * price
+        else:
+            avg = self._c_open_cost / abs(self._c_open_qty)
+            close_qty = min(qty, abs(self._c_open_qty))
+            if is_buy:
+                self._c_realized_pnl += close_qty * (avg - price)
+            else:
+                self._c_realized_pnl += close_qty * (price - avg)
+            self._c_open_qty += sign * qty
+            if self._c_open_qty == 0:
+                self._c_open_cost = 0.0
+            elif sign * self._c_open_qty > 0:
+                self._c_open_cost = (qty - close_qty) * price
+            else:
+                self._c_open_cost = abs(self._c_open_qty) * avg
+
+        self._c_trade_count += 1
+        pos  = self.client.positions.get("C", 0)
+        fv   = self.client.fair_values.get("C")
+        fv_s = f"{fv:.1f}" if fv else "N/A"
+        edge = (fv - price) if (is_buy and fv) else ((price - fv) if fv else 0)
+        log(
+            f"[C-PNL] FILL {'BUY ' if is_buy else 'SELL'} {qty}x C @ {price}  "
+            f"pos={pos:+d}  fv={fv_s}  edge={edge:+.1f}",
+            "c_pnl.log"
+        )
+        self._log_c_status()
+
+    def _log_c_status(self) -> None:
+        pos  = self.client.positions.get("C", 0)
+        fv   = self.client.fair_values.get("C")
+        b, a = self.client.get_best_bid_ask("C")
+        mid  = (b + a) / 2 if b is not None and a is not None else None
+
+        avg   = self._c_open_cost / abs(self._c_open_qty) if self._c_open_qty != 0 else 0
+        cost  = pos * avg if avg != 0 else 0
+        value = pos * mid if mid is not None else (pos * (fv or 0) if fv else 0)
+        upnl  = value - cost if avg != 0 else 0
+
+        fv_s  = f"{fv:.1f}" if fv  is not None else "N/A"
+        mid_s = f"{mid:.0f}" if mid is not None else "N/A"
+        lines = [
+            f"[C-PNL] ── Status ({self._c_trade_count} trades) ──",
+            f"  C: pos={pos:+d}  cost={cost:+.0f}  val={value:+.0f}  uPnL={upnl:+.0f}"
+            f"  fv={fv_s}  mid={mid_s}",
+            f"  TOTAL: uPnL={upnl:+.0f}  realized={self._c_realized_pnl:+.0f}"
+            f"  net={upnl + self._c_realized_pnl:+.0f}",
+        ]
+        log("\n".join(lines), "c_pnl.log")
+
     def reset(self) -> None:
         """Call at round start.  Preserve model params — they carry over."""
+        if self._c_trade_count > 0:
+            log(
+                f"[C-PNL] ── ROUND END ── realized={self._c_realized_pnl:+.0f}  "
+                f"trades={self._c_trade_count}",
+                "c_pnl.log"
+            )
+        self._c_trade_count  = 0
+        self._c_realized_pnl = 0.0
+        self._c_open_qty     = 0
+        self._c_open_cost    = 0.0
         self._last_quote_time = 0.0
         self._last_snipe_time = 0.0
         # Do NOT reset beta, gamma, committed, recent_fits — model knowledge persists
@@ -1946,6 +2021,10 @@ class MyXchangeClient(XChangeClient):
         # Stock A PnL log — pass fill details so on_fill can log edge/uPnL
         self.strat_a.on_fill(order_id, qty=qty if sym == "A" else 0, price=price, is_buy=is_buy)
 
+        # Stock C PnL log
+        if sym == "C":
+            self.strat_c.on_fill(qty, price, is_buy)
+
         # Fed prediction market PnL tracking
         self.strat_fed.record_fill(sym, qty, price, is_buy)
 
@@ -2300,7 +2379,7 @@ class MyXchangeClient(XChangeClient):
             except Exception:
                 pass
         _log_handles = {}
-        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "a_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
+        for f in ["pnl.log", "fills.log", "fed.log", "fed_pnl.log", "a_pnl.log", "c_pnl.log", "news.log", "trades.log", "meta.log", "bot.log"]:
             open(f, "w").close()
 
         await asyncio.sleep(5)
