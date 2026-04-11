@@ -1386,60 +1386,143 @@ class ETFStrategy:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# Strategy: Meta Market  (unchanged — fill in on competition day)
+# Strategy: Meta Market  (fill-count prediction — 4 bucket contracts)
 # ═══════════════════════════════════════════════════════════════════════
 
 class MetaStrategy:
     """
-    Placeholder for the second prediction market revealed on competition day.
+    Meta market: 4 contracts representing buckets of total fill messages
+    observed on the exchange by tick 4400 of the round.
 
-    On competition day:
-    1. Check positions/symbols from first position_snapshot printout.
-    2. Register unknowns: self.client._ensure_symbol(sym).
-    3. Identify settlement condition and news message_type.
-    4. Type: meta SYM1 SYM2  to register symbols at runtime.
-    5. Implement on_news() to update fair_values[sym].
+    Round structure: 10 days × 90s × 5 ticks/s = 4500 ticks total.
+    Settlement tick = 4400 (~last 20 seconds unused for this market).
 
-    The petition news subtype (asset, new_signatures, cumulative) may relate
-    to this market — logged to meta.log for inspection.
+    Exactly ONE contract settles at 1000; the rest settle at 0.
+    Probabilities are modelled as a discretised Normal distribution
+    around the linear fill-rate projection, so they always sum to 1.
+
+    ── Competition day setup ──────────────────────────────────────────
+    1. Observe position_snapshot to find symbol names, e.g.:
+         META_A, META_B, META_C, META_D  (low → high bucket)
+    2. Type:  meta META_A META_B META_C META_D
+    3. Type:  metabuckets 200 400 600
+         → bucket A: fills <  200  (idx 0)
+         → bucket B: 200 ≤ fills < 400  (idx 1)
+         → bucket C: 400 ≤ fills < 600  (idx 2)
+         → bucket D: fills ≥ 600  (idx 3)
+    That's it.  The bot starts projecting and trading immediately.
+
+    ── Tuning ────────────────────────────────────────────────────────
+    metabuckets <t1> <t2> <t3>   update bucket thresholds live
+    metalimit <n>                 change MAX_POS (default 25)
     """
 
-    META_SYMBOLS:   list[str] = []
-    META_MSG_TYPES: set[str]  = set()
+    # ── Class-level config (mutated by runtime commands) ──────────────
+    META_SYMBOLS:   list[str]   = ["FILLS_1", "FILLS_2", "FILLS_3", "FILLS_4"]    # ordered low→high, set via `meta` cmd
+    BUCKET_EDGES:   list[float] = []    # 3 thresholds for 4 buckets, set via `metabuckets`
+
+    # ── Tuning constants ──────────────────────────────────────────────
+    SETTLE_TICK     = 4400      # fills counted up to this tick
+    MAX_POS         = 25        # max long or short per contract
+    ORDER_QTY       = 3         # units per order
+    EDGE_TICKS      = 30        # min edge (in exchange price units, i.e. out of 1000)
+    MIN_TICK        = 100       # don't trade until we have this many ticks of data
+    SIGMA_FLOOR     = 15.0      # minimum std-dev for projection uncertainty (fill counts)
 
     def __init__(self, client: "MyXchangeClient"):
-        self.client   = client
-        self.max_pos  = 20
-        self.qty      = 2
-        self.edge_min = 0.05
+        self.client = client
+
+    # ── Core projection ───────────────────────────────────────────────
+
+    def _projected_fills(self) -> Optional[float]:
+        """Linear projection of total fills at SETTLE_TICK."""
+        tick = self.client.meta_tick
+        if tick < self.MIN_TICK:
+            return None
+        return self.client.meta_fill_count * self.SETTLE_TICK / tick
+
+    def _bucket_probs(self) -> Optional[list[float]]:
+        """
+        Returns list of 4 probabilities (summing to 1.0) for each bucket,
+        using a Normal approximation around the projected fill count.
+        Uncertainty (sigma) shrinks as more ticks are observed.
+        """
+        if not self.META_SYMBOLS or len(self.BUCKET_EDGES) != 3:
+            return None
+        proj = self._projected_fills()
+        if proj is None:
+            return None
+
+        tick   = self.client.meta_tick
+        # Poisson-like std dev, scaled down as forecast horizon shrinks
+        frac_remaining = max(0.0, (self.SETTLE_TICK - tick) / self.SETTLE_TICK)
+        sigma  = max(self.SIGMA_FLOOR, math.sqrt(proj) * frac_remaining)
+
+        edges  = self.BUCKET_EDGES              # [t1, t2, t3]
+        lo, m1, m2 = edges[0], edges[1], edges[2]
+
+        def Φ(x: float) -> float:
+            """Standard normal CDF via math.erf."""
+            return 0.5 * (1.0 + math.erf((x - proj) / (sigma * math.sqrt(2))))
+
+        p0 = Φ(lo)
+        p1 = Φ(m1) - Φ(lo)
+        p2 = Φ(m2) - Φ(m1)
+        p3 = 1.0 - Φ(m2)
+
+        # Clamp to avoid floating-point negatives, renormalise
+        probs = [max(0.0, p) for p in [p0, p1, p2, p3]]
+        total = sum(probs) or 1.0
+        return [p / total for p in probs]
+
+    # ── Trading ───────────────────────────────────────────────────────
+
+    async def trade(self) -> None:
+        if not self.META_SYMBOLS or len(self.BUCKET_EDGES) != 3:
+            return
+        if self.client.meta_tick > self.SETTLE_TICK:
+            return
+
+        probs = self._bucket_probs()
+        if probs is None:
+            return
+
+        proj = self._projected_fills()
+
+        for i, sym in enumerate(self.META_SYMBOLS):
+            fv  = probs[i] * 1000.0          # fair value in exchange units
+            b, a = self.client.get_best_bid_ask(sym)
+            if b is None or a is None:
+                continue
+
+            pos = self.client.positions.get(sym, 0)
+
+            # Buy if ask is cheap vs fair value
+            if fv - a > self.EDGE_TICKS and pos < self.MAX_POS:
+                qty = min(self.ORDER_QTY, self.MAX_POS - pos)
+                await self.client.safe_place_order(sym, qty, Side.BUY, a)
+                log(f"[META] BUY  {sym} {qty}@{a} fv={fv:.0f} "
+                    f"p={probs[i]:.3f} proj={proj:.0f} tick={self.client.meta_tick}",
+                    "meta.log")
+
+            # Sell if bid is rich vs fair value
+            elif b - fv > self.EDGE_TICKS and pos > -self.MAX_POS:
+                qty = min(self.ORDER_QTY, self.MAX_POS + pos)
+                await self.client.safe_place_order(sym, qty, Side.SELL, b)
+                log(f"[META] SELL {sym} {qty}@{b} fv={fv:.0f} "
+                    f"p={probs[i]:.3f} proj={proj:.0f} tick={self.client.meta_tick}",
+                    "meta.log")
+
+    # ── News / petition hooks (logging only — update if market uses news) ──
+
+    def on_news(self, msg_type: str, content: str, tick: int) -> None:
+        log(f"[META] news type='{msg_type}' tick={tick}: {content[:120]}", "meta.log")
 
     def on_petition(self, asset: str, new_sigs: int, cumulative: int) -> None:
         log(f"[META/PETITION] asset={asset} new={new_sigs} cumul={cumulative}", "meta.log")
 
-    def on_news(self, msg_type: str, content: str, tick: int) -> None:
-        log(f"[META] type='{msg_type}' tick={tick}: {content[:120]}", "meta.log")
-
-    async def trade(self) -> None:
-        if not self.META_SYMBOLS:
-            return
-        for sym in self.META_SYMBOLS:
-            fv = self.client.fair_values.get(sym)
-            if fv is None:
-                continue
-            b, a = self.client.get_best_bid_ask(sym)
-            if b is None or a is None:
-                continue
-            mkt = (b + a) / 2 / 1000.0
-            pos = self.client.positions.get(sym, 0)
-            if fv - mkt > self.edge_min and pos < self.max_pos:
-                await self.client.safe_place_order(sym, self.qty, Side.BUY, a)
-                log(f"[META] BUY  {sym} {self.qty} @ {a}", "meta.log")
-            elif mkt - fv > self.edge_min and pos > -self.max_pos:
-                await self.client.safe_place_order(sym, self.qty, Side.SELL, b)
-                log(f"[META] SELL {sym} {self.qty} @ {b}", "meta.log")
-
     def reset(self) -> None:
-        pass
+        pass   # meta_tick / meta_fill_count reset lives in MyXchangeClient._on_round_start
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -1463,6 +1546,11 @@ class MyXchangeClient(XChangeClient):
         }
         self.eps: dict = {"A": None, "C": None}
         self.my_quote_ids: set = set()
+        
+        # meta market
+        
+        self.meta_fill_count: int = 0
+        self.meta_tick: int = 0
 
         # ── Risk limits (update from Ed post on competition day) ──────
         _syms = self.ALL_TRADABLE
@@ -1588,6 +1676,8 @@ class MyXchangeClient(XChangeClient):
         # premature sniping at round start before sensitivity re-calibration.
         self.fair_values["C"] = None
 
+        self.meta_fill_count = 0
+        self.meta_tick = 0
         self.strat_a.reset()
         self.strat_c.reset()       # resets sensitivity; keeps PE_C_scale
         self.strat_options.reset()
@@ -1609,6 +1699,8 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL-FAIL] {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int) -> None:
+        self.meta_fill_count += 1
+        
         self.strat_a.on_cancel_confirmed(order_id)
         info = self.open_orders.get(order_id)
         if info is None:
@@ -1654,6 +1746,8 @@ class MyXchangeClient(XChangeClient):
         print(f"[REJECTED] {order_id}: {reason}")
 
     async def bot_handle_trade_msg(self, symbol: str, price: int, qty: int) -> None:
+        self.meta_fill_count += 1
+        self.meta_tick += 1
         b, a = self.get_best_bid_ask(symbol)
         self.flow.observe(symbol, price, qty, b, a)
         log(f"[TRADE] {symbol} {qty} @ {price}", "trades.log")
@@ -1832,8 +1926,25 @@ class MyXchangeClient(XChangeClient):
                 MetaStrategy.META_SYMBOLS = syms
                 for s in syms:
                     self._ensure_symbol(s)
-                    self.fair_values[s] = 0.5
+                    self.fair_values[s] = 500.0
                 print(f"[CMD] Meta symbols registered: {syms}")
+
+            elif cmd.startswith("metabuckets "):
+                parts = cmd.split()
+                if len(parts) == 4:
+                    MetaStrategy.BUCKET_EDGES = [float(parts[1]), float(parts[2]), float(parts[3])]
+                    print(f"[CMD] Meta buckets: <{parts[1]} | {parts[1]}–{parts[2]} | "
+                        f"{parts[2]}–{parts[3]} | >{parts[3]}")
+                else:
+                    print("[CMD] Usage: metabuckets <t1> <t2> <t3>")
+
+            elif cmd.startswith("metalimit "):
+                MetaStrategy.MAX_POS = int(cmd.split()[1])
+                print(f"[CMD] Meta MAX_POS = {MetaStrategy.MAX_POS}")
+
+            elif cmd == "metastop":
+                MetaStrategy.META_SYMBOLS = []
+                print("[CMD] Meta strategy disabled — use 'meta SYM1 SYM2 SYM3 SYM4' to re-enable")
 
     # ── Main trading loop ─────────────────────────────────────────
 
@@ -1927,7 +2038,7 @@ class MyXchangeClient(XChangeClient):
 # ═══════════════════════════════════════════════════════════════════════
 
 async def main() -> None:
-    SERVER = "practice.uchicago.exchange:3333"
+    SERVER = "uchicago.exchange:3333"
     bot    = MyXchangeClient(SERVER, "chicago6", "bolt-nova-rocket")
     await bot.start()
 
