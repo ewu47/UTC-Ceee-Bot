@@ -1,6 +1,6 @@
 # UChicago Trading Competition 2026 — Case 1
 
-Algorithmic market-making bot for the UTC 2026 Case 1. Best result: **Rank 1, +402k PnL**.
+Algorithmic market-making bot for the UTC 2026 Case 1.
 
 ---
 
