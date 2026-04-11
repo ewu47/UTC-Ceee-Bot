@@ -248,7 +248,7 @@ class StockAStrategy:
     MAX_ORDER_SIZE      = 40
     MAX_OUTSTANDING_VOL = 120
     MAX_OPEN_ORDERS     = 50
-    MAX_ABS_POS         = 200
+    MAX_ABS_POS         = 167
 
     BASE_SPREAD         = 4
     SKEW_PER_UNIT       = 0.15
@@ -1026,7 +1026,7 @@ class FedStrategy:
     expected value of buying at the current ask price is positive.
     """
 
-    FEDSPEAK_MSG_TYPES: set[str] = {"FEDSPEAK", "fedspeak", "FED_SPEAK"}
+    FEDSPEAK_MSG_TYPES: set[str] = {"FEDSPEAK", "fedspeak", "FED_SPEAK", "FedSpeak"}
 
     DOVISH  = ["easing", "cooling", "dovish", "cut", "lower rates", "easing inflation",
                "slowing growth", "policy easing", "expectations of policy easing"]
@@ -1405,11 +1405,12 @@ class MetaStrategy:
     1. Observe position_snapshot to find symbol names, e.g.:
          META_A, META_B, META_C, META_D  (low → high bucket)
     2. Type:  meta META_A META_B META_C META_D
-    3. Type:  metabuckets 200 400 600
-         → bucket A: fills <  200  (idx 0)
-         → bucket B: 200 ≤ fills < 400  (idx 1)
-         → bucket C: 400 ≤ fills < 600  (idx 2)
-         → bucket D: fills ≥ 600  (idx 3)
+    3. Type:  metabuckets 299000 300000 301000
+         → bucket A: fills <  299000  (idx 0)
+         → bucket B: 299000 ≤ fills < 300000  (idx 1)
+         → bucket C: 300000 ≤ fills < 301000  (idx 2)
+         → bucket D: fills ≥ 301000  (idx 3)
+         (R1 settled at ~300k; edges ≈1 sigma apart gives ~16/34/34/16% split)
     That's it.  The bot starts projecting and trading immediately.
 
     ── Tuning ────────────────────────────────────────────────────────
@@ -1419,7 +1420,8 @@ class MetaStrategy:
 
     # ── Class-level config (mutated by runtime commands) ──────────────
     META_SYMBOLS:   list[str]   = ["FILLS_1", "FILLS_2", "FILLS_3", "FILLS_4"]    # ordered low→high, set via `meta` cmd
-    BUCKET_EDGES:   list[float] = []    # 3 thresholds for 4 buckets, set via `metabuckets`
+    BUCKET_EDGES:   list[float] = [250000, 300000, 350000]    # 3 thresholds for 4 buckets, set via `metabuckets`
+    META_MSG_TYPES: set[str]    = set() # unstructured news types routed to this strategy
 
     # ── Tuning constants ──────────────────────────────────────────────
     SETTLE_TICK     = 4400      # fills counted up to this tick
@@ -1427,7 +1429,7 @@ class MetaStrategy:
     ORDER_QTY       = 3         # units per order
     EDGE_TICKS      = 30        # min edge (in exchange price units, i.e. out of 1000)
     MIN_TICK        = 100       # don't trade until we have this many ticks of data
-    SIGMA_FLOOR     = 15.0      # minimum std-dev for projection uncertainty (fill counts)
+    SIGMA_FLOOR     = 500.0     # minimum std-dev for projection uncertainty (fill counts) — R1 settled at ~300k fills, sqrt(300k)≈548
 
     def __init__(self, client: "MyXchangeClient"):
         self.client = client
@@ -1571,7 +1573,9 @@ class MyXchangeClient(XChangeClient):
         # downside if sensitivity is mis-calibrated, while still allowing full
         # CPI-trade alpha (6-8 events × 10 units each = 60-80 max, but we
         # naturally reduce via passive MM quotes between events).
+        self.max_abs_position["A"] = 125  # conservative cap for A
         self.max_abs_position["C"] = 50
+        self.max_abs_position["B"] = 50   # cap B exposure from PCP arb short leg
 
         # Fill tracker  {symbol: (signed_qty_total, cost_total)}
         self.fill_tracker: dict = {}
@@ -1591,6 +1595,12 @@ class MyXchangeClient(XChangeClient):
         self._round_start_wall:   float = 0.0
         self._flatten_triggered:  bool  = False
         self._pending_round_reset: bool = False
+        self._conservative_mode:  bool  = False
+        self._normal_max_order_size: dict = dict(self.max_order_size)
+        # Adaptive caps
+        self._cap_default: dict  = dict(self.max_abs_position)  # baseline per symbol
+        self._upnl_hist:   dict  = {}    # symbol -> deque of recent uPnL readings
+        self._last_cap_check: float = 0.0
 
     # ── Limit-aware order placement ───────────────────────────────
 
@@ -1687,6 +1697,13 @@ class MyXchangeClient(XChangeClient):
 
         self._round_start_wall  = time.time()
         self._flatten_triggered = False
+        self._conservative_mode = False
+        for s in self.max_order_size:
+            self.max_order_size[s] = self._normal_max_order_size.get(s, 40)
+        for s in self.max_abs_position:
+            self.max_abs_position[s] = self._cap_default.get(s, 200)
+        self._upnl_hist.clear()
+        self._last_cap_check = 0.0
 
     # ── Event handlers ────────────────────────────────────────────
 
@@ -1699,8 +1716,6 @@ class MyXchangeClient(XChangeClient):
             print(f"[CANCEL-FAIL] {order_id}: {error}")
 
     async def bot_handle_order_fill(self, order_id: str, qty: int, price: int) -> None:
-        self.meta_fill_count += 1
-        
         self.strat_a.on_cancel_confirmed(order_id)
         info = self.open_orders.get(order_id)
         if info is None:
@@ -1714,6 +1729,7 @@ class MyXchangeClient(XChangeClient):
 
         log(f"[FILL] {sym} {'BUY' if is_buy else 'SELL'} {qty} @ {price} "
             f"pos={self.positions.get(sym, 0)}", "fills.log")
+        self._write_pnl_live()
 
         # ETF full-swap fill tracking
         if self.strat_etf.pending_create and sym in ("A", "B", "C"):
@@ -1850,6 +1866,88 @@ class MyXchangeClient(XChangeClient):
                 await self.safe_place_order(s, abs(pos), Side.BUY, a)
                 log(f"[FLATTEN] BUY  {abs(pos)} {s} @ {a}", "pnl.log")
 
+    def _compute_total_upnl(self) -> float:
+        total = 0.0
+        for s in self.ALL_TRADABLE:
+            pos = self.positions.get(s, 0)
+            if pos == 0:
+                continue
+            _, _, mid = self.get_bba_mid(s)
+            if mid is None:
+                continue
+            t = self.fill_tracker.get(s)
+            if t and t[0] != 0:
+                total += pos * (mid - t[1] / t[0])
+        return total
+
+    def _update_adaptive_caps(self) -> None:
+        """
+        Every 2s, record each symbol's uPnL. After 5 consecutive readings:
+          - all trending up   → raise cap by +5  (max = baseline)
+          - all trending down → lower cap by -15  (min = 10, conservative bias)
+        Caps never exceed the original baseline set at __init__.
+        """
+        WINDOW    = 5    # consecutive readings needed to act
+        UP_STEP   = 5    # increase cap by this much when trending up
+        DOWN_STEP = 15   # decrease cap by this much when trending down (conservative bias)
+        CAP_MIN   = 10
+
+        for s in self.ALL_TRADABLE:
+            pos = self.positions.get(s, 0)
+            _, _, mid = self.get_bba_mid(s)
+            if mid is None:
+                continue
+            t = self.fill_tracker.get(s)
+            upnl = pos * (mid - t[1] / t[0]) if (t and t[0] != 0) else 0.0
+
+            hist = self._upnl_hist.setdefault(s, [])
+            hist.append(upnl)
+            if len(hist) > WINDOW + 1:
+                hist.pop(0)
+            if len(hist) < WINDOW + 1:
+                continue
+
+            changes = [hist[i+1] - hist[i] for i in range(len(hist) - 1)]
+            current = self.max_abs_position.get(s, 200)
+            baseline = self._cap_default.get(s, 200)
+
+            if all(c > 0 for c in changes):
+                new = min(baseline, current + UP_STEP)
+            elif all(c < 0 for c in changes):
+                new = max(CAP_MIN, current - DOWN_STEP)
+            else:
+                continue
+
+            if new != current:
+                self.max_abs_position[s] = new
+                log(f"[ADAPTIVE] {s} cap {current}→{new} (trend {'up' if new > current else 'down'})",
+                    "pnl.log")
+
+    def _write_pnl_live(self) -> None:
+        """Write a single-line cumulative PnL summary to pnl_live.log for tail -f monitoring."""
+        total_upnl = 0.0
+        parts = []
+        for s in self.ALL_TRADABLE:
+            pos = self.positions.get(s, 0)
+            if pos == 0:
+                continue
+            _, _, mid = self.get_bba_mid(s)
+            if mid is None:
+                continue
+            t = self.fill_tracker.get(s)
+            if t and t[0] != 0:
+                upnl = pos * (mid - t[1] / t[0])
+            else:
+                upnl = 0.0
+            total_upnl += upnl
+            parts.append(f"{s}:{pos:+d}({upnl:+.0f})")
+        cash = self.positions.get("cash", 0)
+        elapsed = time.time() - self._round_start_wall
+        line = (f"[{elapsed:5.0f}s] uPnL={total_upnl:+7.0f}  cash={cash}"
+                + (("  " + "  ".join(parts)) if parts else ""))
+        with open("pnl_live.log", "w") as f:
+            f.write(line + "\n")
+
     def print_status(self) -> None:
         lines = [f"[STATUS] ── round elapsed {time.time()-self._round_start_wall:.0f}s ──"]
         total_upnl = 0.0
@@ -1891,7 +1989,8 @@ class MyXchangeClient(XChangeClient):
     async def _listen_commands(self) -> None:
         loop = asyncio.get_running_loop()
         while True:
-            cmd = (await loop.run_in_executor(None, sys.stdin.readline)).strip().lower()
+            raw = (await loop.run_in_executor(None, sys.stdin.readline)).strip()
+            cmd = raw.lower()
             if cmd == "f":
                 log("[CMD] Manual flatten")
                 await self.flatten_all()
@@ -1921,14 +2020,6 @@ class MyXchangeClient(XChangeClient):
                     print(f"[CMD] C sensitivity = {self.strat_c._c_sensitivity}")
                 except (IndexError, ValueError):
                     print("[CMD] Usage: sens <float>  e.g. sens -2.5")
-            elif cmd.startswith("meta "):
-                syms = cmd.split()[1:]
-                MetaStrategy.META_SYMBOLS = syms
-                for s in syms:
-                    self._ensure_symbol(s)
-                    self.fair_values[s] = 500.0
-                print(f"[CMD] Meta symbols registered: {syms}")
-
             elif cmd.startswith("metabuckets "):
                 parts = cmd.split()
                 if len(parts) == 4:
@@ -1950,7 +2041,7 @@ class MyXchangeClient(XChangeClient):
 
     async def trade(self) -> None:
         # Clear logs at startup
-        for f in ["pnl.log", "fills.log", "fed.log", "news.log", "trades.log", "meta.log"]:
+        for f in ["pnl.log", "fills.log", "fed.log", "news.log", "trades.log", "meta.log", "pnl_live.log"]:
             open(f, "w").close()
 
         await asyncio.sleep(5)
@@ -1984,6 +2075,18 @@ class MyXchangeClient(XChangeClient):
                 await asyncio.sleep(0.5)
                 continue
 
+            # ── uPnL spike exit: flatten and go conservative ────────
+            if not self._conservative_mode:
+                upnl = self._compute_total_upnl()
+                if upnl >= 500000:
+                    log(f"[SPIKE-EXIT] uPnL={upnl:+.0f} — flattening and going conservative",
+                        "pnl.log")
+                    print(f"[SPIKE-EXIT] uPnL={upnl:+.0f} — flattening all positions")
+                    await self.flatten_all()
+                    self._conservative_mode = True
+                    for s in self.max_order_size:
+                        self.max_order_size[s] = max(1, self._normal_max_order_size.get(s, 40) // 4)
+
             # ── Settlement trade (CHANGE 6): T-90s to T-20s window ──
             elapsed = now - self._round_start_wall
             if (self._round_start_wall > 0
@@ -2012,10 +2115,16 @@ class MyXchangeClient(XChangeClient):
                 await self.strat_etf.check_arb()
                 await self.strat_options.run()
 
+            # ── Adaptive caps (every 2s) ───────────────────────────
+            if now - self._last_cap_check >= 2.0:
+                self._last_cap_check = now
+                self._update_adaptive_caps()
+
             # ── Status report ──────────────────────────────────────
             if now - last_status >= 10:
                 last_status = now
                 self.print_status()
+                self._write_pnl_live()
 
             await asyncio.sleep(0.1)
 
